@@ -30,6 +30,8 @@
 </head>
 <body id="view" class="view app-view">
 
+    <span class="add-ratetable-group material-icons-outlined" onclick="generateRateTableGroup()">add_box</span>
+
 
 
     <!-- #region || navigation -->
@@ -84,7 +86,7 @@
 
             <!-- #region || chart -->
             <div id="chart-container" class="chart-container container">
-                <canvas id="chart" class="chart"></canvas>
+                <canvas id="rateChart" class="rateChart"></canvas>
             </div>
             <!-- #endregion || chart -->
 
@@ -98,7 +100,11 @@
 
 
         <!-- #region || footer -->
-        <!-- <footer id="footer" class="footer">footer</footer> -->
+        <footer id="footer" class="footer">
+            <div class="project-info">
+                <small><a href="https://github.com/Marc-Anderson/multirotor-rate-converter">GitHub</a></small>
+            </div>
+        </footer>
         <!-- #endregion || footer -->
 
 
@@ -113,10 +119,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js" integrity="sha512-QSkVNOCYLtj73J4hbmVoOV6KVZuMluZlioC+trLpewV8qMjsWqlIQvkn1KGX2StWvPMdWGBqim1xlC8krl1EKQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
     <!-- require integration scripts -->
-    <script src="./js/global.js?v=000"></script>
     <script src="./libraries/js/RateCurve.js"></script>
-    <script src="./js/curveCalculator.js?v=000"></script>
+    <script src="./js/global.js?v=000"></script>
     
+    <script src="./js/curveCalculator.js?v=000"></script>
     <script src="./js/chart.js?v=000"></script>
     <script src="./js/utilities.js?v=000"></script>
     <script src="./js/main.js?v=000"></script>
@@ -133,12 +139,16 @@
     <tbody class="ratetable-group" data-id="">
         <tr class="ratetable-header">
             <td></td>
+            <td></td>
             <td class="rc_rate_title"></td>
             <td class="rate_title"></td>
             <td class="expo_title"></td>
             <td>Max Velocity</td>
         </tr>
         <tr class="ratetable-body">
+            <td class="ratetable-deletesection">
+                <span class="ratetable-delete material-icons-outlined">clear</span>
+            </td>
             <td class="ratetable-typesection">
                 <select class="rateTypeSelector">
                     <!-- RATES TYPE LIST GENERATED HERE -->

@@ -46,8 +46,36 @@ TABS.pid_tuning = {
     }
 };
 
+// create a ratecurve 
+TABS.pid_tuning.rateCurve = new RateCurve(useLegacyCurve);
+
 // as it sounds
 let rateTableGroupCounter = 0;
+
+
+const colors = [
+    '255,61,2',
+    '77,209,33',
+    '41,63,255',
+    '232,203,14',
+    '177,61,255',
+    // '255,0,41',
+    // '102,166,30',
+    // '55,126,184',
+    '255,127,0',
+    '152,78,163',
+    '0,210,213',
+    '175,141,0',
+    '127,128,205',
+    '179,233,0',
+    '196,46,96',
+    '166,86,40',
+    '247,129,191',
+    '141,211,199',
+    '190,186,218',
+    '251,128,114',
+    '128,177,211'
+]
 
 // names, limits and default values for rate types
 let rateDetails = [

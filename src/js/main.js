@@ -11,8 +11,6 @@ function init(){
     rateTypes.forEach((rateTypeTitle) => {
 
         generateRateTableGroup(rateTypeTitle)
-        createDataset(TABS.pid_tuning.RATES_TYPE[rateTypeTitle])
-        updateDataset(TABS.pid_tuning.RATES_TYPE[rateTypeTitle])
     })
    
 }
@@ -20,8 +18,12 @@ function init(){
 function monitorChanges(event){
     if(event.target.selectedIndex == undefined){
         updateDataset(this.dataset.id)
-        updateSlider(event)
+
+        let slider = document.getElementById('rateSlider')
+            slider.value = event.target.value
+
     } else {
+        toggleActiveRow(this.dataset.id)
         updateRateTableGroup(this.dataset.id)
         updateDataset(this.dataset.id)
     }
@@ -29,7 +31,7 @@ function monitorChanges(event){
 
 function updateRateTableGroup(groupID){
 
-    let rateTableGroup = document.querySelectorAll('.ratetable-group')[groupID]
+    let rateTableGroup = document.querySelector(`.ratetable-group[data-id="${groupID}"]`)
 
     let currentRateTypeID = rateTableGroup.querySelector('.rateTypeSelector').selectedIndex
 
@@ -80,47 +82,27 @@ function generateRateTableGroup(targetRateType = "BETAFLIGHT"){
    
     let targetRateTypeID = TABS.pid_tuning.RATES_TYPE[targetRateType.toUpperCase()]
     newRateTableGroup.querySelector('.rateTypeSelector').selectedIndex = targetRateTypeID
-    
+
     newRateTableGroup.dataset.id = rateTableGroupCounter
     rateTable.append(newRateTableGroup)
 
-    updateRateTableGroup(rateTableGroupCounter)
+    updateRateTableGroup(newRateTableGroup.dataset.id)
 
     newRateTableGroup.addEventListener('input', monitorChanges)
-    // newRateTableGroup.addEventListener('change', monitorChanges)
 
     newRateTableGroup.addEventListener('focusin', sliderMonitor)
     newRateTableGroup.addEventListener('focusout', sliderMonitor)
 
+    createDataset(newRateTableGroup.dataset.id)
+    updateDataset(newRateTableGroup.dataset.id)
+
     rateTableGroupCounter++
 
-}
-
-function createDataset(groupID){
-
-    let colors = [
-        '255,61,2',
-        '77,209,33',
-        '41,63,255',
-        '232,203,14',
-        '177,61,255',
-    ]
-
-    if(data.datasets.length - 1 < groupID){
-        data.datasets[groupID] = {
-            label: `Dataset ${groupID}`,
-            backgroundColor: `rgb(${colors[groupID]})`,
-            borderColor: `rgb(${colors[groupID]})`,
-            data: [0, 700],
-            pointStyle: 'circle',
-            pointRadius: 0
-        }
-    }
 }
     
 function updateDataset(groupID){
 
-    let rateTableGroup = document.querySelectorAll('.ratetable-group')[groupID]
+    let rateTableGroup = document.querySelector(`.ratetable-group[data-id="${groupID}"]`)
 
     let currentRateTypeID = rateTableGroup.querySelector('.rateTypeSelector').selectedIndex
 
@@ -128,22 +110,22 @@ function updateDataset(groupID){
     let rc_rate = rateTableGroup.querySelector('input[name="rc_rate"]').value
     let rc_expo = rateTableGroup.querySelector('input[name="rc_expo"]').value
 
-            
     let maxAngularVel_e = rateTableGroup.querySelector('.maxAngularVel')
         maxAngularVel_e.textContent = getRateTableGroupMaxAngularVel(groupID)
 
-    data.datasets[groupID].label = Object.keys(TABS.pid_tuning.RATES_TYPE)[currentRateTypeID].toSentenceCase()
+    let targetDataset = chartData.datasets.find(dataset => dataset.id == groupID)
+    targetDataset.label = Object.keys(TABS.pid_tuning.RATES_TYPE)[currentRateTypeID].toSentenceCase()
 
-    data.datasets[groupID].data = generateCurve(currentRateTypeID, roll_rate, rc_rate, rc_expo)
+    targetDataset.data = generateCurve(currentRateTypeID, roll_rate, rc_rate, rc_expo)
 
-    myChart.update()
+    rateChart.update()
 
 }
 
 
 function getRateTableGroupMaxAngularVel(groupID) {
 
-    let tgtRateTableGroup = document.querySelectorAll('.ratetable-group')[groupID]
+    let tgtRateTableGroup = document.querySelector(`.ratetable-group[data-id="${groupID}"]`)
 
     let currentRateTypeID = parseFloat(tgtRateTableGroup.querySelector('.rateTypeSelector').selectedIndex)
 
@@ -162,9 +144,26 @@ function getRateTableGroupMaxAngularVel(groupID) {
     return parseInt(maxVel)
 }
 
+let toggleActiveRow = (groupID) => {
+
+    let rateTableGroups = document.querySelectorAll('.ratetable-group')
+
+    rateTableGroups.forEach(rateTableGroup => {
+        if(rateTableGroup.dataset.id == groupID){
+            rateTableGroup.classList.add('active')
+        } else {
+            rateTableGroup.classList.remove('active')
+        }
+    })
+}
+
 function sliderMonitor(e){
     
     if(e.target.classList.contains('rateTypeSelector')) return
+
+    if(e.type == 'focusin'){
+        toggleActiveRow(e.target.closest('.ratetable-group').dataset.id)
+    }
 
     let slider = document.getElementById('rateSlider')
         slider.min = e.target.min
@@ -176,14 +175,17 @@ function sliderMonitor(e){
         e.target.value = this.value
         updateDataset(e.target.closest('.ratetable-group').dataset.id)
     }
+
 }
 
-function updateSlider(e){
+function deleteRateTableGroup(id){
 
-    let slider = document.getElementById('rateSlider')
-        slider.min = e.target.min
-        slider.max = e.target.max
-        slider.step = e.target.step
-        slider.value = e.target.value
-        
+    let rateTableGroup = document.querySelector(`.ratetable-group[data-id="${id}"]`)
+
+    if(rateTableGroup === undefined || rateTableGroup === null) throw new Error("This ratetable id does not exist")
+
+    chartData.datasets = chartData.datasets.filter(dataset => dataset.id !== id)
+
+    rateTableGroup.remove()
+    rateChart.update()
 }

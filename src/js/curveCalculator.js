@@ -1,6 +1,3 @@
-// create a ratecurve 
-TABS.pid_tuning.rateCurve = new RateCurve(useLegacyCurve);
-
 // return the value for any curve at a given point
 function getRcCommandRawToDegreesPerSecond(ratesType, rcData, rate, rcRate, rcExpo){
 
