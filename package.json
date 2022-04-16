@@ -1,0 +1,27 @@
+{
+  "name": "multirotor-rate-converter",
+  "version": "1.0.0",
+  "description": "## description a simple web app to visualize the difference and compare rates of flight controller software",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Marc-Anderson/multirotor-rate-converter.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Marc-Anderson/multirotor-rate-converter/issues"
+  },
+  "homepage": "https://github.com/Marc-Anderson/multirotor-rate-converter#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  },
+  "dependencies": {
+    "express": "^4.17.3"
+  }
+}
