@@ -48,6 +48,11 @@ INSPIRATION
 ============================================================ */
 /* #region || temp */
 
+.page-title {
+    text-align: center;
+    font-size: clamp(1.5em, 5vw, 2.5em);
+}
+
 .add-ratetable-group {
     position: absolute;
     top: 0;
@@ -89,10 +94,10 @@ INSPIRATION
     margin: 0 auto;
 }
 
-.slider-container {
+/* .slider-container {
     margin: 0 auto;
     width: clamp(350px, 550px,100%);
-}
+} */
 
 .slider {
     width: 100%
@@ -100,7 +105,7 @@ INSPIRATION
 
 .chart-container {
     margin: 0 auto;
-    max-width: clamp(400px, 700px,100%);
+    max-width: 850px;
 }
 
 .ratetable-header {
@@ -117,8 +122,9 @@ INSPIRATION
     padding: .1em .4em;
 }
 
-.ratetable td:last-child {
+.ratetable .stats{
     text-align: center;
+    font-size: .8em;
 }
 
 .ratetable input, .ratetable select {

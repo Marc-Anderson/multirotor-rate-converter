@@ -6,12 +6,12 @@ window.addEventListener('load', () => {
 
 function init(){
 
-    let rateTypes = Object.keys(TABS.pid_tuning.RATES_TYPE)
+    // let rateTypes = Object.keys(TABS.pid_tuning.RATES_TYPE)
 
-    rateTypes.forEach((rateTypeTitle) => {
-
-        generateRateTableGroup(rateTypeTitle)
-    })
+    // rateTypes.forEach((rateTypeTitle) => {
+        generateRateTableGroup()
+        generateRateTableGroup('RACEFLIGHT')
+    // })
    
 }
 
@@ -117,6 +117,21 @@ function updateDataset(groupID){
     targetDataset.label = Object.keys(TABS.pid_tuning.RATES_TYPE)[currentRateTypeID].toSentenceCase()
 
     targetDataset.data = generateCurve(currentRateTypeID, roll_rate, rc_rate, rc_expo)
+
+
+    let rateTableGroups = document.querySelectorAll('.ratetable-group')
+    rateTableGroups.forEach(rtGroup => {
+
+        let diffFromSelected_e = rtGroup.querySelector('.diffFromSelected')
+
+        if(rtGroup == rateTableGroup) {
+            diffFromSelected_e.textContent = 0
+            return
+        }
+        
+        diffFromSelected_e.textContent = sumCurveDifference(targetDataset.data, chartData.datasets.find(dataset => dataset.id == rtGroup.dataset.id).data).toFixed(0)
+
+    })
 
     rateChart.update()
 

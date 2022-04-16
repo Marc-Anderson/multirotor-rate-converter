@@ -30,7 +30,7 @@
 </head>
 <body id="view" class="view app-view">
 
-    <span class="add-ratetable-group material-icons-outlined" onclick="generateRateTableGroup()">add_box</span>
+    <span class="add-ratetable-group material-icons-outlined" title="insert row" onclick="generateRateTableGroup()">add_box</span>
 
 
 
@@ -67,6 +67,8 @@
         <!-- #region || main -->
         <main id="main" class="main">
 
+            <div class="page-title">Multirotor Rate Converter</div>
+
 
             <!-- #region || input area -->
             <div id="input-container" class="input-container container">
@@ -74,9 +76,9 @@
                     <table id="ratetable" class="ratetable" style="border-collapse: collapse">
                         <!-- RATE TABLE GROUPS GENERATED HERE -->
                     </table>
-                </div>
-                <div class="slider-container">
-                    <input type="range" min="1" max="100" class="slider" id="rateSlider">
+                    <div class="slider-container">
+                        <input type="range" min="1" max="100" class="slider" id="rateSlider">
+                    </div>
                 </div>
             </div>
             <!-- #endregion || input area -->
@@ -143,7 +145,8 @@
             <td class="rc_rate_title"></td>
             <td class="rate_title"></td>
             <td class="expo_title"></td>
-            <td>Max Velocity</td>
+            <td class="stats">Difference</td>
+            <td class="stats">Max Velocity</td>
         </tr>
         <tr class="ratetable-body">
             <td class="ratetable-deletesection">
@@ -163,10 +166,35 @@
             <td class="rc_expo">
                 <input type="number" class="expo_input" name="rc_expo" step="0.01" min="0" max="1">
             </td>
-            <td class="maxAngularVel"></td>
+            <td class="stats diffFromSelected"></td>
+            <td class="stats maxAngularVel"></td>
+        </tr>
+        <tr class="hidden">
+            <td>t</td>
+            <td>t</td>
+            <td>t</td>
+            <td>t</td>
+            <td>t</td>
+            <td>t</td>
+        </tr>
+        <tr class="hidden">
+            <td>v</td>
+            <td>v</td>
+            <td>v</td>
+            <td>v</td>
+            <td>v</td>
+            <td>v</td>
         </tr>
     </tbody>
 </template>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<!-- <script async src="https://www.googletagmanager.com/gtag/js?id=UA-112936483-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag () { dataLayer.push( arguments ); }
+    gtag( 'js', new Date() );
 
+    gtag( 'config', 'UA-112936483-1' );
+</script> -->
 </body>
 </html>

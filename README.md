@@ -19,23 +19,18 @@ How do you know the rates are accurate? I don’t! I’ve entrusted our fate int
 
 
 ### feature ideas
-show least squares
 color coding?
-highlight the last edited row?
 light and dark theme similar to betaflight
 incorporate the throttle slider?
 a way to convert the rates types from one another automatically finding the best line
 
 ### todo
 - [ ] finish readme
-- [ ] add hide/disable option
 - [ ] review scalabiliity
 - [ ] make the ui fancy
 - [ ] check out chart features
 - [ ] organize chart.js
 - [ ] review betaflight configurator changes to see if we can merge them
-- [ ] delete row of data
-- [ ] insert 
 
 
 ### resources
