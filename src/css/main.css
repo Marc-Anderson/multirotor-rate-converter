@@ -254,13 +254,18 @@ input[type=number]::-webkit-outer-spin-button {
     font-size: clamp(1.9em, 6vw, 3em);
     color: white;
     cursor: pointer;
+    user-select: none;
 }
 
+.project-info {
+    position: static;
+    text-align: right;
+    bottom: 0;
+    right: 0;
+    color: black;
+    padding: 5px 10px;
+}
 
-
-
-
-/* :root {} */
 
 body {
     display: flex;
@@ -573,7 +578,7 @@ blockquote > p::after {
 
 .input-container {
     padding: clamp(.2em, .7vw, 1.2em);
-    padding-top: clamp(.2em, 1.7vw, 1.2em);
+    /* padding-top: clamp(.2em, 1.7vw, 1.2em); */
     padding-bottom: 0;
 }
 

@@ -18,12 +18,13 @@ incorporate the throttle slider
 a way to convert the rates types from one another automatically finding the best line
 
 ### todo
+- [ ] fit the chart better on mobile without distortion
 - [ ] review betaflight configurator changes to see if we can merge them
 
 
 ### resources
 
-#### existing rate and inspiration
+#### special thanks to these wonderful projects
 * [rotor pirates](https://github.com/apocolipse/RotorPirates)
 * [rate fitter](https://github.com/yhgillet/rateconv/tree/8e9cc846f63971820bb77f1069e79271c08e2ff2)
 * [rate tuner](https://github.com/Dadibom/Rate-Tuner/tree/de57d61d8307b29d8ac6a9a926aa719ddf3d605b)
