@@ -6,32 +6,28 @@ window.addEventListener('load', () => {
 
 function init(){
 
-    // let rateTypes = Object.keys(TABS.pid_tuning.RATES_TYPE)
-
-    // rateTypes.forEach((rateTypeTitle) => {
-        generateRateTableGroup()
-        generateRateTableGroup('RACEFLIGHT')
-    // })
+    generateRateTableGroup()
+    generateRateTableGroup('RACEFLIGHT')
    
 }
 
 function monitorChanges(event){
     if(event.target.selectedIndex == undefined){
-        updateDataset(this.dataset.id)
+        updateDatasetFromHTML(this.dataset.id)
 
         let slider = document.getElementById('rateSlider')
             slider.value = event.target.value
 
     } else {
         toggleActiveRow(this.dataset.id)
-        updateRateTableGroup(this.dataset.id)
-        updateDataset(this.dataset.id)
+        setRateTableGroupDefaults(this.dataset.id)
+        updateDatasetFromHTML(this.dataset.id)
     }
 }
 
-function updateRateTableGroup(groupID){
+function setRateTableGroupDefaults(id){
 
-    let rateTableGroup = document.querySelector(`.ratetable-group[data-id="${groupID}"]`)
+    let rateTableGroup = document.querySelector(`.ratetable-group[data-id="${id}"]`)
 
     let currentRateTypeID = rateTableGroup.querySelector('.rateTypeSelector').selectedIndex
 
@@ -67,6 +63,11 @@ function updateRateTableGroup(groupID){
 
 function generateRateTableGroup(targetRateType = "BETAFLIGHT"){
 
+    if(chartData.datasets.length > colors.length) {
+        window.alert("Sorry, you've reached the limit. wtf are you using so many anyway.")
+        return
+    }
+
     let rateTypeTitles = Object.keys(TABS.pid_tuning.RATES_TYPE)
 
     let rateTable = document.getElementById('ratetable')
@@ -86,21 +87,32 @@ function generateRateTableGroup(targetRateType = "BETAFLIGHT"){
     newRateTableGroup.dataset.id = rateTableGroupCounter
     rateTable.append(newRateTableGroup)
 
-    updateRateTableGroup(newRateTableGroup.dataset.id)
+    setRateTableGroupDefaults(newRateTableGroup.dataset.id)
+
+    // console.log(`-4px 0px 0px 0px rgb(${colors[newRateTableGroup.dataset.id]})`)
+    newRateTableGroup.style.boxShadow = `-4px 0px 0px 0px rgb(${colors[newRateTableGroup.dataset.id]})`
 
     newRateTableGroup.addEventListener('input', monitorChanges)
-
     newRateTableGroup.addEventListener('focusin', sliderMonitor)
     newRateTableGroup.addEventListener('focusout', sliderMonitor)
 
+    function handleDeleteRateTableGroup(e){
+        let id = e.target.closest('.ratetable-group').dataset.id
+        deleteRateTableGroup(id)
+    }
+    
+    let deleteButton = newRateTableGroup.querySelector('.ratetable-delete')
+    deleteButton.addEventListener('click', handleDeleteRateTableGroup)
+
+    // TODO: maybe move these away to their own assembly function
     createDataset(newRateTableGroup.dataset.id)
-    updateDataset(newRateTableGroup.dataset.id)
+    updateDatasetFromHTML(newRateTableGroup.dataset.id)
 
     rateTableGroupCounter++
 
 }
     
-function updateDataset(groupID){
+function updateDatasetFromHTML(groupID){
 
     let rateTableGroup = document.querySelector(`.ratetable-group[data-id="${groupID}"]`)
 
@@ -114,6 +126,7 @@ function updateDataset(groupID){
         maxAngularVel_e.textContent = getRateTableGroupMaxAngularVel(groupID)
 
     let targetDataset = chartData.datasets.find(dataset => dataset.id == groupID)
+
     targetDataset.label = Object.keys(TABS.pid_tuning.RATES_TYPE)[currentRateTypeID].toSentenceCase()
 
     targetDataset.data = generateCurve(currentRateTypeID, roll_rate, rc_rate, rc_expo)
@@ -129,8 +142,15 @@ function updateDataset(groupID){
             return
         }
         
-        diffFromSelected_e.textContent = sumCurveDifference(targetDataset.data, chartData.datasets.find(dataset => dataset.id == rtGroup.dataset.id).data).toFixed(0)
+        let difference = sumCurveDifference(targetDataset.data, chartData.datasets.find(dataset => dataset.id == rtGroup.dataset.id).data).toFixed(0)
 
+        if(parseInt(diffFromSelected_e.textContent) < difference) {
+            colorpop(diffFromSelected_e, 'neg')
+        } else if (parseInt(diffFromSelected_e.textContent) > difference) {
+            colorpop(diffFromSelected_e, 'pos')
+        }
+
+        diffFromSelected_e.textContent = difference
     })
 
     rateChart.update()
@@ -163,6 +183,8 @@ let toggleActiveRow = (groupID) => {
 
     let rateTableGroups = document.querySelectorAll('.ratetable-group')
 
+    document.querySelector(':root').style.setProperty('--slider-color', chartData.datasets.find(dataset => dataset.id == groupID).backgroundColor)   
+
     rateTableGroups.forEach(rateTableGroup => {
         if(rateTableGroup.dataset.id == groupID){
             rateTableGroup.classList.add('active')
@@ -188,7 +210,7 @@ function sliderMonitor(e){
 
     slider.oninput = function () {
         e.target.value = this.value
-        updateDataset(e.target.closest('.ratetable-group').dataset.id)
+        updateDatasetFromHTML(e.target.closest('.ratetable-group').dataset.id)
     }
 
 }
@@ -196,11 +218,40 @@ function sliderMonitor(e){
 function deleteRateTableGroup(id){
 
     let rateTableGroup = document.querySelector(`.ratetable-group[data-id="${id}"]`)
-
+    
     if(rateTableGroup === undefined || rateTableGroup === null) throw new Error("This ratetable id does not exist")
+
+    rateTableGroup.remove('input', monitorChanges)
+    rateTableGroup.remove('focusin', sliderMonitor)
+    rateTableGroup.remove('focusout', sliderMonitor)
+    let deleteButton = rateTableGroup.querySelector('.ratetable-delete')
+        deleteButton.remove('click', deleteRateTableGroup)
 
     chartData.datasets = chartData.datasets.filter(dataset => dataset.id !== id)
 
     rateTableGroup.remove()
     rateChart.update()
+}
+
+function colorpop(target, type){
+    target.classList.add('colorpop')
+
+    if(type === 'pos'){
+        target.classList.add('positive')
+        setTimeout(() => {
+            target.classList.remove('positive')
+        }, 400);    
+            
+    }
+    if(type === 'neg'){
+        target.classList.add('negative')
+        setTimeout(() => {
+            target.classList.remove('negative')
+        }, 400);
+    }
+
+    setTimeout(() => {
+        target.classList.remove('colorpop')
+    }, 600);
+
 }

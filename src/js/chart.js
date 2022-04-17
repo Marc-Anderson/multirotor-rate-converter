@@ -43,18 +43,19 @@ const rateChart = new Chart(
     chartConfig
 );
 
-const createDataset = (newDatasetID) => {
+const createDataset = (id) => {
 
-    if(chartData.datasets.length > colors.length) return
-
-    chartData.datasets[newDatasetID] = {
-        id: parseFloat(newDatasetID),
-        label: `Dataset ${newDatasetID}`,
-        backgroundColor: `rgb(${colors[newDatasetID]})`,
-        borderColor: `rgb(${colors[newDatasetID]})`,
+    let newChartDatasetTemplate = {
+        id: id,
+        label: `Dataset ${id}`,
+        backgroundColor: `rgb(${colors[id]})`,
+        borderColor: `rgb(${colors[id]})`,
         data: [0, 700],
         pointStyle: 'circle',
         pointRadius: 0
     }
+
+    chartData.datasets.push(newChartDatasetTemplate)
+
 }
     
