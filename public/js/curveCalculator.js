@@ -1,9 +1,9 @@
 // return the value for any curve at a given point
 function getRcCommandRawToDegreesPerSecond(ratesType, rcData, rate, rcRate, rcExpo){
 
-    if(Object.values(TABS.pid_tuning.RATES_TYPE).find( x => x == ratesType) == undefined) return
+    if(Object.keys(rateDetails).find( x => x == ratesType) == undefined) return
     
-    TABS.pid_tuning.currentRatesType = parseFloat(ratesType)
+    TABS.pid_tuning.currentRatesType = parseFloat(rateDetails[ratesType].id)
 
     rate = parseFloat(rate)
     rcRate = parseFloat(rcRate)
@@ -22,17 +22,13 @@ function getRcCommandRawToDegreesPerSecond(ratesType, rcData, rate, rcRate, rcEx
 function generateCurve(ratesType, rate, rcRate, rcExpo){
 
     let curve = []
-    
     let rcValue = 1500;
     let rcMax = 2001
 
     while(rcValue < rcMax){
-
         curve.push(getRcCommandRawToDegreesPerSecond(ratesType, rcValue, rate, rcRate, rcExpo))
-
         rcValue++
     }
-
     return curve
     
 }

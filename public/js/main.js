@@ -7,7 +7,7 @@ window.addEventListener('load', () => {
 function init(){
 
     generateRateTableGroup()
-    generateRateTableGroup('RACEFLIGHT')
+    generateRateTableGroup('raceflight')
    
 }
 
@@ -25,50 +25,52 @@ function monitorChanges(event){
     }
 }
 
-function setRateTableGroupDefaults(id){
+function setRateTableGroupDefaults(groupID){
 
-    let rateTableGroup = document.querySelector(`.ratetable-group[data-id="${id}"]`)
+    let rateTableGroup = document.querySelector(`.ratetable-group[data-id="${groupID}"]`)
 
-    let currentRateTypeID = rateTableGroup.querySelector('.rateTypeSelector').selectedIndex
+    let rateType = Object.keys(rateDetails).filter(type => {
+        return rateDetails[type].id == rateTableGroup.querySelector('.rateTypeSelector').selectedIndex;
+    })[0]
 
     let rc_rate_title = rateTableGroup.querySelector('.rc_rate_title')
-        rc_rate_title.textContent = rateDetails[currentRateTypeID].rc_rate.title
+        rc_rate_title.textContent = rateDetails[rateType].rateValues.rc_rate.title
 
     let rate_title = rateTableGroup.querySelector('.rate_title')
-        rate_title.textContent = rateDetails[currentRateTypeID].roll_rate.title
+        rate_title.textContent = rateDetails[rateType].rateValues.rate.title
 
     let expo_title = rateTableGroup.querySelector('.expo_title')
-        expo_title.textContent = rateDetails[currentRateTypeID].rc_expo.title
+        expo_title.textContent = rateDetails[rateType].rateValues.rc_expo.title
     
     let rc_rate_e = rateTableGroup.querySelector('input[name="rc_rate"]')
-        rc_rate_e.step = rateDetails[currentRateTypeID].rc_rate.step
-        rc_rate_e.min = rateDetails[currentRateTypeID].rc_rate.min
-        rc_rate_e.max = rateDetails[currentRateTypeID].rc_rate.max
-        rc_rate_e.value = rateDetails[currentRateTypeID].rc_rate.default
+        rc_rate_e.step = rateDetails[rateType].rateValues.rc_rate.step
+        rc_rate_e.min = rateDetails[rateType].rateValues.rc_rate.min
+        rc_rate_e.max = rateDetails[rateType].rateValues.rc_rate.max
+        rc_rate_e.value = rateDetails[rateType].rateValues.rc_rate.default
 
-    let roll_rate_e = rateTableGroup.querySelector('input[name="roll_rate"]')
-        roll_rate_e.step = rateDetails[currentRateTypeID].roll_rate.step
-        roll_rate_e.min = rateDetails[currentRateTypeID].roll_rate.min
-        roll_rate_e.max = rateDetails[currentRateTypeID].roll_rate.max
-        roll_rate_e.value = rateDetails[currentRateTypeID].roll_rate.default
+    let rate_e = rateTableGroup.querySelector('input[name="rate"]')
+        rate_e.step = rateDetails[rateType].rateValues.rate.step
+        rate_e.min = rateDetails[rateType].rateValues.rate.min
+        rate_e.max = rateDetails[rateType].rateValues.rate.max
+        rate_e.value = rateDetails[rateType].rateValues.rate.default
 
     let rc_expo_e = rateTableGroup.querySelector('input[name="rc_expo"]')
-        rc_expo_e.step = rateDetails[currentRateTypeID].rc_expo.step
-        rc_expo_e.min = rateDetails[currentRateTypeID].rc_expo.min
-        rc_expo_e.max = rateDetails[currentRateTypeID].rc_expo.max
-        rc_expo_e.value = rateDetails[currentRateTypeID].rc_expo.default
+        rc_expo_e.step = rateDetails[rateType].rateValues.rc_expo.step
+        rc_expo_e.min = rateDetails[rateType].rateValues.rc_expo.min
+        rc_expo_e.max = rateDetails[rateType].rateValues.rc_expo.max
+        rc_expo_e.value = rateDetails[rateType].rateValues.rc_expo.default
         
 }
 
 
-function generateRateTableGroup(targetRateType = "BETAFLIGHT"){
+function generateRateTableGroup(targetRateType = "betaflight"){
 
     if(chartData.datasets.length > colors.length) {
         window.alert("Sorry, you've reached the limit. wtf are you using so many anyway.")
         return
     }
 
-    let rateTypeTitles = Object.keys(TABS.pid_tuning.RATES_TYPE)
+    let rateTypeTitles = Object.keys(rateDetails)
 
     let rateTable = document.getElementById('ratetable')
     let rateTableGroupTemplate = document.getElementById('ratetable-group-template').content
@@ -76,12 +78,12 @@ function generateRateTableGroup(targetRateType = "BETAFLIGHT"){
 
     rateTypeTitles.forEach(rateType => {
         let newSelect = document.createElement('option')
-        newSelect.textContent = rateType.toSentenceCase()
-        newSelect.value = TABS.pid_tuning.RATES_TYPE[rateType]
+        newSelect.textContent = rateDetails[rateType].label
+        newSelect.value = rateDetails[rateType].id
         newRateTableGroup.querySelector('.rateTypeSelector').append(newSelect)
     })
    
-    let targetRateTypeID = TABS.pid_tuning.RATES_TYPE[targetRateType.toUpperCase()]
+    let targetRateTypeID = rateDetails[targetRateType.toLowerCase()].id
     newRateTableGroup.querySelector('.rateTypeSelector').selectedIndex = targetRateTypeID
 
     newRateTableGroup.dataset.id = rateTableGroupCounter
@@ -89,7 +91,6 @@ function generateRateTableGroup(targetRateType = "BETAFLIGHT"){
 
     setRateTableGroupDefaults(newRateTableGroup.dataset.id)
 
-    // console.log(`-4px 0px 0px 0px rgb(${colors[newRateTableGroup.dataset.id]})`)
     newRateTableGroup.style.boxShadow = `-4px 0px 0px 0px rgb(${colors[newRateTableGroup.dataset.id]})`
 
     newRateTableGroup.addEventListener('input', monitorChanges)
@@ -116,9 +117,12 @@ function updateDatasetFromHTML(groupID){
 
     let rateTableGroup = document.querySelector(`.ratetable-group[data-id="${groupID}"]`)
 
-    let currentRateTypeID = rateTableGroup.querySelector('.rateTypeSelector').selectedIndex
+    // let currentRateTypeID = rateTableGroup.querySelector('.rateTypeSelector').selectedIndex
+    let rateType = Object.keys(rateDetails).filter(type => {
+        return rateDetails[type].id == rateTableGroup.querySelector('.rateTypeSelector').selectedIndex;
+    })[0]
 
-    let roll_rate = rateTableGroup.querySelector('input[name="roll_rate"]').value
+    let rate = rateTableGroup.querySelector('input[name="rate"]').value
     let rc_rate = rateTableGroup.querySelector('input[name="rc_rate"]').value
     let rc_expo = rateTableGroup.querySelector('input[name="rc_expo"]').value
 
@@ -127,14 +131,13 @@ function updateDatasetFromHTML(groupID){
 
     let targetDataset = chartData.datasets.find(dataset => dataset.id == groupID)
 
-    targetDataset.label = Object.keys(TABS.pid_tuning.RATES_TYPE)[currentRateTypeID].toSentenceCase()
+    targetDataset.label = rateDetails[rateType].label
 
-    targetDataset.data = generateCurve(currentRateTypeID, roll_rate, rc_rate, rc_expo)
-
+    targetDataset.data = generateCurve(rateType, rate, rc_rate, rc_expo)
 
     let rateTableGroups = document.querySelectorAll('.ratetable-group')
-    rateTableGroups.forEach(rtGroup => {
 
+    rateTableGroups.forEach(rtGroup => {
         let diffFromSelected_e = rtGroup.querySelector('.diffFromSelected')
 
         if(rtGroup == rateTableGroup) {
@@ -160,21 +163,24 @@ function updateDatasetFromHTML(groupID){
 
 function getRateTableGroupMaxAngularVel(groupID) {
 
-    let tgtRateTableGroup = document.querySelector(`.ratetable-group[data-id="${groupID}"]`)
+    let rateTableGroup = document.querySelector(`.ratetable-group[data-id="${groupID}"]`)
 
-    let currentRateTypeID = parseFloat(tgtRateTableGroup.querySelector('.rateTypeSelector').selectedIndex)
+    // let currentRateTypeID = parseFloat(tgtRateTableGroup.querySelector('.rateTypeSelector').selectedIndex)
+    let rateType = Object.keys(rateDetails).filter(type => {
+        return rateDetails[type].id == rateTableGroup.querySelector('.rateTypeSelector').selectedIndex;
+    })[0]
 
-    let roll_rate = parseFloat(tgtRateTableGroup.querySelector('input[name="roll_rate"]').value)
-    let rc_rate = parseFloat(tgtRateTableGroup.querySelector('input[name="rc_rate"]').value)
-    let rc_expo = parseFloat(tgtRateTableGroup.querySelector('input[name="rc_expo"]').value)
+    let rate = parseFloat(rateTableGroup.querySelector('input[name="rate"]').value)
+    let rc_rate = parseFloat(rateTableGroup.querySelector('input[name="rc_rate"]').value)
+    let rc_expo = parseFloat(rateTableGroup.querySelector('input[name="rc_expo"]').value)
 
     let superExpoActive = true
     let deadband = 0
     let limit = 1998
 
-    TABS.pid_tuning.currentRatesType = currentRateTypeID
+    TABS.pid_tuning.currentRatesType = rateDetails[rateType].id
 
-    let maxVel = TABS.pid_tuning.rateCurve.getMaxAngularVel(roll_rate, rc_rate, rc_expo, superExpoActive, deadband, limit)
+    let maxVel = TABS.pid_tuning.rateCurve.getMaxAngularVel(rate, rc_rate, rc_expo, superExpoActive, deadband, limit)
 
     return parseInt(maxVel)
 }
