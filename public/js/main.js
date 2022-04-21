@@ -250,7 +250,7 @@ function convertRates(event){
             return
         } else {
             let requestData = `srcRateType=${srcRateType}&rate=${rate}&rc_rate=${rc_rate}&rc_expo=${rc_expo}&tgtRateType=${currentRateType}`
-            fetch(`https://rates.metamarc.com/api?${requestData}`)
+            fetch(`${window.location.href}api?${requestData}`)
                 .then(response => response.json())
                 .then(data => {
                     currentData.datasets.forEach(dataset => {
