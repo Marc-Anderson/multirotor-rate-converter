@@ -16,8 +16,8 @@ def getBetaflightRates(rcCommandf, rcCommandfAbs, rate, rcRate, rcExpo, superExp
     if rcRate > 2:
         rcRate = rcRate + (rcRate - 2) * 14.54
 
-    expoPower = 2
-    rcRateConstant = 205.85
+    expoPower = 3
+    rcRateConstant = 200
 
     if rcExpo > 0:
         rcCommandf =  rcCommandf * (rcCommandfAbs**expoPower) * rcExpo + rcCommandf * (1-rcExpo)

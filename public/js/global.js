@@ -6,7 +6,7 @@ let useLegacyCurve = false;
 // bypass versioning
 let API_VERSION_1_43 = "1.43"
 let semver = {
-    gte: (test, actual) => test == actual
+    gte: (current, test) => parseInt(current) >= parseInt(test)
 }
 
 // create a mock flight controller
