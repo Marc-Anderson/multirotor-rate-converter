@@ -260,6 +260,7 @@ function convertRates(event){
                             rateTableGroup.querySelector('input[name="rc_rate"]').value = data.tgt_rc_rate
                             rateTableGroup.querySelector('input[name="rc_expo"]').value = data.tgt_rc_expo
                             rateTableGroup.querySelector('.convert-btn').classList.remove('rainbow')
+                            updateDatasetFromHTML(dataset.id)
                         }
                     })
                 });
