@@ -1,4 +1,4 @@
-const chartData = {
+const currentData = {
     labels: Array(1001 - 500).fill().map((_,i) => 500 + i),
     datasets: [
     ],
@@ -6,7 +6,7 @@ const chartData = {
 
 const chartConfig = {
     type: 'line',
-    data: chartData,
+    data: currentData,
     options: {
         aspectRatio: 1.9,
         layout: {
@@ -43,19 +43,27 @@ const rateChart = new Chart(
     chartConfig
 );
 
-const createDataset = (id) => {
+function createDataset(rateType = "betaflight"){
 
     let newChartDatasetTemplate = {
-        id: id,
-        label: `Dataset ${id}`,
-        backgroundColor: `rgb(${colors[id]})`,
-        borderColor: `rgb(${colors[id]})`,
+        id: rateTableGroupCounter,
+        label: rateType.toSentenceCase(),
+        backgroundColor: `rgb(${colors[rateTableGroupCounter]})`,
+        borderColor: `rgb(${colors[rateTableGroupCounter]})`,
         data: [0, 700],
         pointStyle: 'circle',
+        rates: {
+            rc_rate: rateDetails[rateType].rateValues.rc_rate.default,
+            rate: rateDetails[rateType].rateValues.rate.default,
+            rc_expo: rateDetails[rateType].rateValues.rc_expo.default,
+            max: 0
+        },
         pointRadius: 0
     }
 
-    chartData.datasets.push(newChartDatasetTemplate)
+    currentData.datasets.push(newChartDatasetTemplate)
+    rateTableGroupCounter++
+    return newChartDatasetTemplate.id
 
 }
     

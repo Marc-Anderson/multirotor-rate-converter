@@ -26,6 +26,7 @@ a way to convert the rates types from one another automatically finding the best
 - [ ] change roll_rate to rate
 - [ ] match fitter data to chartdata
 - [ ] match global rateDetails
+- [ ] add usedColors to currentData and loop through unused colors
 
 
 ### resources

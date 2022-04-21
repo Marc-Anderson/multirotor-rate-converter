@@ -192,9 +192,9 @@ input[type=number]::-webkit-outer-spin-button {
 
 
 
-.colorpop {
+/* .colorpop {
     transition: all 200ms ease-out;
-}
+} */
 
 .positive {
     background-color: #ddffd6;
@@ -238,7 +238,17 @@ input[type=number]::-webkit-outer-spin-button {
 
 
 
+.convert-btn {
+    text-align: center;
+    margin: 2px;
+    border: 1px solid darkgrey;
+    border-radius: .3em;
+    cursor: pointer;
+}
 
+.convert-btn:hover {
+    background-color: rgba(0,0,0,.1);
+}
 
 .page-title {
     text-align: center;
@@ -518,6 +528,44 @@ blockquote > p::after {
 }
 
 
+
+.rainbow { 
+    /* height: 100%;
+    width: 100%;
+    left:0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    position: absolute; */
+    background: linear-gradient(124deg, #ff2400, #e81d1d, #e8b71d, #e3e81d, #1de840, #1ddde8, #2b1de8, #dd00f3, #dd00f3);
+    background-size: 180% 180%;
+  
+    -webkit-animation: rainbow 2s ease infinite;
+    -z-animation: rainbow 2s ease infinite;
+    -o-animation: rainbow 2s ease infinite;
+    animation: rainbow 2s ease infinite;
+}
+  
+  @-webkit-keyframes rainbow {
+      0%{background-position:0% 82%}
+      50%{background-position:100% 19%}
+      100%{background-position:0% 82%}
+  }
+  @-moz-keyframes rainbow {
+      0%{background-position:0% 82%}
+      50%{background-position:100% 19%}
+      100%{background-position:0% 82%}
+  }
+  @-o-keyframes rainbow {
+      0%{background-position:0% 82%}
+      50%{background-position:100% 19%}
+      100%{background-position:0% 82%}
+  }
+  @keyframes rainbow { 
+      0%{background-position:0% 82%}
+      50%{background-position:100% 19%}
+      100%{background-position:0% 82%}
+  }
 
 
 

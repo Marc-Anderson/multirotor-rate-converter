@@ -33,10 +33,12 @@ function generateCurve(ratesType, rate, rcRate, rcExpo){
     
 }
 
+
+// disabled since conversion api
 // the sum difference between 2 arrays
-function sumCurveDifference ( dataSetOne, dataSetTwo ) {
-    let sumDiff = dataSetOne.reduce( ( previousValue, currentValue, index ) => {
-        return previousValue + Math.abs( currentValue - dataSetTwo[ index ] )
-    }, 0 )
-    return sumDiff
-}
+// function sumCurveDifference ( dataSetOne, dataSetTwo ) {
+//     let sumDiff = dataSetOne.reduce( ( previousValue, currentValue, index ) => {
+//         return previousValue + Math.abs( currentValue - dataSetTwo[ index ] )
+//     }, 0 )
+//     return sumDiff
+// }
