@@ -10,19 +10,15 @@ enter your rates or rates of popular pilots to visually compare or automatically
 
 ## faq
 * How do you know the rates are accurate? I don’t! I’ve entrusted our fate into the hands of the [betaflight configurator](https://github.com/betaflight/betaflight-configurator) devs. I borrowed their rate calculation file and gave it a new place to show off its curves. 
-* how does the automatic rate conversion work? the api takes 10 datapoints of the source curve and uses non-linear least squares to fint the best fit of the rate type you want.
+* how does the automatic rate conversion work? the api takes 10 datapoints of the source curve and uses non-linear least squares to find the best fit of the rate type you want.
 
 ## feature ideas
 themes
 incorporate the throttle slider
 
 ## todo
-- [ ] bugfix, rainbow never stops if all rates are the same type
-- [ ] account for bad api responses
-- [ ] check for bad entered data before api request
 - [ ] mobile
 - [ ] review betaflight configurator changes to see if we can merge them
-- [ ] add usedColors to currentData and loop through unused colors
 
 
 ## resources

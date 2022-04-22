@@ -11,12 +11,21 @@ function init(){
    
 }
 
-function monitorChanges(event){
-    if(event.target.selectedIndex == undefined){
+function monitorChanges(e){
+    if(e.target.selectedIndex == undefined){
+
+        let rateType = Object.keys(rateDetails).filter(type => {
+            return rateDetails[type].id == e.currentTarget.querySelector('.rateTypeSelector').selectedIndex;
+        })[0]
+        if(parseFloat(e.target.value) < rateDetails[rateType].rateValues[e.target.name].min) return
+        if(parseFloat(e.target.value) > rateDetails[rateType].rateValues[e.target.name].max) return
+
+        let stepMod = parseFloat(e.target.value) % rateDetails[rateType].rateValues[e.target.name].step
+        
         updateDatasetFromHTML(this.dataset.id)
 
         let slider = document.getElementById('rateSlider')
-            slider.value = event.target.value
+            slider.value = e.target.value
 
     } else {
         toggleActiveRow(this.dataset.id)
@@ -71,7 +80,7 @@ function updateRateTableGroupType(datasetID){
 
 function generateRateTableGroup(targetRateType = "betaflight"){
 
-    if(currentData.datasets.length > colors.length) {
+    if(colors.length < 1) {
         window.alert("Sorry, you've reached the limit. wtf are you using so many anyway.")
         return
     }
@@ -95,9 +104,11 @@ function generateRateTableGroup(targetRateType = "betaflight"){
     // TODO: createdataset generates dataset & ratetable ids, move this somewhere more elegant
     newRateTableGroup.dataset.id = createDataset(targetRateType)
 
+    let targetDataset = currentData.datasets.find(dataset => dataset.id == newRateTableGroup.dataset.id)
+
     rateTable.append(newRateTableGroup)
 
-    newRateTableGroup.style.boxShadow = `-4px 0px 0px 0px rgb(${colors[newRateTableGroup.dataset.id]})`
+    newRateTableGroup.style.boxShadow = `-4px 0px 0px 0px ${targetDataset.backgroundColor}`
 
     newRateTableGroup.addEventListener('input', monitorChanges)
     newRateTableGroup.addEventListener('focusin', sliderMonitor)
@@ -112,8 +123,8 @@ function generateRateTableGroup(targetRateType = "betaflight"){
     }
 
     // TODO: maybe move these away
-    updateRateTableGroupType(newRateTableGroup.dataset.id)
-    updateDatasetFromHTML(newRateTableGroup.dataset.id)
+    updateRateTableGroupType(targetDataset.id)
+    updateDatasetFromHTML(targetDataset.id)
 
 }
     
@@ -132,29 +143,6 @@ function updateDatasetFromHTML(datasetID){
 
     targetDataset.data = generateCurve(targetDataset.label.toLowerCase(), targetDataset.rates.rate, targetDataset.rates.rc_rate, targetDataset.rates.rc_expo)
 
-    
-    // disabled since conversion api
-    // let rateTableGroups = Array.from(document.querySelectorAll('.ratetable-group'))
-
-    // rateTableGroups.forEach(rtGroup => {
-    //     let diffFromSelected_e = rtGroup.querySelector('.diffFromSelected')
-
-    //     if(rtGroup == rateTableGroup) {
-    //         diffFromSelected_e.textContent = 0
-    //         return
-    //     }
-        
-    //     let difference = sumCurveDifference(targetDataset.data, currentData.datasets.find(dataset => dataset.id == rtGroup.dataset.id).data).toFixed(0)
-
-    //     if(parseInt(diffFromSelected_e.textContent) < difference) {
-    //         colorpop(diffFromSelected_e, 'neg')
-    //     } else if (parseInt(diffFromSelected_e.textContent) > difference) {
-    //         colorpop(diffFromSelected_e, 'pos')
-    //     }
-
-    //     diffFromSelected_e.textContent = difference
-    // })
-
     rateChart.update()
 
 }
@@ -162,7 +150,6 @@ function updateDatasetFromHTML(datasetID){
 function getRateTableGroupMaxAngularVel(datasetID){
 
     let targetDataset = currentData.datasets.find(dataset => dataset.id == datasetID)
-
 
     let ratesType = targetDataset.label.toLowerCase()
     let rate = targetDataset.rates.rate
@@ -222,7 +209,11 @@ function deleteRateTableGroup(datasetID){
     let deleteButton = rateTableGroup.querySelector('.ratetable-delete')
         deleteButton.remove('click', deleteRateTableGroup)
 
-    currentData.datasets = currentData.datasets.filter(dataset => dataset.id !== parseInt(datasetID))
+    let targetDataset = currentData.datasets.find(dataset => dataset.id == datasetID)
+
+    colors.push(targetDataset.backgroundColor)
+    
+    currentData.datasets.splice(currentData.datasets.indexOf(targetDataset),1)
 
     rateTableGroup.remove()
     rateChart.update()
@@ -246,28 +237,31 @@ function convertRates(event){
     let targetRateTypes = new Set(currentData.datasets.map(dataset => dataset.label.toLowerCase()))
 
     targetRateTypes.forEach(currentRateType => {
-        if(currentRateType == srcRateType){
-            return
-        } else {
+        if(currentRateType !== srcRateType){
             let requestData = `srcRateType=${srcRateType}&rate=${rate}&rc_rate=${rc_rate}&rc_expo=${rc_expo}&tgtRateType=${currentRateType}`
             fetch(`${window.location.href}api?${requestData}`)
                 .then(response => response.json())
                 .then(data => {
-                    currentData.datasets.forEach(dataset => {
-                        if(dataset.label.toLowerCase() == data.tgtRateType){
-                            let rateTableGroup = document.querySelector(`.ratetable-group[data-id="${dataset.id}"]`)
-                            rateTableGroup.querySelector('input[name="rate"]').value = data.tgt_rate
-                            rateTableGroup.querySelector('input[name="rc_rate"]').value = data.tgt_rc_rate
-                            rateTableGroup.querySelector('input[name="rc_expo"]').value = data.tgt_rc_expo
-                            rateTableGroup.querySelector('.convert-btn').classList.remove('rainbow')
-                            updateDatasetFromHTML(dataset.id)
-                        }
-                    })
+                    if(data.request_status === "failed"){
+                        console.log(`invalid api request - ${data.errors[0]}`)
+                    } else {
+                        currentData.datasets.forEach(dataset => {
+                            if(dataset.label.toLowerCase() == data.tgtRateType){
+                                let rateTableGroup = document.querySelector(`.ratetable-group[data-id="${dataset.id}"]`)
+                                rateTableGroup.querySelector('input[name="rate"]').value = data.tgt_rate
+                                rateTableGroup.querySelector('input[name="rc_rate"]').value = data.tgt_rc_rate
+                                rateTableGroup.querySelector('input[name="rc_expo"]').value = data.tgt_rc_expo
+                                rateTableGroup.querySelector('.convert-btn').classList.remove('rainbow')
+                                updateDatasetFromHTML(dataset.id)
+                            }
+                        })
+                    }
                 });
+        } else {
+            setTimeout(() => {
+                document.querySelectorAll('.convert-btn').forEach(btn => btn.classList.remove('rainbow'))
+            }, 1000);
         }
-        setTimeout(() => {
-            document.querySelectorAll('.convert-btn').forEach(btn => btn.classList.remove('rainbow'))
-        }, 1000);
     
     })
 }
