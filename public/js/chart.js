@@ -2,6 +2,7 @@ const currentData = {
     labels: Array(1001 - 500).fill().map((_,i) => 500 + i),
     datasets: [
     ],
+    usedColors: []
 };
 
 const chartConfig = {
@@ -45,11 +46,13 @@ const rateChart = new Chart(
 
 function createDataset(rateType = "betaflight"){
 
+    let currentColor = colors.shift()
+
     let newChartDatasetTemplate = {
         id: rateTableGroupCounter,
         label: rateType.toSentenceCase(),
-        backgroundColor: `rgb(${colors[rateTableGroupCounter]})`,
-        borderColor: `rgb(${colors[rateTableGroupCounter]})`,
+        backgroundColor: `${currentColor}`,
+        borderColor: `${currentColor}`,
         data: [0, 700],
         pointStyle: 'circle',
         rates: {
