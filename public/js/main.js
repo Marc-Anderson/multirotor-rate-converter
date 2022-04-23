@@ -233,11 +233,21 @@ function convertRates(event){
     let rate = sourceDataset.rates.rate
     let rc_rate = sourceDataset.rates.rc_rate
     let rc_expo = sourceDataset.rates.rc_expo
- 
+
+    let apiTrackingObject = {
+        event: "convert_rates",
+        srcRateType: srcRateType,
+        rate: rate,
+        rc_rate: rc_rate,
+        rc_expo: rc_expo,
+        tgtRateTypes: []
+    }
+
     let targetRateTypes = new Set(currentData.datasets.map(dataset => dataset.label.toLowerCase()))
 
     targetRateTypes.forEach(currentRateType => {
         if(currentRateType !== srcRateType){
+            apiTrackingObject.tgtRateTypes.push(currentRateType)
             let requestData = `srcRateType=${srcRateType}&rate=${rate}&rc_rate=${rc_rate}&rc_expo=${rc_expo}&tgtRateType=${currentRateType}`
             fetch(`${window.location.href}api?${requestData}`)
                 .then(response => response.json())
@@ -260,6 +270,7 @@ function convertRates(event){
         } else {
             setTimeout(() => {
                 document.querySelectorAll('.convert-btn').forEach(btn => btn.classList.remove('rainbow'))
+                dataLayer.push(apiTrackingObject)
             }, 1000);
         }
     
