@@ -9,34 +9,43 @@ let semver = {
     gte: (current, test) => parseInt(current) >= parseInt(test)
 }
 
-// create a mock flight controller
-let FC = {}
-FC.CONFIG = {}
-FC.CONFIG.apiVersion = "1.43.0";
-
-// betaflight configurator global references
-let TABS = {};
-TABS.pid_tuning = {
-    currentRates: {
-        deadband: 0,
-        pitch_rate: 0.7,
-        pitch_rate_limit: 1998,
-        rc_expo: 0.5,
-        rc_pitch_expo: 0.5,
-        rc_rate: 1,
-        rc_rate_pitch: 1,
-        rc_rate_yaw: 1,
-        rc_yaw_expo: 0.5,
-        roll_rate: 0.7,
-        roll_rate_limit: 1998,
-        superexpo: true,
-        yawDeadband: 0,
-        yaw_rate: 0.7,
-        yaw_rate_limit: 1998
+// create a mock flight controller and configurator global references
+const FC = {
+    CONFIG: {
+        apiVersion: "1.43.0"
     },
-    currentRateProfile: null,
-    currentRatesType: null,
-    previousRatesType: null,
+    RC_TUNING: {
+        rates_type: 0,
+        roll_rate: 0.7,
+        pitch_rate: 0.7,
+        yaw_rate: 0.7,
+        RC_RATE: 1,
+        rcYawRate: 1,
+        RC_EXPO: 0.5,
+        RC_YAW_EXPO: 0.5,
+        rcPitchRate: 1,
+        RC_PITCH_EXPO: 0.5,
+        roll_rate_limit: 1998,
+        pitch_rate_limit: 1998,
+        yaw_rate_limit: 1998
+        // superexpo: true,
+    },
+    RC_DEADBAND_CONFIG: {
+        deadband: 0,
+        yaw_deadband: 0
+    },
+    FEATURE_CONFIG: {
+        features: {
+            isEnabled: (feature) => {
+                if(FC.FEATURE_CONFIG.features.activeFeatures.includes(feature)){
+                    return true
+                } else {
+                    return false
+                }
+            },
+            activeFeatures: ['SUPEREXPO_RATES']
+        }
+    },
     RATES_TYPE: {
         BETAFLIGHT: 0,
         RACEFLIGHT: 1,
@@ -44,10 +53,10 @@ TABS.pid_tuning = {
         ACTUAL: 3,
         QUICKRATES: 4,
     }
-};
+}
 
 // create a ratecurve 
-TABS.pid_tuning.rateCurve = new RateCurve(useLegacyCurve);
+FC.RC_TUNING.rateCurve = new RateCurve(useLegacyCurve);
 
 // as it sounds
 let rateTableGroupCounter = 0;

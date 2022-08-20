@@ -3,7 +3,7 @@ function getRcCommandRawToDegreesPerSecond(ratesType, rcData, rate, rcRate, rcEx
 
     if(Object.keys(rateDetails).find( x => x == ratesType) == undefined) return
     
-    TABS.pid_tuning.currentRatesType = parseFloat(rateDetails[ratesType].id)
+    FC.RC_TUNING.rates_type = parseFloat(rateDetails[ratesType].id)
 
     rate = parseFloat(rate)
     rcRate = parseFloat(rcRate)
@@ -13,7 +13,7 @@ function getRcCommandRawToDegreesPerSecond(ratesType, rcData, rate, rcRate, rcEx
     let deadband = 0
     let limit = 1998
 
-    let anglerate = TABS.pid_tuning.rateCurve.rcCommandRawToDegreesPerSecond(rcData, rate, rcRate, rcExpo, superExpoActive, deadband, limit)
+    let anglerate = FC.RC_TUNING.rateCurve.rcCommandRawToDegreesPerSecond(rcData, rate, rcRate, rcExpo, superExpoActive, deadband, limit)
 
     return anglerate
 }
