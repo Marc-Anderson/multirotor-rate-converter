@@ -20,8 +20,6 @@ function monitorChanges(e){
         if(parseFloat(e.target.value) < rateDetails[rateType].rateValues[e.target.name].min) return
         if(parseFloat(e.target.value) > rateDetails[rateType].rateValues[e.target.name].max) return
 
-        let stepMod = parseFloat(e.target.value) % rateDetails[rateType].rateValues[e.target.name].step
-        
         updateDatasetFromHTML(this.dataset.id)
 
         let slider = document.getElementById('rateSlider')
@@ -158,7 +156,7 @@ function getRateTableGroupMaxAngularVel(datasetID){
     
     let rcMax = 2001
 
-    return parseInt(getRcCommandRawToDegreesPerSecond(ratesType, rcMax, rate, rcRate, rcExpo))
+    return Math.round((getRcCommandRawToDegreesPerSecond(ratesType, rcMax, rate, rcRate, rcExpo)))
     
 }
 
@@ -226,6 +224,8 @@ function convertRates(event){
     document.querySelectorAll('.convert-btn').forEach(btn => btn.classList.add('rainbow'))
 
     let datasetID = event.target.closest('.ratetable-group').dataset.id
+
+    toggleActiveRow(datasetID)
 
     let sourceDataset = currentData.datasets.find(dataset => dataset.id == datasetID)
 

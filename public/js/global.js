@@ -110,7 +110,7 @@ let rateDetails = {
                 "step": 0.01,
                 "min": 0.00,
                 "max": 1.00,
-                "default": 0.50
+                "default": 0.00
             }
         }
     },
