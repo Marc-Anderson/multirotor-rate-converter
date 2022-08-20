@@ -1,7 +1,7 @@
 {
   "name": "multirotor-rate-converter",
-  "version": "1.0.0",
-  "description": "## description a simple web app to visualize the difference and compare rates of flight controller software",
+  "version": "1.0.1",
+  "description": "a simple web app to visualize the difference and compare rates of flight controller software",
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
