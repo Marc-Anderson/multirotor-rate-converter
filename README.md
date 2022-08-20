@@ -18,7 +18,6 @@ incorporate the throttle slider
 
 ## todo
 - [ ] mobile
-- [ ] review betaflight configurator changes to see if we can merge them
 
 
 ## resources
