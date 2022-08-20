@@ -7,7 +7,7 @@ window.addEventListener('load', () => {
 function init(){
 
     generateRateTableGroup()
-    generateRateTableGroup('raceflight')
+    generateRateTableGroup('actual')
    
 }
 

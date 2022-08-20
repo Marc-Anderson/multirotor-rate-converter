@@ -183,7 +183,7 @@ let rateDetails = {
                 "step": 10,
                 "min": 10,
                 "max": 2000,
-                "default": 200
+                "default": 70
             },
             "rate": {
                 "title": "Max Rate",
@@ -197,7 +197,7 @@ let rateDetails = {
                 "step": 0.01,
                 "min": 0.00,
                 "max": 1.00,
-                "default": 0.54
+                "default": 0.00
             }
         }
     },
