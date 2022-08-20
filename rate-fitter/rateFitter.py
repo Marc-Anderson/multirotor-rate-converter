@@ -68,16 +68,6 @@ def getQuickRates(rcCommandf, rcCommandfAbs, rate, rcRate, rcExpo):
 
 
 
-
-
-
-
-
-# import json
-
-# with open('resources/global.json', 'r') as file:
-#   data = json.load(file)
-
 # get degrees per second value at any given rc command
 def getDegreeesPerSecondAtRcCommand(rateType, rcCommandf, rate, rcRate, rcExpo):
 
@@ -139,66 +129,6 @@ def testCurveFunctions():
 
 
 
-
-
-
-
-
-
-# # FULLY FUNCTIONAL
-
-# import matplotlib.pyplot as plt
-# import numpy as np
-# from scipy.optimize import curve_fit
-
-# srcRateType = "betaflight"
-# tgtRateType = "quickrates"
-
-# srcRcRate = data[srcRateType]["rateValues"]["rc_rate"]["default"]
-# srcRate = data[srcRateType]["rateValues"]["rate"]["default"]
-# srcExpo = data[srcRateType]["rateValues"]["rc_expo"]["default"]
-
-# y = np.array(generateCurve(srcRateType,srcRate,srcRcRate,srcExpo))
-
-# def func(x, a, b, c):
-#     if isinstance(x, int | float):
-#         return getDegreeesPerSecondAtRcCommand(tgtRateType, x/10, a, b, c)
-#     return [getDegreeesPerSecondAtRcCommand(tgtRateType, z/10, a, b, c) for z in x]
-
-# # working range 0-10 - seems like any more than this exceeds limits
-# x = np.array([x for x in range(0, 11)])
-
-# # tgtRateMin,tgtRcRateMin,tgtRcExpoMin = lower bounds
-# # tgtRateMax,tgtRcRateMax,tgtRcExpoMax = upper bounds
-# tgtRateMin = data[tgtRateType]["rateValues"]["rate"]["min"]
-# tgtRcRateMin = data[tgtRateType]["rateValues"]["rc_rate"]["min"]
-# tgtRcExpoMin = data[tgtRateType]["rateValues"]["rc_expo"]["min"]
-
-# tgtRateMax = data[tgtRateType]["rateValues"]["rate"]["max"]
-# tgtRcRateMax = data[tgtRateType]["rateValues"]["rc_rate"]["max"]
-# tgtRcExpoMax = data[tgtRateType]["rateValues"]["rc_expo"]["max"]
-
-# initialGuess = [
-#     data[tgtRateType]["rateValues"]["rate"]["default"]/2,
-#     data[tgtRateType]["rateValues"]["rc_rate"]["default"]/2,
-#     data[tgtRateType]["rateValues"]["rc_expo"]["default"]/2
-# ]
-
-# popt, pcov = curve_fit(func, x, y, p0=[*initialGuess], bounds=([tgtRateMin,tgtRcRateMin,tgtRcExpoMin],[tgtRateMax,tgtRcRateMax,tgtRcExpoMax]))
-
-# plt.plot(x, y, 'b-', label='data')
-# plt.plot(x, func(x, *popt), 'r-', label='fit')
-
-# print(round(popt[1],2),round(popt[0],2),round(popt[2],2))
-
-# plt.xlabel('x')
-# plt.ylabel('y')
-# plt.legend()
-# plt.show()
-
-
-
-
 def validateData(srcRateType, tgtRateType, srcRate, srcRcRate, srcRcExpo):
 
     try:
@@ -222,9 +152,6 @@ def validateData(srcRateType, tgtRateType, srcRate, srcRcRate, srcRcExpo):
         raise ValueError("srcRcExpo value out of range: ", srcRcExpo)
 
 
-
-# import numpy as np
-# from scipy.optimize import curve_fit
 
 def getFitValues(srcRateType, tgtRateType, srcRate, srcRcRate, srcRcExpo):
 
