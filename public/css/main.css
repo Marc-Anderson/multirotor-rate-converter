@@ -289,6 +289,61 @@ input[type=number]::-webkit-outer-spin-button {
 
 
 
+.header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid lightgrey;
+    box-shadow: 0 -1px 4px 0px lightgrey;
+}
+
+.header-left {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.add-group-btn {
+    color: var(--font-color-dark);
+    font-size: clamp(1.9em, 6vw, 3em);
+    cursor: pointer;
+    user-select: none;
+    margin: 5px;
+}
+
+.site-icon {
+    width: clamp(30px, 5vw, 40px);
+    /* width: 40px; */
+    margin: 5px;
+    background-color: #8e8e8e;
+    border-radius: 100%;
+}
+
+.site-title {
+    font-size: var(--font-size-scaled);
+    margin-left: 5px;
+}
+
+.divider {
+    font-size: clamp(1.8em, 5vw, 2em);
+    margin: 0 .1em .2em;
+}
+
+.main {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.chart-container {
+    width: 100%;
+}
+
+
+
+
+
 
 .convert-btn {
     text-align: center;
