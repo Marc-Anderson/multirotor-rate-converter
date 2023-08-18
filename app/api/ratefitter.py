@@ -3,9 +3,9 @@ from scipy.optimize import curve_fit
 import json
 import math
 
-with open('resources/global.json', 'r') as file:
+# with open('./resources/global.json', 'r') as file:
+with open('./app/api/resources/global.json', 'r') as file:
   data = json.load(file)
-
 
 def constrain(value, minValue, maxValue):
     if isinstance(value, int) | isinstance(value, float):

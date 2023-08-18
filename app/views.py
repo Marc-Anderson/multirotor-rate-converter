@@ -1,7 +1,7 @@
-from flask import Flask, request, jsonify
-app = Flask(__name__)
+from app import app
+from flask import request, jsonify
+from app.api.ratefitter import *
 
-from rateFitter import *
 
 @app.route("/api", methods=['GET'])
 def fitter():
@@ -20,5 +20,3 @@ def fitter():
         }
     return json.dumps(result)
 
-if __name__ == "__main__":
-    app.run(host='0.0.0.0')
