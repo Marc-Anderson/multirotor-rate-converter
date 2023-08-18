@@ -1,26 +1,35 @@
 # multirotor-rate-converter
 
+
 see it live [here](https://rates.metamarc.com/)
+
 
 ## purpose
 provide a place where multirotor users can convert flight controller rates from one type to another
 
+
 ## how it works
 enter your rates or rates of popular pilots to visually compare or automatically convert rates to your preferred fc software
 
+
 ## faq
-* How do you know the rates are accurate? I don’t! I’ve entrusted our fate into the hands of the [betaflight configurator](https://github.com/betaflight/betaflight-configurator) devs. I borrowed their rate calculation file and gave it a new place to show off its curves. 
+* How do you know the rates are accurate? The rate calculations come directly from the [betaflight configurator](https://github.com/betaflight/betaflight-configurator) repo. I simply borrowed their rate calculation file and gave it a new place to show off its curves. 
 * how does the automatic rate conversion work? the api takes 10 datapoints of the source curve and uses non-linear least squares to find the best fit of the rate type you want.
+
 
 ## feature ideas
 themes
 incorporate the throttle slider
 
+
 ## todo
 - [ ] mobile
+- [ ] [dockerize](https://starcross.dev/blog/8/using-docker-compose-with-django-nginx-and-gunicorn/)
+- [ ] [shrink size](https://avilpage.com/2020/02/reduce-python-package-footprint.html)
 
 
 ## resources
+
 
 ### special thanks to these wonderful projects
 * [betaflight configurator](https://github.com/betaflight/betaflight-configurator)
@@ -30,50 +39,39 @@ incorporate the throttle slider
 * [desmos](https://www.desmos.com/calculator/r5pkxlxhtb?fbclid=IwAR0DfRnnfMaYSUXF5g7moEjfHlwCOi84iq9WMOUaOhVQwauY-ggFDh-KpSY)
 
 
-## development setup(front end)
-
-### requirements
-* node
-* npm
-
-### process
-
-1. navigate to /multirotor-rate-converter
-2. install all of the required packages
-```
-npm install
-```
-3. run the express development server
-```
-npm run dev
-```
-
 ## development setup(the whole shabang)
 
-### requirements
+
+### prerequisites
 * python
 * venv
 * pip
 
+
 ### process
 
-1. navigate to /multirotor-rate-converter/rate-fitter  
+1. navigate to `/multirotor-rate-converter/`
+
 2. create a python virtual environment
 ```
 python3 -m venv .env
 ```
+
 3. activate the virtual environment
 ```
 source .env/bin/activate
 ```
+
 4. install the packages in requirements.txt
 ```
 pip install -r requirements.txt
 ```
+
 5. launch the devServer.py
 ```
 python3 devServer.py
 ```
+
 6. if you have issues you may need to set environment variables  
 ```
 export FLASK_APP=devServer
