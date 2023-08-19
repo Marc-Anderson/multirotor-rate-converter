@@ -1,7 +1,13 @@
 version: "3"
 
 services:
-  web:
-      build: .
-      ports:
-        - "3000:3000"
+  rateconv:
+    # build an image from the dockerfile in the current folder
+    build: .
+    # name it rate-conv
+    image: rate-conv:package
+    ports:
+      - "3000:3000"
+
+# docker compose build
+# docker compose up

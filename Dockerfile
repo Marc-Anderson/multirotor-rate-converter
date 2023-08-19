@@ -8,18 +8,26 @@ WORKDIR /usr/src/app
 COPY requirements.txt ./
 
 RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir gunicorn
 
 COPY . .
 
 EXPOSE 3000
 
-ENV FLASK_APP=app
-ENV FLASK_ENV=development
-ENV FLASK_RUN_HOST=0.0.0.0
-ENV FLASK_RUN_PORT=3000
+# gunicorn environment variable so you dont need to define when calling
+ENV GUNICORN_CMD_ARGS="--bind=0.0.0.0:3000 --workers=1"
 
-CMD ["python", "wsgi.py"]
+# call gunicorn, first app is folder, second is callable.py
+CMD ["gunicorn", "app:app"]
 
+# flask environment variables for development
+# ENV FLASK_APP=app
+# ENV FLASK_ENV=development
+# ENV FLASK_RUN_HOST=0.0.0.0
+# ENV FLASK_RUN_PORT=3000
+
+# call the flask app directly
+# CMD ["python", "wsgi.py"]
 
 # docker build -t rate-conv .
 # docker run -p 3000:3000 rate-conv

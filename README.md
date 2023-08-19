@@ -24,6 +24,7 @@ incorporate the throttle slider
 
 ## todo
 - [ ] mobile
+- [ ] tests
 - [ ] [dockerize](https://starcross.dev/blog/8/using-docker-compose-with-django-nginx-and-gunicorn/)
 - [ ] [shrink size](https://avilpage.com/2020/02/reduce-python-package-footprint.html)
 
