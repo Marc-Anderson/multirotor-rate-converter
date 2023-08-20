@@ -1,5 +1,12 @@
 from flask import Flask
 
-app = Flask(__name__, static_url_path='', static_folder='static')
+# create flask factory
+def init_app():
 
-from app import views
+    app = Flask(__name__, static_url_path='', static_folder='static')
+
+    # initialize routes, injecting the app as a dependency
+    from app import routes
+    routes.init(app)
+
+    return app
