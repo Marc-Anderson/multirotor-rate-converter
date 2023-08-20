@@ -1,0 +1,20 @@
+FROM python:3.8-slim
+
+WORKDIR /usr/src/app
+
+# RUN python3 -m venv .env
+# RUN source .env/bin/activate
+
+COPY requirements.txt ./
+
+RUN pip install --no-cache-dir -r requirements.txt && pip install --no-cache-dir gunicorn
+
+COPY . .
+
+# gunicorn environment variable so you dont need to define when calling but this adds an intermediate layer
+# ENV GUNICORN_CMD_ARGS="--bind=0.0.0.0:3000 --workers=1"
+
+CMD ["gunicorn", "--bind=unix:/tmp/gunicorn.sock", "--workers=1", "wsgi:app"]
+
+# docker build -f Dockerfile.api -t rateapi:latest .
+# docker run --rm -p 3000:80 rateapi:latest

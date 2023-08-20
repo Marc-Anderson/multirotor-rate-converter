@@ -1,0 +1,10 @@
+FROM nginx:latest
+
+COPY ./app/static /usr/share/nginx/html/rates.metamarc.com
+
+COPY ./nginx.conf /etc/nginx/nginx.conf
+
+EXPOSE 80
+
+# docker build -f Dockerfile.frontend -t ratefront:latest .
+# docker run --rm -p 3000:80 ratefront:latest

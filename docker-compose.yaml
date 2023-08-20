@@ -1,13 +1,26 @@
 version: "3"
 
 services:
-  rateconv:
-    # build an image from the dockerfile in the current folder
-    build: .
-    # name it rate-conv
-    image: rate-conv:package
-    ports:
-      - "3000:3000"
+  rateapi:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    volumes:
+      - ./socket_volume:/tmp
 
-# docker compose build
-# docker compose up
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - rateapi
+    volumes:
+      - ./socket_volume:/tmp
+
+volumes:
+  socket_volume:
+
+  # docker compose up -d --build
+  # docker compose down
