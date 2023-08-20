@@ -25,8 +25,7 @@ incorporate the throttle slider
 ## todo
 - [ ] mobile
 - [ ] tests
-- [ ] [dockerize](https://starcross.dev/blog/8/using-docker-compose-with-django-nginx-and-gunicorn/)
-- [ ] [shrink size](https://avilpage.com/2020/02/reduce-python-package-footprint.html)
+- [ ] secure containers
 
 
 ## resources
@@ -40,7 +39,7 @@ incorporate the throttle slider
 * [desmos](https://www.desmos.com/calculator/r5pkxlxhtb?fbclid=IwAR0DfRnnfMaYSUXF5g7moEjfHlwCOi84iq9WMOUaOhVQwauY-ggFDh-KpSY)
 
 
-## development setup(the whole shabang)
+## development setup
 
 
 ### prerequisites
@@ -49,7 +48,7 @@ incorporate the throttle slider
 * pip
 
 
-### process
+### local
 
 1. navigate to `/multirotor-rate-converter/`
 
@@ -68,19 +67,34 @@ source .env/bin/activate
 pip install -r requirements.txt
 ```
 
-5. launch the devServer.py
+5. launch the application
 ```
-python3 devServer.py
+python3 wsgi.py
 ```
 
 6. if you have issues you may need to set environment variables  
 ```
-export FLASK_APP=devServer
+export FLASK_APP=app
 export FLASK_ENV=development
 export FLASK_RUN_HOST=localhost
 export FLASK_RUN_PORT=3000
 ```
 NOTE: sometimes the browser likes to cache files so either use an incognito window or hard refresh every once in a while
+
+
+## development setup(docker)
+
+**note:** docker configuration is not currently fit for production
+
+1. build and run 
+```bash
+docker compose up -d --build
+```
+
+2. tear it down
+```bash
+docker compose down
+```
 
 
 ## deploying to production
