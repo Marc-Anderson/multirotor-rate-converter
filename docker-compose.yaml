@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile.api
     volumes:
-      - ./socket_volume:/tmp
+      - ./socket_volume:/tmp/vol
 
   nginx:
     build:
@@ -17,10 +17,19 @@ services:
     depends_on:
       - rateapi
     volumes:
-      - ./socket_volume:/tmp
+      - ./socket_volume:/tmp/vol
 
 volumes:
   socket_volume:
 
 # docker compose up -d --build
 # docker compose down
+
+
+# current issue is that the volume folder is created by the host user so the containers dont have permissions to read/write to the socket.
+# need to figure this out, maybe changing the location (not in tmp), maybe with a script, maybe a script in [entrypoint?]
+# can be bypassed by setting permissions to 777 temporarily
+# CMD ["gunicorn", "--bind=unix:/var/run/gunicorn/gunicorn.sock", "--workers=1", "wsgi:app"]
+# --bind=unix:/var/run/gunicorn/gunicorn.sock
+# /tmp/vol/gunicorn.sock
+# ./socket_volume:/tmp/vol

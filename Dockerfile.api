@@ -1,5 +1,6 @@
 FROM python:3.8-slim
 
+# set working directory
 WORKDIR /usr/src/app
 
 # RUN python3 -m venv .env
@@ -11,10 +12,33 @@ RUN pip install --no-cache-dir -r requirements.txt && pip install --no-cache-dir
 
 COPY . .
 
+# remove redundant static files
+# todo:this really shouldnt be in the container context at all
+RUN rm -rf /usr/src/app/static
+
+# set user variables
+ARG CONT_USER=gunicorn
+ARG USER_UID=1000
+ARG USER_GID=$USER_UID
+
+# Create the user
+RUN useradd --uid $USER_UID -m $CONT_USER
+
+# set permissions for required folders
+# 755 for directories, 644 for files
+# may need to add group like user:group
+RUN chown -R $CONT_USER /usr/src/app && chmod -R 755 /usr/src/app
+
+# activate the user
+USER $CONT_USER
+
 # gunicorn environment variable so you dont need to define when calling but this adds an intermediate layer
 # ENV GUNICORN_CMD_ARGS="--bind=0.0.0.0:3000 --workers=1"
 
-CMD ["gunicorn", "--bind=unix:/tmp/gunicorn.sock", "--workers=1", "wsgi:app"]
-
+# if running the api by itself, 
+# EXPOSE 3000
+# CMD ["gunicorn", "--bind=0.0.0.0:3000", "--workers=1", "wsgi:app"]
 # docker build -f Dockerfile.api -t rateapi:latest .
-# docker run --rm -p 3000:80 rateapi:latest
+# docker run --rm -p 3000:3000 rateapi:latest
+
+CMD ["gunicorn", "--bind=unix:/tmp/vol/gunicorn.sock", "--workers=1", "wsgi:app"]

@@ -1,8 +1,27 @@
 FROM nginx:latest
 
+# copy nginx config
+COPY ./nginx.conf /etc/nginx/nginx.conf
+
+# copy site content
 COPY ./app/static /usr/share/nginx/html/rates.metamarc.com
 
-COPY ./nginx.conf /etc/nginx/nginx.conf
+# set working directory
+WORKDIR /usr/share/nginx/html
+
+# set user variables
+ARG CONT_USER=nginx
+
+# set permissions for required folders
+# 755 for directories, 644 for files
+# may need to add group like user:group
+RUN chown -R $CONT_USER /usr/share/nginx/html && chmod -R 755 /usr/share/nginx/html && \
+        chown -R $CONT_USER /var/cache/nginx && \
+        chown -R $CONT_USER /var/log/nginx && \
+        chown -R $CONT_USER /etc/nginx/conf.d
+
+# activate the user
+USER $CONT_USER
 
 EXPOSE 80
 
