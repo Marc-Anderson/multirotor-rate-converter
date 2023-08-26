@@ -75,22 +75,61 @@ NOTE: sometimes the browser likes to cache files so either use an incognito wind
 
 
 ## development setup(docker)
-**warning:** docker configuration has not been tested in production  
 
-create folder for gunicorn socket and give user and group permissions
+**WARNING:** docker configuration has not been tested in production  
+
+### todo
+- [ ] add ssl cert
+
+
+### build instructions
+
+1. navigate to `/multirotor-rate-converter/`
+
+2. create folder for logs, gunicorn socket and give user and group permissions
 ```bash
-# you must manually create the volume folder on the host machine and set the group it(gid) to 1000 or it 
-# will be created as root and gunicorn will not be able to access it. in my case(wsl2) (uid/gid:1000) is
+# you must manually create the volume folder on the host machine and set the group id(gid) to 1000 or it 
+# will be created as root and containers will not be able to access them. in my case(wsl2) (uid/gid:1000) is
 # my user and group. for experimenting, it can be bypassed by setting permissions of the folder to 777 from the host
-mkdir ./socket_volume && chmod 770 ./socket_volume
+mkdir -p ./docker_volumes/sockets && mkdir -p ./docker_volumes/log/gunicorn && mkdir ./docker_volumes/log/nginx && chmod 770 -R ./docker_volumes/
 ```
 
-build and run 
+3. build and run 
 ```bash
 docker compose up -d --build
 ```
 
-tear it down
+4. configure logrotate in the host to prevent logs from growing out of control
+```bash
+nano /etc/logrotate.d/gunicorn 
+
+## set the contents to the below(this is an almost copy of the nginx logrotate config)
+/var/log/gunicorn/*.log {
+    # attempt to rotate logs daily/weekly/monthly
+    daily
+    # keep 4 rotated logs
+    rotate 14
+    size=1M
+    dateext
+    dateformat -%d%m%Y
+    missingok
+    compress
+    delaycompress
+    # notifempty
+        # create 0640 www-data adm
+        # sharedscripts
+        # prerotate
+        #         if [ -d /etc/logrotate.d/httpd-prerotate ]; then \
+        #                 run-parts /etc/logrotate.d/httpd-prerotate; \
+        #         fi \
+        # endscript
+        # postrotate
+        #         invoke-rc.d nginx rotate >/dev/null 2>&1
+        # endscript
+}
+```
+
+5. tear it down
 ```bash
 docker compose down
 ```

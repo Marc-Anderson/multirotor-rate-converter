@@ -31,6 +31,8 @@ RUN useradd --uid $USER_UID -m $CONT_USER && usermod -aG $CONT_GRUP $CONT_USER
 # 755 for directories, 644 for files
 # may need to add group like user:group
 RUN chown -R $CONT_USER /usr/src/app && chmod -R 755 /usr/src/app
+# make and apply permissions for log directories
+RUN mkdir -p /var/log/gunicorn && chown -R $CONT_USER /var/log/gunicorn && chmod -R 755 /var/log/gunicorn
 
 # activate the user
 USER $CONT_USER
@@ -39,8 +41,8 @@ USER $CONT_USER
 # EXPOSE 3000
 # CMD ["gunicorn", "--bind=0.0.0.0:3000", "--workers=1", "wsgi:app"]
 
-# for production and running the entire setup
-CMD ["gunicorn", "--bind=unix:/run/gunicorn/gunicorn.sock", "--workers=1", "wsgi:app"]
+# for production and running the entire setup, also setting log directories
+CMD ["gunicorn", "--log-level=info","--error-logfile=/var/log/gunicorn/error.log", "--access-logfile=/var/log/gunicorn/access.log", "--bind=unix:/run/gunicorn/gunicorn.sock", "--workers=1", "wsgi:app"]
 
 # docker build -f Dockerfile.api -t rateapi:latest .
 # docker run --rm -p 3000:3000 rateapi:latest

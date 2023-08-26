@@ -6,9 +6,11 @@ services:
       context: .
       dockerfile: Dockerfile.api
     volumes:
-      - ./socket_volume:/run/gunicorn
+      - ./docker_volumes/sockets:/run/gunicorn
+      - ./docker_volumes/log/gunicorn:/var/log/gunicorn
     security_opt:
       - "no-new-privileges"
+    restart: always
 
   nginx:
     build:
@@ -19,12 +21,14 @@ services:
     depends_on:
       - rateapi
     volumes:
-      - ./socket_volume:/run/gunicorn
+      - ./docker_volumes/sockets:/run/gunicorn
+      - ./docker_volumes/log/nginx:/var/log/nginx
     security_opt:
       - "no-new-privileges"
+    restart: always
 
 volumes:
-  socket_volume:
+  docker_volumes:
 
 # docker compose up -d --build
 # docker compose down
