@@ -25,7 +25,6 @@ incorporate the throttle slider
 ## todo
 - [ ] mobile
 - [ ] tests
-- [ ] secure containers
 
 
 ## resources
@@ -72,33 +71,24 @@ pip install -r requirements.txt
 python3 wsgi.py
 ```
 
-6. if you have issues you may need to set environment variables  
-```
-export FLASK_APP=app
-export FLASK_ENV=development
-export FLASK_RUN_HOST=localhost
-export FLASK_RUN_PORT=3000
-```
 NOTE: sometimes the browser likes to cache files so either use an incognito window or hard refresh every once in a while
 
 
 ## development setup(docker)
+**warning:** docker configuration has not been tested in production  
 
-**note:** docker configuration is not currently fit for production
+create folder for gunicorn socket and give user and group permissions
+```bash
+# you must manually create the volume folder on the host machine and set the group it(gid) to 1000 or it will be created as root and gunicorn will not be able to access it. in my case(wsl2) (uid/gid:1000) is my user and group. for experimenting, it can be bypassed by setting permissions of the folder to 777 from the host
+mkdir /run/gunicorn && chmod 770 /run/gunicorn
+```
 
-1. build and run 
+build and run 
 ```bash
 docker compose up -d --build
 ```
 
-2. tear it down
+tear it down
 ```bash
 docker compose down
 ```
-
-
-## deploying to production
-### front end
-serve static files with nginx or whatever you prefer
-### api
-https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-gunicorn-and-nginx-on-ubuntu-20-04

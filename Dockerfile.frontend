@@ -11,6 +11,12 @@ WORKDIR /usr/share/nginx/html
 
 # set user variables
 ARG CONT_USER=nginx
+ARG USER_UID=1000
+ARG CONT_GRUP=contgrp
+ARG CONT_GID=$USER_UID
+
+# Create the group
+RUN groupadd -g $CONT_GID -o $CONT_GRUP && usermod -aG $CONT_GRUP $CONT_USER
 
 # set permissions for required folders
 # 755 for directories, 644 for files
