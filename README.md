@@ -79,8 +79,10 @@ NOTE: sometimes the browser likes to cache files so either use an incognito wind
 
 create folder for gunicorn socket and give user and group permissions
 ```bash
-# you must manually create the volume folder on the host machine and set the group it(gid) to 1000 or it will be created as root and gunicorn will not be able to access it. in my case(wsl2) (uid/gid:1000) is my user and group. for experimenting, it can be bypassed by setting permissions of the folder to 777 from the host
-mkdir /run/gunicorn && chmod 770 /run/gunicorn
+# you must manually create the volume folder on the host machine and set the group it(gid) to 1000 or it 
+# will be created as root and gunicorn will not be able to access it. in my case(wsl2) (uid/gid:1000) is
+# my user and group. for experimenting, it can be bypassed by setting permissions of the folder to 777 from the host
+mkdir ./socket_volume && chmod 770 ./socket_volume
 ```
 
 build and run 
