@@ -9,22 +9,23 @@ COPY ./app/static /usr/share/nginx/html/rates.metamarc.com
 # set working directory
 WORKDIR /usr/share/nginx/html
 
-# set user variables
+# set user variables(do not change)
 ARG CONT_USER=nginx
-ARG USER_UID=1000
-ARG CONT_GRUP=contgrp
-ARG CONT_GID=$USER_UID
+# simple defaults which can be overridden in docker compose
+ARG CONT_GRUP=docker_grp
+ARG CONT_GID=1000
 
 # Create the group
 RUN groupadd -g $CONT_GID -o $CONT_GRUP && usermod -aG $CONT_GRUP $CONT_USER
 
 # set permissions for required folders
-# 755 for directories, 644 for files
-# may need to add group like user:group
 RUN chown -R $CONT_USER /usr/share/nginx/html && chmod -R 755 /usr/share/nginx/html && \
         chown -R $CONT_USER /var/cache/nginx && \
         chown -R $CONT_USER /var/log/nginx && \
         chown -R $CONT_USER /etc/nginx/conf.d
+
+# disable root user entirely
+RUN chsh -s /usr/sbin/nologin
 
 # activate the user
 USER $CONT_USER

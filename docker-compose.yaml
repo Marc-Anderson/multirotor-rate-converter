@@ -3,32 +3,60 @@ version: "3"
 services:
   rateapi:
     build:
+      args:
+        # define the user id for gunicorn in the container
+        - USER_UID=${DOC_GUN_UID}
       context: .
       dockerfile: Dockerfile.api
     volumes:
-      - ./docker_volumes/sockets:/run/gunicorn
-      - ./docker_volumes/log/gunicorn:/var/log/gunicorn
+      # define the socket location
+      - ${DOC_GUN_SOCK_PATH}:/run/gunicorn
+      # define gunicorn log path
+      - ${DOC_GUN_LOG_PATH}:/var/log/gunicorn
     security_opt:
       - "no-new-privileges"
-    restart: always
+    restart: unless-stopped
+    logging:
+      # force docker to rotate logs
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: 5
+        tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
 
   nginx:
     build:
+      args:
+        # note: default nginx uid is 101
+        # define group and gid which will have permissions to read socket
+        - CONT_GRUP=${DOC_VOL_GRP}
+        - CONT_GID=${DOC_VOL_GRP_ID}
       context: .
       dockerfile: Dockerfile.frontend
     ports:
-      - "3000:80"
+      - "${DOC_PORT_MAP}"
     depends_on:
       - rateapi
     volumes:
-      - ./docker_volumes/sockets:/run/gunicorn
-      - ./docker_volumes/log/nginx:/var/log/nginx
+      # define the socket location
+      - ${DOC_GUN_SOCK_PATH}:/run/gunicorn
+      # define nginx log path
+      - ${DOC_NGINX_LOG_PATH}:/var/log/nginx
     security_opt:
       - "no-new-privileges"
-    restart: always
+    restart: unless-stopped
+    logging:
+      # force docker to rotate logs
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: 5
+        tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
 
 volumes:
   docker_volumes:
 
+# docker-compose config
+# docker compose --env-file ./.env.dev up --build
 # docker compose up -d --build
 # docker compose down
