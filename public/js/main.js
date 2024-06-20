@@ -319,7 +319,7 @@ function LocalConvertRates(event){
     let rc_expo = sourceDataset.rates.rc_expo
 
     let apiTrackingObject = {
-        event: "convert_rates",
+        event: "convert_rates_local",
         srcRateType: srcRateType,
         rate: rate,
         rc_rate: rc_rate,

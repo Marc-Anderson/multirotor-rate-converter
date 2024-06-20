@@ -1,91 +1,54 @@
-# multirotor-rate-converter
+# Multirotor Rate Converter (BETA)
 
-see it live [here](https://rates.metamarc.com/)
+Experience it live [here](https://rates.metamarc.com/dev).
 
-## purpose
-provide a place where multirotor users can convert flight controller rates from one type to another
+## Purpose
 
-## how it works
-enter your rates or rates of popular pilots to visually compare or automatically convert rates to your preferred fc software
+The Multirotor Rate Converter provides an essential tool for multirotor enthusiasts, enabling them to convert flight controller (FC) rates from one type to another seamlessly. This platform aims to simplify the process of rate conversion, enhancing the user experience for pilots migrating to a new platform.
 
-## faq
-* How do you know the rates are accurate? I don’t! I’ve entrusted our fate into the hands of the [betaflight configurator](https://github.com/betaflight/betaflight-configurator) devs. I borrowed their rate calculation file and gave it a new place to show off its curves. 
-* how does the automatic rate conversion work? the api takes 10 datapoints of the source curve and uses non-linear least squares to find the best fit of the rate type you want.
+## How It Works
 
-## feature ideas
-themes
-incorporate the throttle slider
+Users can input their own rates or the rates of popular pilots to visually compare and automatically convert them to their preferred FC software. This tool supports various FC rate formats, ensuring accurate conversions and easy comparisons.
 
-## todo
-- [ ] mobile
+## Frequently Asked Questions (FAQ)
 
+### How do you ensure the accuracy of the rates?
 
-## resources
+The accuracy of the rates is guaranteed through the use of the rate calculation file from the [Betaflight Configurator](https://github.com/betaflight/betaflight-configurator). This ensures that the conversions adhere to the standards and calculations used by one of the most trusted sources in the industry.
 
-### special thanks to these wonderful projects
-* [betaflight configurator](https://github.com/betaflight/betaflight-configurator)
-* [rotor pirates](https://github.com/apocolipse/RotorPirates)
-* [rate fitter](https://github.com/yhgillet/rateconv/tree/8e9cc846f63971820bb77f1069e79271c08e2ff2)
-* [rate tuner](https://github.com/Dadibom/Rate-Tuner/tree/de57d61d8307b29d8ac6a9a926aa719ddf3d605b)
-* [desmos](https://www.desmos.com/calculator/r5pkxlxhtb?fbclid=IwAR0DfRnnfMaYSUXF5g7moEjfHlwCOi84iq9WMOUaOhVQwauY-ggFDh-KpSY)
+### How does the automatic rate conversion work?
 
+In this latest version, the conversion process involves taking 500 data points from the provided source rates. A JavaScript implementation of gradient descent is then used to calculate the best fit for the target rate type. The error, also known as the total delta, is determined by calculating the mean squared error (MSE) between data points from both curves at each RC command value.
 
-## development setup(front end)
+### Is an API required for the conversion process?
 
-### requirements
-* node
-* npm
+No, this version performs all calculations directly on the device, eliminating the need for an external API. This on-device processing enhances reliability and speed, ensuring that users can perform conversions even without internet access.
 
-### process
+## Feature Ideas
 
-1. navigate to /multirotor-rate-converter
-2. install all of the required packages
-```
-npm install
-```
-3. run the express development server
-```
-npm run dev
-```
+- **Themes**: Customize the appearance of the converter to suit personal preferences.
+- **Throttle Slider Integration**: Incorporate a throttle slider for more interactive rate adjustments.
 
-## development setup(the whole shabang)
+## To-Do List
 
-### requirements
-* python
-* venv
-* pip
+- [ ] Mobile Compatibility: Enhance the platform to ensure full functionality and a seamless user experience on mobile devices.
 
-### process
+## Resources
 
-1. navigate to /multirotor-rate-converter/rate-fitter  
-2. create a python virtual environment
-```
-python3 -m venv .env
-```
-3. activate the virtual environment
-```
-source .env/bin/activate
-```
-4. install the packages in requirements.txt
-```
-pip install -r requirements.txt
-```
-5. launch the devServer.py
-```
-python3 devServer.py
-```
-6. if you have issues you may need to set environment variables  
-```
-export FLASK_APP=devServer
-export FLASK_ENV=development
-export FLASK_RUN_HOST=localhost
-export FLASK_RUN_PORT=3000
-```
-NOTE: sometimes the browser likes to cache files so either use an incognito window or hard refresh every once in a while
+### Special Thanks to These Wonderful Projects
 
+- [Betaflight Configurator](https://github.com/betaflight/betaflight-configurator)
+- [Rotor Pirates](https://github.com/apocolipse/RotorPirates)
+- [Rate Fitter](https://github.com/yhgillet/rateconv/tree/8e9cc846f63971820bb77f1069e79271c08e2ff2)
+- [Rate Tuner](https://github.com/Dadibom/Rate-Tuner/tree/de57d61d8307b29d8ac6a9a926aa719ddf3d605b)
+- [Desmos Calculator](https://www.desmos.com/calculator/r5pkxlxhtb?fbclid=IwAR0DfRnnfMaYSUXF5g7moEjfHlwCOi84iq9WMOUaOhVQwauY-ggFDh-KpSY)
 
-## deploying to production
-### front end
-serve static files with nginx or whatever you prefer
-### api
-https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-gunicorn-and-nginx-on-ubuntu-20-04
+## Development Setup
+
+### Requirements
+
+- A web server capable of hosting static files.
+
+### Process
+
+To set up the development environment, simply host the static files on a web server. This straightforward setup ensures that the application can be accessed and used with minimal configuration.
