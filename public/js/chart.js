@@ -9,7 +9,7 @@ const chartConfig = {
     data: currentData,
     options: {
         aspectRatio: ()=>{
-            return window.innerWidth < 450 ? 1 : 1.6;
+            return window.innerWidth < 450 ? 1 : 1.7;
         },
         // // layout: {
         // //     padding: 10,
@@ -21,7 +21,11 @@ const chartConfig = {
             yAxisID: {
                 title: {
                     display: true,
-                    text: 'Rate'
+                    text: 'Rate',
+                    padding: {
+                        top: 40,
+                        bottom: -50
+                    }
                 },
                 position: "left",
                 min: 0,
@@ -32,7 +36,11 @@ const chartConfig = {
             xAxisID: {
                 title: {
                     display: true,
-                    text: 'RC Command'
+                    text: 'RC Command',
+                    padding: {
+                        top: 0,
+                        bottom: 0
+                    }
                 },
                 position: "bottom",
                 ticks: {

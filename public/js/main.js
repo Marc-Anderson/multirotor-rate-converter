@@ -144,10 +144,13 @@ function updateDatasetFromHTML(datasetID){
 
     // todo: implement mse error
     let totalDeltaElement = document.querySelector(`.totalDelta`)
-    
-    totalDeltaElement.value = currentData.datasets.reduce((acc, curr) => {
-        return Math.abs(curr.rates.max - acc);
-    }, 0);
+
+    try {
+        totalDeltaElement.value = calculateMSError(currentData.datasets[0].data, currentData.datasets[1].data).toFixed(2);
+    } catch (error) {
+        totalDeltaElement.value = 0;
+    }
+  
 
     rateChart.update()
 
@@ -300,11 +303,13 @@ function LegacyConvertRates(event){
 
 
 function LocalConvertRates(event){
-    document.querySelectorAll('.convert-btn').forEach(btn => btn.classList.add('rainbow'))
+    
+    document.querySelector('.convert-btn').classList.add('rainbow')
+    
+    // let datasetID = event.target.closest('.ratetable-group').dataset.id
+    let datasetID = 0
 
-    let datasetID = event.target.closest('.ratetable-group').dataset.id
-
-    toggleActiveRow(datasetID)
+    // toggleActiveRow(datasetID)
 
     let sourceDataset = currentData.datasets.find(dataset => dataset.id == datasetID)
 
@@ -338,7 +343,6 @@ function LocalConvertRates(event){
                     rateTableGroup.querySelector('input[name="rate"]').value = fit_data.tgt_rate
                     rateTableGroup.querySelector('input[name="rc_rate"]').value = fit_data.tgt_rc_rate
                     rateTableGroup.querySelector('input[name="rc_expo"]').value = fit_data.tgt_rc_expo
-                    rateTableGroup.querySelector('.convert-btn').classList.remove('rainbow')
                     updateDatasetFromHTML(dataset.id);
 
                     // rateChart.update()

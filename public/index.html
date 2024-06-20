@@ -9,11 +9,37 @@
 
     <title>Rate Converter</title>
 
-    <meta property="og:title" content="multirotor rate converter">
+    <!-- top level meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:locale" content="en_US" />
 
+    <!-- location meta -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://rates.metamarc.com" />
+    <link rel="canonical" href="https://rates.metamarc.com" />
+
+    <!-- title meta -->
+    <meta property="og:title" content="multirotor rate converter" />
+    <meta property="og:site_name" content="multirotor rate converter" />
+    <meta property="twitter:title" content="multirotor rate converter" />
+
+    <!-- description meta -->
+    <title>multirotor rate converter | a simple website to visualize the difference and compare rates of flight controller software</title>
+    <meta name="description" content="a simple website to visualize the difference and compare rates of flight controller software" />
+    <meta property="og:description" content="a simple website to visualize the difference and compare rates of flight controller software" />
+    <meta name="twitter:card" content="a simple website to visualize the difference and compare rates of flight controller software" />
+    
+    <!-- icon meta -->
     <link rel="apple-touch-icon" href="mm-logo@32.png">
     <link rel="icon" type="image/x-icon" href="./favicon.ico">
-    <link rel="icon" href="./media/mm-logo@32.png">
+    <!-- <meta property="og:image" content="https://example.com/assets/images/someimage.jpg" /> -->
+
+    <!-- data meta -->
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","description":"a simple website to visualize the difference and compare rates of flight controller software","headline":"multirotor rate converter","name":"multirotor rate converter","url":"https://rates.metamarc.com"}</script>
+    <link type="application/atom+xml" rel="alternate" href="https://rates.metamarc.comfeed.xml" title="multirotor rate converter" />
+
 
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;700&amp;display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -22,6 +48,8 @@
     <link rel="stylesheet" href="css/main.css?v=000">
 
     <meta name="theme-color" content="#fafafa">
+
+
 
     <!-- Google Tag Manager -->
     <!-- <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-5QH8NCZ');</script> -->
@@ -94,8 +122,7 @@
                     <div class="data-row convert">
 
                         <div class="data-cell convert">
-                            <button class="convert-btn" onclick="">Convert</button>
-                            <!-- <button class="convert-btn" onclick="convertRates(event)">Convert</button> -->
+                            <button class="convert-btn" onclick="convertRates(event)">Convert</button>
                         </div>
 
 
@@ -153,17 +180,6 @@
 
 
 
-    <script>
-    </script>
-
-<script>
-    rateChart.config.options.scales.yAxisID.title.padding.top = 40
-    rateChart.config.options.scales.yAxisID.title.padding.bottom = -50
-    rateChart.config.options.scales.xAxisID.title.padding.bottom = 0
-    rateChart.config.options.scales.xAxisID.title.padding.top = 0
-    // delete rateChart.config.options.scales.xAxisID.title
-    rateChart.update()
-</script>
 
 
 <template id="ratetable-group-template">

@@ -270,7 +270,7 @@ h1,h2,h3,h4,h5,h6 {
 
 .site-title {
     /* font-size: clamp(1.8em, 5vw, 2em); */
-    font-size: clamp(1.5rem, 5vw, 2.2rem);
+    font-size: clamp(1.2rem, 5vw, 2.2rem);
     /* margin: 0 .1em .2em; */
 }
 
@@ -688,7 +688,67 @@ blockquote > p::after {
 /* #region || rate tables */
 
 
+.input-container {
+    margin-inline: 4px;
+flex-grow: 1;
+display: flex;
+flex-direction: column;
+justify-content: space-evenly;
+}
 
+.input-container input[type=number] {
+    text-align: center;
+    font-size: 1rem;
+    border: none;
+    background-color: rgba(255,255,255,.7);
+    width: 100%;
+    font-size: 1.2rem;
+    padding-block: .2rem;
+}
+
+
+.data-row {
+    margin-block: .07rem;
+}
+.data-cell {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    background-color: var(--ratetable-bg-color, rgb(205, 205, 205));
+    margin: 2px;
+    border-radius: .4rem;
+}
+.ratetable-group {
+    margin-block: .4rem;
+}
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -moz-appearance: textfield;
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.ratetable-group .data-row:first-child {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+}
+.ratetable-group .data-row:nth-child(2) {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+}
+.data-row.convert {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+}
+.ratetype-selector {
+    appearance: none;
+    border: none;
+    text-align-last: center;
+    height: 100%;
+    width: 100%;
+    font-size: 1.2rem;
+    background-color: rgba(0,0,0,.1);
+}
 
 /* =============================================
     END rate tables
@@ -711,127 +771,8 @@ blockquote > p::after {
     padding: 5px 10px;
     margin-inline: auto;
     width: var(--site-width);
+    box-sizing: border-box;
 }
 
 /* #endregion || footer */
-
-
-
-/* ============================================================
-    999. test
-============================================================ */
-/* #region || test */
-
-/* #header {} */
-/* #main {} */
-/* #chart-container {} */
-/* #rateChart {} */
-/* #input-container {} */
-/* #ratetable {} */
-/* #rateSlider {} */
-/* #footer {} */
-/* #ratetable-group-template {} */
-
-
-/* .no-js {} */
-/* .site-content {} */
-/* .header {} */
-/* .header-left {} */
-/* .site-icon {} */
-/* .divider {} */
-/* .site-title {} */
-/* .add-group-btn.material-icons-outlined {} */
-/* .main {} */
-/* .chart-container {} */
-/* .rateChart {} */
-.input-container {
-    margin-inline: 4px;
-flex-grow: 1;
-display: flex;
-flex-direction: column;
-justify-content: space-evenly;
-}
-.input-container input[type=number] {
-    text-align: center;
-    font-size: 1rem;
-    border: none;
-    background-color: rgba(255,255,255,.7);
-    width: 100%;
-    font-size: 1.2rem;
-    padding-block: .2rem;
-}
-/* .data-section {} */
-/* .ratetable {} */
-.data-row {
-    margin-block: .07rem;
-}
-.data-cell {
-    display: flex;
-    flex-direction: column;
-    text-align: center;
-    background-color: var(--ratetable-bg-color, rgb(205, 205, 205));
-    margin: 2px;
-    border-radius: .4rem;
-}
-/* .data-cell.convert {} */
-/* .convert-btn {} */
-/* .convert-btn {} */
-/* .data-cell.stats {} */
-/* .data-cell-title {} */
-/* .rate-input.totalDelta {} */
-/* .data-row.slider-container {} */
-/* .slider {} */
-/* .footer {} */
-/* .project-info-footer {} */
-.ratetable-group {
-    margin-block: .4rem;
-}
-/* .ratetable-group input {} */
-input[type=number]::-webkit-inner-spin-button,
-input[type=number]::-webkit-outer-spin-button {
-    -moz-appearance: textfield;
-    -webkit-appearance: none;
-    margin: 0;
-}
-
-.ratetable-group .data-row:first-child {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-}
-.ratetable-group .data-row:nth-child(2) {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-}
-.data-row.convert {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-}
-/* .data-row.ratetable-typesection {} */
-/* .data-cell.rate-type {} */
-.ratetype-selector {
-    appearance: none;
-    border: none;
-    text-align-last: center;
-    height: 100%;
-    width: 100%;
-    font-size: 1.2rem;
-    background-color: rgba(0,0,0,.1);
-}
-/* .data-cell.max {} */
-/* .data-cell-title {} */
-/* .rate-input.maxAngularVel {} */
-/* .data-row {} */
-/* .data-cell.rc_rate {} */
-/* .data-cell-title {} */
-/* .rate-input.rc_rate_input {} */
-/* .data-cell.rate {} */
-/* .data-cell-title {} */
-/* .rate-input.rate_input {} */
-/* .data-cell.rc_expo {} */
-/* .data-cell-title {} */
-/* .rate-input.expo_input {} */
-
-
-
-/* #endregion || test */
 
