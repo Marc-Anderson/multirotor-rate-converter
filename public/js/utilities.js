@@ -28,3 +28,9 @@ function findValueInScale(sourceMin, sourceMax, sourceCurrentValue, targetMin, t
     return value.toFixed(targetStep.countDecimalPlaces())
 }
 findValueInScale(0, 100, 50, 0, 1, .1)
+
+
+function randBetween(min, max) {
+    return Math.floor(Math.random() * (max - min + 1) + min);
+}
+  

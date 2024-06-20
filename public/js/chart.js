@@ -9,7 +9,7 @@ const chartConfig = {
     data: currentData,
     options: {
         aspectRatio: ()=>{
-            return window.innerWidth < 540 ? 1 : 1.6;
+            return window.innerWidth < 450 ? 1 : 1.6;
         },
         // // layout: {
         // //     padding: 10,

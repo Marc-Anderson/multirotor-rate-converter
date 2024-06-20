@@ -15,7 +15,7 @@ function monitorChanges(e){
     if(e.target.selectedIndex == undefined){
 
         let rateType = Object.keys(rateDetails).filter(type => {
-            return rateDetails[type].id == e.currentTarget.querySelector('.rateTypeSelector').selectedIndex;
+            return rateDetails[type].id == e.currentTarget.querySelector('.ratetype-selector').selectedIndex;
         })[0]
         if(parseFloat(e.target.value) < rateDetails[rateType].rateValues[e.target.name].min) return
         if(parseFloat(e.target.value) > rateDetails[rateType].rateValues[e.target.name].max) return
@@ -37,16 +37,16 @@ function updateRateTableGroupType(datasetID){
     let rateTableGroup = document.querySelector(`.ratetable-group[data-id="${datasetID}"]`)
     
     let rateType = Object.keys(rateDetails).filter(type => {
-        return rateDetails[type].id == rateTableGroup.querySelector('.rateTypeSelector').selectedIndex;
+        return rateDetails[type].id == rateTableGroup.querySelector('.ratetype-selector').selectedIndex;
     })[0]
 
-    let rc_rate_title = rateTableGroup.querySelector('.rc_rate_title')
+    let rc_rate_title = rateTableGroup.querySelector('.data-cell.rc_rate .data-cell-title')
         rc_rate_title.textContent = rateDetails[rateType].rateValues.rc_rate.title
 
-    let rate_title = rateTableGroup.querySelector('.rate_title')
+    let rate_title = rateTableGroup.querySelector('.data-cell.rc_rate .data-cell-title')
         rate_title.textContent = rateDetails[rateType].rateValues.rate.title
 
-    let expo_title = rateTableGroup.querySelector('.expo_title')
+    let expo_title = rateTableGroup.querySelector('.data-cell.rc_rate .data-cell-title')
         expo_title.textContent = rateDetails[rateType].rateValues.rc_expo.title
     
     let rc_rate_e = rateTableGroup.querySelector('input[name="rc_rate"]')
@@ -93,11 +93,11 @@ function generateRateTableGroup(targetRateType = "betaflight"){
         let rateTypeSelect = document.createElement('option')
         rateTypeSelect.textContent = rateDetails[rateType].label
         rateTypeSelect.value = rateDetails[rateType].id
-        newRateTableGroup.querySelector('.rateTypeSelector').append(rateTypeSelect)
+        newRateTableGroup.querySelector('.ratetype-selector').append(rateTypeSelect)
     })
    
     let rateTypeID = rateDetails[targetRateType.toLowerCase()].id
-    newRateTableGroup.querySelector('.rateTypeSelector').selectedIndex = rateTypeID
+    newRateTableGroup.querySelector('.ratetype-selector').selectedIndex = rateTypeID
 
     // TODO: createdataset generates dataset & ratetable ids, move this somewhere more elegant
     newRateTableGroup.dataset.id = createDataset(targetRateType)
@@ -107,13 +107,14 @@ function generateRateTableGroup(targetRateType = "betaflight"){
     rateTable.append(newRateTableGroup)
 
     newRateTableGroup.style.boxShadow = `-4px 0px 0px 0px ${targetDataset.backgroundColor}`
+    newRateTableGroup.style.setProperty('--ratetable-bg-color', targetDataset.backgroundColor.replace(")", ", 0.5)"));    
 
     newRateTableGroup.addEventListener('input', monitorChanges)
     newRateTableGroup.addEventListener('focusin', sliderMonitor)
     newRateTableGroup.addEventListener('focusout', sliderMonitor)
     
-    let deleteButton = newRateTableGroup.querySelector('.ratetable-delete')
-    deleteButton.addEventListener('click', handleDeleteRateTableGroup, {once: true})
+    // let deleteButton = newRateTableGroup.querySelector('.ratetable-delete')
+    // deleteButton.addEventListener('click', handleDeleteRateTableGroup, {once: true})
 
     function handleDeleteRateTableGroup(e){
         let datasetID = e.target.closest('.ratetable-group').dataset.id
@@ -137,9 +138,16 @@ function updateDatasetFromHTML(datasetID){
     targetDataset.rates.rc_expo = rateTableGroup.querySelector('input[name="rc_expo"]').value
     
     targetDataset.rates.max = getRateTableGroupMaxAngularVel(datasetID)
-    rateTableGroup.querySelector('.maxAngularVel').textContent = targetDataset.rates.max
+    rateTableGroup.querySelector('.maxAngularVel').value = targetDataset.rates.max
 
     targetDataset.data = generateCurve(targetDataset.label.toLowerCase(), targetDataset.rates.rate, targetDataset.rates.rc_rate, targetDataset.rates.rc_expo)
+
+    // todo: implement mse error
+    let totalDeltaElement = document.querySelector(`.totalDelta`)
+    
+    totalDeltaElement.value = currentData.datasets.reduce((acc, curr) => {
+        return Math.abs(curr.rates.max - acc);
+    }, 0);
 
     rateChart.update()
 
@@ -178,7 +186,7 @@ let toggleActiveRow = (datasetID) => {
 
 function sliderMonitor(e){
     
-    if(e.target.classList.contains('rateTypeSelector')) return
+    if(e.target.classList.contains('ratetype-selector')) return
 
     if(e.type == 'focusin'){
         toggleActiveRow(e.target.closest('.ratetable-group').dataset.id)
