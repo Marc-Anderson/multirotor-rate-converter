@@ -43,10 +43,10 @@ function updateRateTableGroupType(datasetID){
     let rc_rate_title = rateTableGroup.querySelector('.data-cell.rc_rate .data-cell-title')
         rc_rate_title.textContent = rateDetails[rateType].rateValues.rc_rate.title
 
-    let rate_title = rateTableGroup.querySelector('.data-cell.rc_rate .data-cell-title')
+    let rate_title = rateTableGroup.querySelector('.data-cell.rate .data-cell-title')
         rate_title.textContent = rateDetails[rateType].rateValues.rate.title
 
-    let expo_title = rateTableGroup.querySelector('.data-cell.rc_rate .data-cell-title')
+    let expo_title = rateTableGroup.querySelector('.data-cell.rc_expo .data-cell-title')
         expo_title.textContent = rateDetails[rateType].rateValues.rc_expo.title
     
     let rc_rate_e = rateTableGroup.querySelector('input[name="rc_rate"]')
@@ -285,7 +285,7 @@ function LegacyConvertRates(event){
                                 rateTableGroup.querySelector('input[name="rate"]').value = data.tgt_rate
                                 rateTableGroup.querySelector('input[name="rc_rate"]').value = data.tgt_rc_rate
                                 rateTableGroup.querySelector('input[name="rc_expo"]').value = data.tgt_rc_expo
-                                rateTableGroup.querySelector('.convert-btn').classList.remove('rainbow')
+                                rateTableGroup.querySelector('.convert-btn')?.classList.remove('rainbow')
                                 updateDatasetFromHTML(dataset.id)
                             }
                         })
@@ -294,7 +294,7 @@ function LegacyConvertRates(event){
         } else {
             setTimeout(() => {
                 document.querySelectorAll('.convert-btn').forEach(btn => btn.classList.remove('rainbow'))
-                dataLayer.push(apiTrackingObject)
+                dataLayer?.push(apiTrackingObject)
             }, 1000);
         }
     

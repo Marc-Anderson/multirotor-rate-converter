@@ -1,3 +1,43 @@
+
+const shiftYAxisTicksPlugin = {
+    id: 'shiftYTicks',
+    afterDraw ( chart ) {
+
+        if(window.innerWidth >= 450) return;
+
+        const yAxis = chart.scales.yAxisID;
+        if ( !yAxis ) return;
+
+        // define the shift amount (pixels)
+        labelColor = "rgba(0, 0, 0, 0.62)";
+        const tickShift = 10;
+
+        // get the canvas context for drawing
+        const ctx = chart.ctx;
+        
+        yAxis.ticks.forEach( ( tick, index ) => {
+            // get y position of tick label
+            const tickValue = yAxis.getPixelForValue( tick.value );
+
+            // save the current canvas state
+            ctx.save();
+
+            // clear the original tick label
+            ctx.clearRect( yAxis.left, tickValue - 10, yAxis.width, 18 );
+
+            // format the new tick label text
+            ctx.fillStyle = labelColor;
+            ctx.textAlign = 'right';
+            ctx.textBaseline = 'middle';
+            // draw the shifted tick
+            ctx.fillText( tick.label, yAxis.right + tickShift, tickValue );
+            // restore the canvas state
+            ctx.restore();
+        } );
+    }
+};
+Chart.register( shiftYAxisTicksPlugin );
+
 const currentData = {
     labels: Array(1001 - 500).fill().map((_,i) => 500 + i),
     datasets: [],
@@ -8,19 +48,30 @@ const chartConfig = {
     type: 'line',
     data: currentData,
     options: {
+        plugins: [shiftYAxisTicksPlugin],
         aspectRatio: ()=>{
-            return window.innerWidth < 450 ? 1 : 1.7;
+            return window.innerWidth < 450 ? 1.4 : 1.6;
         },
-        // // layout: {
-        // //     padding: 10,
-        // // },
+        layout: {
+            padding: {
+                left:  -20
+            },
+        },
+        elements: {
+            line: {
+                tension: 0.4,
+                borderJoinStyle: 'round',
+                borderCapStyle: 'round',
+                borderWidth: 4,
+            }
+        },
         interaction: {
           mode: 'nearest',
         },
         scales: {
             yAxisID: {
                 title: {
-                    display: true,
+                    display: () => { return window.innerWidth < 450 ? false : true },
                     text: 'Rate',
                     padding: {
                         top: 40,
@@ -38,7 +89,7 @@ const chartConfig = {
                     display: true,
                     text: 'RC Command',
                     padding: {
-                        top: 0,
+                        top: -10,
                         bottom: 0
                     }
                 },
@@ -99,3 +150,17 @@ function createDataset(rateType = "betaflight"){
 
 }
     
+
+// rateChart.config.options.scales.yAxisID.title.padding.top = 40
+// rateChart.config.options.scales.yAxisID.title.padding.bottom = -50
+// rateChart.config.options.scales.xAxisID.title.padding.bottom = 0
+// rateChart.config.options.scales.xAxisID.title.padding.top = 0
+// rateChart.config.options.scales.yAxisID.ticks.padding = -30
+// rateChart.config.options.scales.yAxisID.ticks.z = 1
+// vertical
+// rateChart.config.options.scales.yAxisID.ticks.labelOffset = -51
+// rateChart.config.options.scales.yAxisID.ticks.align = "center"
+// rateChart.config.options.scales.yAxisID.ticks.padding = -20
+// rateChart.config.options.scales.ticks.z = 1
+// delete rateChart.config.options.scales.xAxisID.title
+// rateChart.update()
