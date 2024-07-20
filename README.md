@@ -51,7 +51,7 @@ npm run dev
 ## development setup(the whole shabang)
 
 ### requirements
-* python
+* python3.8
 * venv
 * pip
 
