@@ -50,7 +50,7 @@ const chartConfig = {
     options: {
         plugins: [shiftYAxisTicksPlugin],
         aspectRatio: ()=>{
-            return window.innerWidth < 450 ? 1.4 : 1.6;
+            return window.innerWidth < 450 ? 1.4 : 1.7;
         },
         layout: {
             padding: {
@@ -72,11 +72,7 @@ const chartConfig = {
             yAxisID: {
                 title: {
                     display: () => { return window.innerWidth < 450 ? false : true },
-                    text: 'Rate',
-                    padding: {
-                        top: 40,
-                        bottom: -50
-                    }
+                    text: 'Rate'
                 },
                 position: "left",
                 min: 0,

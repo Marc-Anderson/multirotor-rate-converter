@@ -320,6 +320,7 @@ body {
     flex-grow: 1;
     grid-area: content;
     overflow: hidden;
+    overflow-y: scroll;
 }
 
 
@@ -544,8 +545,21 @@ blockquote > p::after {
       100%{background-position:0% 82%}
   }
 
+/* 
+  .rainbow {
+    background: linear-gradient(124deg, #ff2400, #e81d1d, #e8b71d, #e3e81d, #1de840, #1ddde8, #2b1de8, #dd00f3, #dd00f3);
+    background-size: 200% 200%;
+    animation: rainbow 2s linear infinite;
+}
 
-
+@keyframes rainbow {
+    0% {
+        background-position: 0% 50%;
+    }
+    100% {
+        background-position: 100% 50%;
+    }
+} */
 
 
 /* =============================================
@@ -764,7 +778,6 @@ blockquote > p::after {
     flex-direction: column;
     justify-content: space-evenly;
 }
-
 .input-container input[type=number] {
     text-align: center;
     font-size: 1rem;
@@ -775,8 +788,8 @@ blockquote > p::after {
     padding-block: .2rem;
     box-sizing: border-box;
 }
-
-
+/* .data-section {} */
+/* .ratetable {} */
 .data-row {
     margin-block: .07rem;
 }
@@ -788,9 +801,20 @@ blockquote > p::after {
     margin: 2px;
     border-radius: .4rem;
 }
+/* .data-cell.convert {} */
+/* .convert-btn {} */
+/* .convert-btn {} */
+/* .data-cell.stats {} */
+/* .data-cell-title {} */
+/* .rate-input.totalDelta {} */
+/* .data-row.slider-container {} */
+/* .slider {} */
+/* .footer {} */
+/* .project-info-footer {} */
 .ratetable-group {
     margin-block: .4rem;
 }
+/* .ratetable-group input {} */
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button {
     -moz-appearance: textfield;
@@ -810,6 +834,8 @@ input[type=number]::-webkit-outer-spin-button {
     display: grid;
     grid-template-columns: 2fr 1fr;
 }
+/* .data-row.ratetable-typesection {} */
+/* .data-cell.rate-type {} */
 .ratetype-selector {
     appearance: none;
     border: none;
@@ -819,30 +845,28 @@ input[type=number]::-webkit-outer-spin-button {
     font-size: 1.2rem;
     background-color: rgba(0,0,0,.1);
 }
-
-/* =============================================
-    END rate tables
-============================================= */
-/* #endregion || rate tables */
-
-
-
-/* ============================================================
-    1. footer
-============================================================ */
-/* #region || footer */
-
-.project-info-footer {
-    position: static;
-    text-align: right;
-    bottom: 0;
-    right: 0;
-    color: black;
-    padding: 5px 10px;
-    margin-inline: auto;
-    width: var(--site-width);
-    box-sizing: border-box;
+/* .data-cell.max {} */
+.data-cell-title {}
+@media screen and (max-width: 450px) {
+    .data-cell-title {
+        font-size: 0.8rem;
+        line-height: 1.4;
+    }
+    
 }
+/* .rate-input.maxAngularVel {} */
+/* .data-row {} */
+/* .data-cell.rc_rate {} */
+/* .data-cell-title {} */
+/* .rate-input.rc_rate_input {} */
+/* .data-cell.rate {} */
+/* .data-cell-title {} */
+/* .rate-input.rate_input {} */
+/* .data-cell.rc_expo {} */
+/* .data-cell-title {} */
+/* .rate-input.expo_input {} */
 
-/* #endregion || footer */
+
+
+/* #endregion || test */
 

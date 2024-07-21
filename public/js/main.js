@@ -142,11 +142,10 @@ function updateDatasetFromHTML(datasetID){
 
     targetDataset.data = generateCurve(targetDataset.label.toLowerCase(), targetDataset.rates.rate, targetDataset.rates.rc_rate, targetDataset.rates.rc_expo)
 
-    // todo: implement mse error
     let totalDeltaElement = document.querySelector(`.totalDelta`)
 
     try {
-        totalDeltaElement.value = calculateMSError(currentData.datasets[0].data, currentData.datasets[1].data).toFixed(2);
+        totalDeltaElement.value = calculateMSError(currentData.datasets[0].data, currentData.datasets[targetDataset.id].data).toFixed(2);
     } catch (error) {
         totalDeltaElement.value = 0;
     }
@@ -302,15 +301,14 @@ function LegacyConvertRates(event){
 }
 
 
-function LocalConvertRates(event){
+async function LocalConvertRates(event){
+
+    const convertBtn = document.getElementById('convert-btn');
     
-    document.querySelector('.convert-btn').classList.add('rainbow')
-    
-    // let datasetID = event.target.closest('.ratetable-group').dataset.id
+    convertBtn.classList.add('rainbow');
+
+    // target the first dataset using the new ui
     let datasetID = 0
-
-    // toggleActiveRow(datasetID)
-
     let sourceDataset = currentData.datasets.find(dataset => dataset.id == datasetID)
 
     let srcRateType = sourceDataset.label.toLowerCase()
@@ -329,217 +327,49 @@ function LocalConvertRates(event){
 
     let targetRateTypes = new Set(currentData.datasets.map(dataset => dataset.label.toLowerCase()))
 
-    targetRateTypes.forEach(currentRateType => {
-        if(currentRateType !== srcRateType){
-            
-            apiTrackingObject.tgtRateTypes.push(currentRateType)
+    let fitDataPromises = [];
 
-            /** @type {object} */
-            let fit_data = gradientDescent(srcRateType, currentRateType, [rate, rc_rate, rc_expo]);
-            currentData.datasets.forEach(dataset => {
-                if(dataset.label.toLowerCase() == fit_data.tgtRateType){
-                    let rateTableGroup = document.querySelector(`.ratetable-group[data-id="${dataset.id}"]`)
+    for(let tgtRateType of targetRateTypes){
+        if(tgtRateType !== srcRateType){
+            apiTrackingObject.tgtRateTypes.push(tgtRateType)
 
-                    rateTableGroup.querySelector('input[name="rate"]').value = fit_data.tgt_rate
-                    rateTableGroup.querySelector('input[name="rc_rate"]').value = fit_data.tgt_rc_rate
-                    rateTableGroup.querySelector('input[name="rc_expo"]').value = fit_data.tgt_rc_expo
-                    updateDatasetFromHTML(dataset.id);
+            const gradientDescentWorker = new Worker('./js/gradientDescentWorker.js');
+            console.log(`tgtRateType - ${tgtRateType}`)
 
-                    // rateChart.update()
-                }
+            const fitDataPromise = new Promise((resolve, reject) => {
+
+                gradientDescentWorker.onmessage = function(e) {
+                    if(e.data.request_status === "failed"){
+                        reject(e);
+                    }
+                    resolve(e);
+                    gradientDescentWorker.terminate();
+                };
+
+                gradientDescentWorker.postMessage({...apiTrackingObject, tgtRateType});
+            });
+
+            fitDataPromise.then((e)=>{
+                const targetDataSet = currentData.datasets.find(dataset => dataset.label.toLowerCase() == e.data.tgtRateType);
+                let rateTableGroup = document.querySelector(`.ratetable-group[data-id="${targetDataSet.id}"]`);
+
+                rateTableGroup.querySelector('input[name="rate"]').value = e.data.tgt_rate
+                rateTableGroup.querySelector('input[name="rc_rate"]').value = e.data.tgt_rc_rate
+                rateTableGroup.querySelector('input[name="rc_expo"]').value = e.data.tgt_rc_expo
+
+                updateDatasetFromHTML(targetDataSet.id);
+
+            }).catch((e) => {
+                console.log(`invalid api request - ${e}`)
             })
 
-
-        } else {
-            setTimeout(() => {
-                document.querySelectorAll('.convert-btn').forEach(btn => btn.classList.remove('rainbow'))
-                dataLayer.push(apiTrackingObject)
-            }, 1000);
+            fitDataPromises.push(fitDataPromise)
         }
+    }
     
-    })
-}
-
-
-
-
-/* ============================================================
-    1. gradient descent
-============================================================ */
-/* #region || gradient descent */
-
-
-/**
- * @param {Point[]} srcRateCurve
- * @param {string} tgtRateType
- * @param {[number,number,number]} params normalized rate values
- * @returns {[number,number,number]} gradient for each rate value
- */
-function calculateNumericGradients(srcRateCurve, tgtRateType, params, DELTA=1e-4) {
-
-    /** @type {[number,number,number]} */
-    let gradients = [0,0,0];
-
-    for (let i = 0; i < params.length; i++) {
-        let paramsPlus = params.slice();
-        paramsPlus[i] += DELTA;
-
-        let paramsMinus = params.slice();
-        paramsMinus[i] -= DELTA;
-
-        /** @type {number[]} */
-        let plusTgtRateCurve = srcRateCurve.map(rcCommand => {
-            /** @type {[number,number,number]} */
-            const denormalizedParamsPlus = denormalizeParams(paramsPlus, tgtRateType)
-            return getRcCommandRawToDegreesPerSecond(tgtRateType, rcCommand.x, ...denormalizedParamsPlus)
-        });
-
-        /** @type {number[]} */
-        let minusTgtRateCurve = srcRateCurve.map(rcCommand => {
-            /** @type {[number,number,number]} */
-            const denormalizedParamsMinus = denormalizeParams(paramsMinus, tgtRateType)
-            return getRcCommandRawToDegreesPerSecond(tgtRateType, rcCommand.x, ...denormalizedParamsMinus)
-        });
-
-        /** @type {number} */
-        let gradient = (calculateMSError(srcRateCurve, plusTgtRateCurve) - calculateMSError(srcRateCurve, minusTgtRateCurve)) / (2 * DELTA);
-
-        gradients[i] = gradient;
-    }
-
-    return gradients;
-}
-
-
-
-/**
- * @param {string} srcRateType
- * @param {string} tgtRateType
- * @param {[string,string,string]} srcRates
- * @returns 
- */
-function gradientDescent(srcRateType, tgtRateType, srcRates){
-
-    const CONFIG = {
-        // number of data points to fit the curve
-        NUM_RATE_CURVE_DATAPOINTS_TO_FIT: 501,
-        // 
-        GD_ITERATIONS: 1000,
-        // exponential decay rate for first moment - lower values make optimizer more responsive to recent changes, higher values make it smoother
-        BETA1: 0.9,
-        // exponential decay rate for second moment - lower values make optimizer more responsive to recent changes, higher values make it smoother
-        BETA2: 0.999,
-        // 
-        LEARNING_RATE: 15e-3,
-        // learning rate decay per iteration
-        LR_DECAY: 0.99,
-        // adjust the learning rate for each rate parameter
-        LEARNING_RATE_SCALES: [16e-2, 16e-2, 16e-1],
-        // small constant to prevent division by zero
-        EPSILON: 1e-5
-    }
-
-    // generate evenly spaced rcCommand values between 0 and 1
-    /** @type {number[]} */
-    const rcCommandfs = linspace(1500, 2001, CONFIG.NUM_RATE_CURVE_DATAPOINTS_TO_FIT);
+    await Promise.all(fitDataPromises);
+    convertBtn.classList.remove('rainbow');
     
-    // initialize parameters
-    /** @type {string} */
-    const tgtRateReferenceData = rateDetails[tgtRateType]["rateValues"];
-    /** @type {number} */
-    let rate = tgtRateReferenceData["rate"]["default"]
-    /** @type {number} */
-    let rcRate = tgtRateReferenceData["rc_rate"]["default"]
-    /** @type {number} */
-    let rcExpo = tgtRateReferenceData["rc_expo"]["default"]
-    /** @type {[number,number,number]} */
-    let tgtRates = [rate, rcRate, rcExpo];
+    dataLayer.push(apiTrackingObject);
 
-    /** @type {Point[]} the curve representing the source rate values */
-    const sourceRateCurve = rcCommandfs.map(rcCommand => {
-        return { x: rcCommand, y: getRcCommandRawToDegreesPerSecond(srcRateType, rcCommand, ...srcRates) };
-    });
-
-    /** @type {number[]} moving average of gradients (momentum) */
-    let m = Array(tgtRates.length).fill(0);
-
-    /** @type {number[]} moving average of squared gradients (scales learning rate) */
-    let v = Array(tgtRates.length).fill(0);
-
-    // process gradient descent for each iteration
-    for (let i = 0; i < CONFIG.GD_ITERATIONS; i++) {
-
-        /** @type {[number,number,number]} scale parameters to 0-1 for optimization */
-        let params = normalizeParams([rate,rcRate,rcExpo], tgtRateType)
-
-        /** @type {number[]} */
-        let gradients = calculateNumericGradients(sourceRateCurve, tgtRateType, params);
-
-        // apply bias correction for each moment
-        m = m.map((mVal, index) => CONFIG.BETA1 * mVal + (1 - CONFIG.BETA1) * gradients[index]);
-        v = v.map((vVal, index) => CONFIG.BETA2 * vVal + (1 - CONFIG.BETA2) * Math.pow(gradients[index], 2));
-
-        /** @type {number[]} bias corrected moving average of gradients (momentum) */
-        let mHat = m.map(mVal => mVal / (1 - Math.pow(CONFIG.BETA1, (i + 1))));
-
-        /** @type {number[]} bias corrected moving average of squared gradients (scales learning rate) */
-        let vHat = v.map(vVal => vVal / (1 - Math.pow(CONFIG.BETA2, (i + 1))));
-
-        /** @type {number} */
-        let decayedLearningRate = CONFIG.LEARNING_RATE * Math.pow(CONFIG.LR_DECAY, (i + 1));
-        
-        /** @type {number[]} */
-        let cleanedparams = params.map((param, index) => param - decayedLearningRate * CONFIG.LEARNING_RATE_SCALES[index] * mHat[index] / (Math.sqrt(vHat[index]) + CONFIG.EPSILON));
-        
-        /** @type {[number,number,number]} */
-        let predictedRates = denormalizeParams(cleanedparams, tgtRateType);
-
-        // constrain the predicted rates to the min and max values
-        rate = Math.min(Math.max(predictedRates[0], tgtRateReferenceData["rate"]["min"]), tgtRateReferenceData["rate"]["max"]);
-        rcRate = Math.min(Math.max(predictedRates[1], tgtRateReferenceData["rc_rate"]["min"]), tgtRateReferenceData["rc_rate"]["max"]);
-        rcExpo = Math.min(Math.max(predictedRates[2], tgtRateReferenceData["rc_expo"]["min"]), tgtRateReferenceData["rc_expo"]["max"]);
-
-    }
-
-    const targetRateCurve = rcCommandfs.map(rcCommand => {
-        return { x: rcCommand, y: getRcCommandRawToDegreesPerSecond(tgtRateType, rcCommand, rate, rcRate, rcExpo) };
-    });
-
-    let formatted_rate, formatted_rc_rate, formatted_rc_expo;
-    if (tgtRateType === "raceflight") {
-        formatted_rate = Math.ceil(rate);
-        formatted_rc_rate = Math.ceil(rcRate);
-        formatted_rc_expo = Math.ceil(rcExpo);
-    } else if (tgtRateType === "actual") {
-        formatted_rate = Math.ceil(rate);
-        formatted_rc_rate = Math.ceil(rcRate);
-        formatted_rc_expo = rcExpo.toFixed(2);
-    } else if (tgtRateType === "quickrates") {
-        formatted_rate = Math.ceil(rate);
-        formatted_rc_rate = rcRate.toFixed(2);
-        formatted_rc_expo = rcExpo.toFixed(2);
-    } else {
-        formatted_rate = rate.toFixed(2);
-        formatted_rc_rate = rcRate.toFixed(2);
-        formatted_rc_expo = rcExpo.toFixed(2);
-    }
-
-    const best_fit_object = {
-        "srcRateType": srcRateType,
-        "src_rate": srcRates[0],
-        "src_rc_rate": srcRates[1],
-        "src_rc_expo": srcRates[2],
-        "source_data": sourceRateCurve,
-        "tgtRateType": tgtRateType,
-        "tgt_rate": `${formatted_rate}`,
-        "tgt_rc_rate": `${formatted_rc_rate}`,
-        "tgt_rc_expo": `${formatted_rc_expo}`,
-        "target_data": targetRateCurve
-    };
-
-    // console.log(best_fit_object.tgt_rate, best_fit_object.tgt_rc_rate, best_fit_object.tgt_rc_expo);
-
-    return best_fit_object
 }
-// gradientDescent(source_rate_type, target_rate_type, source_rates)
-/* #endregion || gradient descent */
