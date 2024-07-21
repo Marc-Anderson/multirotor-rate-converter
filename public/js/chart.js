@@ -50,7 +50,7 @@ const chartConfig = {
     options: {
         plugins: [shiftYAxisTicksPlugin],
         aspectRatio: ()=>{
-            return window.innerWidth < 450 ? 1.4 : 1.6;
+            return window.innerWidth < 450 ? 1.4 : 1.7;
         },
         layout: {
             padding: {

@@ -145,9 +145,12 @@ function updateDatasetFromHTML(datasetID){
     // todo: implement mse error
     let totalDeltaElement = document.querySelector(`.totalDelta`)
     
-    totalDeltaElement.value = currentData.datasets.reduce((acc, curr) => {
-        return Math.abs(curr.rates.max - acc);
-    }, 0);
+    try {
+        totalDeltaElement.value = calculateMSError(currentData.datasets[0].data, currentData.datasets[targetDataset.id].data).toFixed(2);
+    } catch (error) {
+        totalDeltaElement.value = 0;
+    }
+
 
     rateChart.update()
 
@@ -226,8 +229,34 @@ function deleteRateTableGroup(datasetID){
     
 }
 
+function convertRates(event) {
+    if(event.target.classList.contains('convert-btn')){
+        if(event.target.classList.contains('rainbow')){
+            return
+        }
+        if(event.target.classList.contains('legacy')){
+            if(event.target.classList.contains('new-layout')){
+                event = {
+                    target: {
+                        closest: function() {
+                            return {
+                                dataset: {
+                                    id: 0
+                                }
+                            };
+                        }
+                    }
+                };
+            }
+            LegacyConvertRates(event)
+        } else {
+                LocalConvertRates(event)
+            }
+        }
 
-function convertRates(event){
+}
+
+function LegacyConvertRates(event){
 
     document.querySelectorAll('.convert-btn').forEach(btn => btn.classList.add('rainbow'))
 
@@ -286,17 +315,75 @@ function convertRates(event){
 }
 
 
-function convertRatesFromFirstRatetableGroup() {
-    const event = {
-        target: {
-            closest: function() {
-                return {
-                    dataset: {
-                        id: 0
+async function LocalConvertRates(event){
+
+    const convertBtn = document.getElementById('convert-btn');
+    
+    convertBtn.classList.add('rainbow');
+
+    // target the first dataset using the new ui
+    let datasetID = 0
+    let sourceDataset = currentData.datasets.find(dataset => dataset.id == datasetID)
+
+    let srcRateType = sourceDataset.label.toLowerCase()
+    let rate = sourceDataset.rates.rate
+    let rc_rate = sourceDataset.rates.rc_rate
+    let rc_expo = sourceDataset.rates.rc_expo
+
+    let apiTrackingObject = {
+        event: "convert_rates_local",
+        srcRateType: srcRateType,
+        rate: rate,
+        rc_rate: rc_rate,
+        rc_expo: rc_expo,
+        tgtRateTypes: []
+    }
+
+    let targetRateTypes = new Set(currentData.datasets.map(dataset => dataset.label.toLowerCase()))
+
+    let fitDataPromises = [];
+
+    for(let tgtRateType of targetRateTypes){
+        if(tgtRateType !== srcRateType){
+            apiTrackingObject.tgtRateTypes.push(tgtRateType)
+
+            const gradientDescentWorker = new Worker('./js/gradientDescentWorker.js');
+            console.log(`tgtRateType - ${tgtRateType}`)
+
+            const fitDataPromise = new Promise((resolve, reject) => {
+
+                gradientDescentWorker.onmessage = function(e) {
+                    if(e.data.request_status === "failed"){
+                        reject(e);
                     }
+                    resolve(e);
+                    gradientDescentWorker.terminate();
                 };
-            }
+
+                gradientDescentWorker.postMessage({...apiTrackingObject, tgtRateType});
+            });
+
+            fitDataPromise.then((e)=>{
+                const targetDataSet = currentData.datasets.find(dataset => dataset.label.toLowerCase() == e.data.tgtRateType);
+                let rateTableGroup = document.querySelector(`.ratetable-group[data-id="${targetDataSet.id}"]`);
+
+                rateTableGroup.querySelector('input[name="rate"]').value = e.data.tgt_rate
+                rateTableGroup.querySelector('input[name="rc_rate"]').value = e.data.tgt_rc_rate
+                rateTableGroup.querySelector('input[name="rc_expo"]').value = e.data.tgt_rc_expo
+
+                updateDatasetFromHTML(targetDataSet.id);
+
+            }).catch((e) => {
+                console.log(`invalid api request - ${e}`)
+            })
+
+            fitDataPromises.push(fitDataPromise)
         }
-    };
-    convertRates(event);
+    }
+    
+    await Promise.all(fitDataPromises);
+    convertBtn.classList.remove('rainbow');
+    
+    dataLayer.push(apiTrackingObject);
+
 }
