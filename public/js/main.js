@@ -99,6 +99,10 @@ function generateRateTableGroup(targetRateType = "betaflight"){
     let rateTypeID = rateDetails[targetRateType.toLowerCase()].id
     newRateTableGroup.querySelector('.ratetype-selector').selectedIndex = rateTypeID
 
+    if(window.innerWidth <= 450){
+        newRateTableGroup.querySelectorAll('input.rate-input').forEach(input => input.setAttribute('inputmode', 'none'));
+    }
+
     // TODO: createdataset generates dataset & ratetable ids, move this somewhere more elegant
     newRateTableGroup.dataset.id = createDataset(targetRateType)
 
@@ -191,8 +195,27 @@ function sliderMonitor(e){
     
     if(e.target.classList.contains('ratetype-selector')) return
 
+    let rateTableGroup;
+
     if(e.type == 'focusin'){
-        toggleActiveRow(e.target.closest('.ratetable-group').dataset.id)
+
+        console.log('focusin: ', e)
+        rateTableGroup = e.target.closest('.ratetable-group')
+        toggleActiveRow(rateTableGroup.dataset.id)
+
+        let currentFocusElement = rateTableGroup.getAttribute('current-focus-target') | undefined;
+        if(currentFocusElement){
+            rateTableGroup.removeAttribute('inputmode')
+        }
+        rateTableGroup.setAttribute('current-focus-target', e.target.name)
+    } else if(e.type == 'focusout'){
+
+        console.log('focusout: ', e)
+        rateTableGroup = e.target.closest('.ratetable-group')
+        rateTableGroup.removeAttribute('current-focus-target', e.target.name)
+        
+    } else {
+        console.log('different: ', e)
     }
 
     let slider = document.getElementById('rateSlider')
