@@ -4,16 +4,16 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta value="0" name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta value="0" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <meta name="description" content="a simple website to visualize the difference and compare rates of flight controller software">
 
     <title>Rate Converter</title>
 
     <meta property="og:title" content="multirotor rate converter">
 
-    <link rel="apple-touch-icon" href="icon.png">
+    <link rel="apple-touch-icon" href="mm-logo@32.png">
     <link rel="icon" type="image/x-icon" href="./favicon.ico">
-    <link rel="icon" href="./media/icon.png">
+    <link rel="icon" href="./media/mm-logo@32.png">
 
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;700&amp;display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -23,48 +23,41 @@
 
     <meta name="theme-color" content="#fafafa">
 
-    <style id="local-styles"></style>
-
     <!-- Google Tag Manager -->
     <!-- <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-5QH8NCZ');</script> -->
     <!-- End Google Tag Manager -->
 
 </head>
-<body id="view" class="view app-view">
+<body>
 
     <!-- Google Tag Manager (noscript) -->
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5QH8NCZ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5QH8NCZ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript> -->
     <!-- End Google Tag Manager (noscript) -->
 
-    <span class="add-ratetable-group material-icons-outlined" title="insert row" onclick="generateRateTableGroup()">add_box</span>
 
 
 
-    <!-- #region || navigation -->
-    <!-- <nav id="navigation" class="navigation">navigation</nav> -->
-    <!-- #endregion || navigation -->
-
-
-
-
-    <!-- #region || content -->
-    <div class="content">
+    <!-- #region || site-content -->
+    <div class="site-content">
 
 
 
 
     
         <!-- #region || header -->
-        <!-- <header id="header" class="header">header</header> -->
+        <div class="header-wrapper">
+        <header id="header" class="header">
+            <div class="header-left">
+                <img class="site-icon" src="./media/logo1.svg"></img>
+                <span class="divider">|</span>
+                <span class="site-title">Multirotor Rate Converter</span>
+            </div>
+            <span class="add-group-btn material-icons-outlined" title="insert row" onclick="generateRateTableGroup()">add</span>
+        </header>
+        </div>
         <!-- #endregion || header -->
 
 
-
-
-
-        <!-- #region || toolbar -->
-        <!-- <div id="toolbar" class="toolbar">toolbar</div> -->
-        <!-- #endregion || toolbar -->
 
 
 
@@ -73,30 +66,55 @@
         <!-- #region || main -->
         <main id="main" class="main">
 
-            <div class="page-title">Multirotor Rate Converter</div>
-
-
-            <!-- #region || input area -->
-            <div id="input-container" class="input-container container">
-                <div class="ratetable-container">
-                    <table id="ratetable" class="ratetable" style="border-collapse: collapse">
-                        <!-- RATE TABLE GROUPS GENERATED HERE -->
-                    </table>
-                    <div class="slider-container">
-                        <input type="range" min="1" max="100" class="slider" id="rateSlider">
-                    </div>
-                </div>
-            </div>
-            <!-- #endregion || input area -->
-
 
 
 
             <!-- #region || chart -->
-            <div id="chart-container" class="chart-container container">
+            <div id="chart-container" class="chart-container">
                 <canvas id="rateChart" class="rateChart"></canvas>
             </div>
             <!-- #endregion || chart -->
+
+
+            
+            
+
+            <!-- #region || input area -->
+            <div id="input-container" class="input-container">
+
+
+                <div class="data-section">
+                    <div id="ratetable" class="ratetable" style="border-collapse: collapse">
+                        <!-- RATE TABLE GROUPS GENERATED HERE -->
+                    </div>
+                </div>
+
+
+                <div class="data-section">
+                    <div class="data-row convert">
+
+                        <div class="data-cell convert">
+                            <!-- use the api to convert rates -->
+                            <!-- <button id="convert-btn" class="convert-btn legacy new-layout" onclick="convertRates(event)">Convert</button> -->
+                            <!-- use gradient descent locally to convert rates -->
+                            <button id="convert-btn" class="convert-btn" onclick="convertRates(event)">Convert</button>
+                        </div>
+
+
+                        <label class="data-cell stats">
+                            <span class="data-cell-title">Total Delta</span>
+                            <input type="number" class="rate-input totalDelta" disabled value="999"></input>
+                        </label>
+                        
+                    </div>
+
+                    <div class="data-row slider-container">
+                        <input type="range" min="1" max="100" class="slider" id="rateSlider">
+                    </div>
+                </div>
+
+            </div>
+            <!-- #endregion || input area -->
 
 
 
@@ -109,7 +127,7 @@
 
         <!-- #region || footer -->
         <footer id="footer" class="footer">
-            <div class="project-info">
+            <div class="project-info-footer">
                 <small>See the full project on <a href="https://github.com/Marc-Anderson/multirotor-rate-converter">GitHub</a></small>
             </div>
         </footer>
@@ -120,7 +138,7 @@
 
         
     </div>
-    <!-- #endregion || content -->
+    <!-- #endregion || site-content -->
 
 
 
@@ -140,42 +158,49 @@
     <script>
     </script>
 
+<script>
 
+</script>
 
 
 <template id="ratetable-group-template">
-    <tbody class="ratetable-group" data-id="">
-        <tr class="ratetable-header">
-            <td></td>
-            <td><div class="convert-btn" onclick="convertRates(event)">Convert</div></td>
-            <td class="rc_rate_title"></td>
-            <td class="rate_title"></td>
-            <td class="expo_title"></td>
-            <!-- <td class="stats">Difference</td> -->
-            <td class="stats">Max Rate</td>
-        </tr>
-        <tr class="ratetable-body">
-            <td class="ratetable-deletesection">
-                <span class="ratetable-delete material-icons-outlined">clear</span>
-            </td>
-            <td class="ratetable-typesection">
-                <select class="rateTypeSelector">
+
+
+    <div class="ratetable-group" data-id="">
+
+        <div class="data-row ratetable-typesection">
+
+            <div class="data-cell rate-type">
+                <select class="ratetype-selector">
                     <!-- RATES TYPE LIST GENERATED HERE -->
                 </select>
-            </td>
-            <td class="rc_rate">
-                <input type="number" class="rc_rate_input" name="rc_rate" step="0.01" min="0" max="1">
-            </td>
-            <td class="rate">
-                <input type="number" class="rate_input" name="rate" step="0.01" min="0" max="1">
-            </td>
-            <td class="rc_expo">
-                <input type="number" class="expo_input" name="rc_expo" step="0.01" min="0" max="1">
-            </td>
-            <!-- <td class="stats diffFromSelected"></td> -->
-            <td class="stats maxAngularVel"></td>
-        </tr>
-    </tbody>
+            </div>
+
+            <label class="data-cell max">
+                <span class="data-cell-title">Max Rate</span>
+                <input type="number" class="rate-input maxAngularVel" disabled value="999"></input>
+            </label>
+        </div>
+
+
+        <div class="data-row">
+            <label class="data-cell rc_rate">
+                <span class="data-cell-title">RC Rate</span>
+                <input type="number" class="rate-input rc_rate_input" name="rc_rate" step="0.01" min="0" max="1" inputmode='decimal'>
+            </label>
+            <label class="data-cell rate">
+                <span class="data-cell-title">Rate</span>
+                <input type="number" class="rate-input rate_input" name="rate" step="0.01" min="0" max="1" inputmode='decimal'>
+            </label>
+            <label class="data-cell rc_expo">
+                <span class="data-cell-title">Expo</span>
+                <input type="number" class="rate-input expo_input" name="rc_expo" step="0.01" min="0" max="1" inputmode='decimal'>
+            </label>
+        </div>
+
+    </div>
+
+
 </template>
 </body>
 </html>

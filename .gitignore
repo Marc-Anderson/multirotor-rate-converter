@@ -1,4 +1,5 @@
 node_modules
 .venv
+venv
 __pycache__
-docker_volumes
+docker_volumes.DS_Store

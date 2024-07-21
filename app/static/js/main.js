@@ -15,7 +15,7 @@ function monitorChanges(e){
     if(e.target.selectedIndex == undefined){
 
         let rateType = Object.keys(rateDetails).filter(type => {
-            return rateDetails[type].id == e.currentTarget.querySelector('.rateTypeSelector').selectedIndex;
+            return rateDetails[type].id == e.currentTarget.querySelector('.ratetype-selector').selectedIndex;
         })[0]
         if(parseFloat(e.target.value) < rateDetails[rateType].rateValues[e.target.name].min) return
         if(parseFloat(e.target.value) > rateDetails[rateType].rateValues[e.target.name].max) return
@@ -37,16 +37,16 @@ function updateRateTableGroupType(datasetID){
     let rateTableGroup = document.querySelector(`.ratetable-group[data-id="${datasetID}"]`)
     
     let rateType = Object.keys(rateDetails).filter(type => {
-        return rateDetails[type].id == rateTableGroup.querySelector('.rateTypeSelector').selectedIndex;
+        return rateDetails[type].id == rateTableGroup.querySelector('.ratetype-selector').selectedIndex;
     })[0]
 
-    let rc_rate_title = rateTableGroup.querySelector('.rc_rate_title')
+    let rc_rate_title = rateTableGroup.querySelector('.data-cell.rc_rate .data-cell-title')
         rc_rate_title.textContent = rateDetails[rateType].rateValues.rc_rate.title
 
-    let rate_title = rateTableGroup.querySelector('.rate_title')
+    let rate_title = rateTableGroup.querySelector('.data-cell.rate .data-cell-title')
         rate_title.textContent = rateDetails[rateType].rateValues.rate.title
 
-    let expo_title = rateTableGroup.querySelector('.expo_title')
+    let expo_title = rateTableGroup.querySelector('.data-cell.rc_expo .data-cell-title')
         expo_title.textContent = rateDetails[rateType].rateValues.rc_expo.title
     
     let rc_rate_e = rateTableGroup.querySelector('input[name="rc_rate"]')
@@ -93,11 +93,15 @@ function generateRateTableGroup(targetRateType = "betaflight"){
         let rateTypeSelect = document.createElement('option')
         rateTypeSelect.textContent = rateDetails[rateType].label
         rateTypeSelect.value = rateDetails[rateType].id
-        newRateTableGroup.querySelector('.rateTypeSelector').append(rateTypeSelect)
+        newRateTableGroup.querySelector('.ratetype-selector').append(rateTypeSelect)
     })
    
     let rateTypeID = rateDetails[targetRateType.toLowerCase()].id
-    newRateTableGroup.querySelector('.rateTypeSelector').selectedIndex = rateTypeID
+    newRateTableGroup.querySelector('.ratetype-selector').selectedIndex = rateTypeID
+
+    if(window.innerWidth <= 450){
+        newRateTableGroup.querySelectorAll('input.rate-input').forEach(input => input.setAttribute('inputmode', 'none'));
+    }
 
     // TODO: createdataset generates dataset & ratetable ids, move this somewhere more elegant
     newRateTableGroup.dataset.id = createDataset(targetRateType)
@@ -107,13 +111,14 @@ function generateRateTableGroup(targetRateType = "betaflight"){
     rateTable.append(newRateTableGroup)
 
     newRateTableGroup.style.boxShadow = `-4px 0px 0px 0px ${targetDataset.backgroundColor}`
+    newRateTableGroup.style.setProperty('--ratetable-bg-color', targetDataset.backgroundColor.replace(")", ", 0.5)"));    
 
     newRateTableGroup.addEventListener('input', monitorChanges)
     newRateTableGroup.addEventListener('focusin', sliderMonitor)
     newRateTableGroup.addEventListener('focusout', sliderMonitor)
     
-    let deleteButton = newRateTableGroup.querySelector('.ratetable-delete')
-    deleteButton.addEventListener('click', handleDeleteRateTableGroup, {once: true})
+    // let deleteButton = newRateTableGroup.querySelector('.ratetable-delete')
+    // deleteButton.addEventListener('click', handleDeleteRateTableGroup, {once: true})
 
     function handleDeleteRateTableGroup(e){
         let datasetID = e.target.closest('.ratetable-group').dataset.id
@@ -137,9 +142,19 @@ function updateDatasetFromHTML(datasetID){
     targetDataset.rates.rc_expo = rateTableGroup.querySelector('input[name="rc_expo"]').value
     
     targetDataset.rates.max = getRateTableGroupMaxAngularVel(datasetID)
-    rateTableGroup.querySelector('.maxAngularVel').textContent = targetDataset.rates.max
+    rateTableGroup.querySelector('.maxAngularVel').value = targetDataset.rates.max
 
     targetDataset.data = generateCurve(targetDataset.label.toLowerCase(), targetDataset.rates.rate, targetDataset.rates.rc_rate, targetDataset.rates.rc_expo)
+
+    // todo: implement mse error
+    let totalDeltaElement = document.querySelector(`.totalDelta`)
+    
+    try {
+        totalDeltaElement.value = calculateMSError(currentData.datasets[0].data, currentData.datasets[targetDataset.id].data).toFixed(2);
+    } catch (error) {
+        totalDeltaElement.value = 0;
+    }
+
 
     rateChart.update()
 
@@ -178,10 +193,29 @@ let toggleActiveRow = (datasetID) => {
 
 function sliderMonitor(e){
     
-    if(e.target.classList.contains('rateTypeSelector')) return
+    if(e.target.classList.contains('ratetype-selector')) return
+
+    let rateTableGroup;
 
     if(e.type == 'focusin'){
-        toggleActiveRow(e.target.closest('.ratetable-group').dataset.id)
+
+        console.log('focusin: ', e)
+        rateTableGroup = e.target.closest('.ratetable-group')
+        toggleActiveRow(rateTableGroup.dataset.id)
+
+        let currentFocusElement = rateTableGroup.getAttribute('current-focus-target') | undefined;
+        if(currentFocusElement){
+            rateTableGroup.removeAttribute('inputmode')
+        }
+        rateTableGroup.setAttribute('current-focus-target', e.target.name)
+    } else if(e.type == 'focusout'){
+
+        console.log('focusout: ', e)
+        rateTableGroup = e.target.closest('.ratetable-group')
+        rateTableGroup.removeAttribute('current-focus-target', e.target.name)
+        
+    } else {
+        console.log('different: ', e)
     }
 
     let slider = document.getElementById('rateSlider')
@@ -218,8 +252,34 @@ function deleteRateTableGroup(datasetID){
     
 }
 
+function convertRates(event) {
+    if(event.target.classList.contains('convert-btn')){
+        if(event.target.classList.contains('rainbow')){
+            return
+        }
+        if(event.target.classList.contains('legacy')){
+            if(event.target.classList.contains('new-layout')){
+                event = {
+                    target: {
+                        closest: function() {
+                            return {
+                                dataset: {
+                                    id: 0
+                                }
+                            };
+                        }
+                    }
+                };
+            }
+            LegacyConvertRates(event)
+        } else {
+                LocalConvertRates(event)
+            }
+        }
 
-function convertRates(event){
+}
+
+function LegacyConvertRates(event){
 
     document.querySelectorAll('.convert-btn').forEach(btn => btn.classList.add('rainbow'))
 
@@ -261,7 +321,7 @@ function convertRates(event){
                                 rateTableGroup.querySelector('input[name="rate"]').value = data.tgt_rate
                                 rateTableGroup.querySelector('input[name="rc_rate"]').value = data.tgt_rc_rate
                                 rateTableGroup.querySelector('input[name="rc_expo"]').value = data.tgt_rc_expo
-                                rateTableGroup.querySelector('.convert-btn').classList.remove('rainbow')
+                                rateTableGroup.querySelector('.convert-btn')?.classList.remove('rainbow')
                                 updateDatasetFromHTML(dataset.id)
                             }
                         })
@@ -270,9 +330,83 @@ function convertRates(event){
         } else {
             setTimeout(() => {
                 document.querySelectorAll('.convert-btn').forEach(btn => btn.classList.remove('rainbow'))
-                dataLayer.push(apiTrackingObject)
+                dataLayer?.push(apiTrackingObject)
             }, 1000);
         }
     
     })
+}
+
+
+async function LocalConvertRates(event){
+
+    const convertBtn = document.getElementById('convert-btn');
+    
+    convertBtn.classList.add('rainbow');
+
+    // target the first dataset using the new ui
+    let datasetID = 0
+    let sourceDataset = currentData.datasets.find(dataset => dataset.id == datasetID)
+
+    let srcRateType = sourceDataset.label.toLowerCase()
+    let rate = sourceDataset.rates.rate
+    let rc_rate = sourceDataset.rates.rc_rate
+    let rc_expo = sourceDataset.rates.rc_expo
+
+    let apiTrackingObject = {
+        event: "convert_rates_local",
+        srcRateType: srcRateType,
+        rate: rate,
+        rc_rate: rc_rate,
+        rc_expo: rc_expo,
+        tgtRateTypes: []
+    }
+
+    let targetRateTypes = new Set(currentData.datasets.map(dataset => dataset.label.toLowerCase()))
+
+    let fitDataPromises = [];
+
+    for(let tgtRateType of targetRateTypes){
+        if(tgtRateType !== srcRateType){
+            apiTrackingObject.tgtRateTypes.push(tgtRateType)
+
+            const gradientDescentWorker = new Worker('./js/gradientDescentWorker.js');
+            console.log(`tgtRateType - ${tgtRateType}`)
+
+            const fitDataPromise = new Promise((resolve, reject) => {
+
+                gradientDescentWorker.onmessage = function(e) {
+                    if(e.data.request_status === "failed"){
+                        reject(e);
+                    }
+                    resolve(e);
+                    gradientDescentWorker.terminate();
+                };
+
+                gradientDescentWorker.postMessage({...apiTrackingObject, tgtRateType});
+            });
+
+            fitDataPromise.then((e)=>{
+                const targetDataSet = currentData.datasets.find(dataset => dataset.label.toLowerCase() == e.data.tgtRateType);
+                let rateTableGroup = document.querySelector(`.ratetable-group[data-id="${targetDataSet.id}"]`);
+
+                rateTableGroup.querySelector('input[name="rate"]').value = e.data.tgt_rate
+                rateTableGroup.querySelector('input[name="rc_rate"]').value = e.data.tgt_rc_rate
+                rateTableGroup.querySelector('input[name="rc_expo"]').value = e.data.tgt_rc_expo
+
+                updateDatasetFromHTML(targetDataSet.id);
+
+            }).catch((e) => {
+                console.log(`invalid api request - ${e}`)
+            })
+
+            fitDataPromises.push(fitDataPromise)
+        }
+    }
+    
+    await Promise.all(fitDataPromises);
+    convertBtn.classList.remove('rainbow');
+    
+    dataLayer.push(apiTrackingObject);
+
 }
