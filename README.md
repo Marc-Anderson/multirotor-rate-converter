@@ -5,100 +5,90 @@ See it live [here](https://rates.metamarc.com/)
 
 
 ## Purpose
-provide a place where multirotor users can convert flight controller rates from one type to another
-
+The Multirotor Rate Converter aims to provide multirotor enthusiasts with a tool to convert flight controller (FC) rates from one type to another.
 
 ## How It Works
-enter your rates or rates of popular pilots to visually compare or automatically convert rates to your preferred fc software
+Users can input their own rates or the rates of popular pilots to visually compare them. Additionally, the tool allows for the automatic conversion of these rates to a format of another flight controller software.
 
+## Frequently Asked Questions (FAQ)
 
-## FAQ
-* How do you know the rates are accurate? The rate calculations come directly from the [betaflight configurator](https://github.com/betaflight/betaflight-configurator) repo. I simply borrowed their rate calculation file and gave it a new place to show off its curves. 
-* How does the automatic rate conversion work? The api takes 10 datapoints of the source curve and uses non-linear least squares to find the best fit of the rate type you want.
+### How do you ensure the rates are accurate?
+The rate calculations are derived directly from the [Betaflight Configurator](https://github.com/betaflight/betaflight-configurator) repository. This tool simply borrows their rate calculation file and gaves it a new place to show off its curves.
 
+### How does the automatic rate conversion work?
+There are two methods for rate calculation:
+1. **API-Based Calculation:** This method takes 10 data points from the source curve and uses non-linear least squares to find the best fit for the desired rate type.
+2. **Local Gradient Descent:** This method uses 500 data points and Mean Squared Error (MSE) to identify the best fit.
+
+### Why are there two calculation methods?
+The on-device gradient descent calculation was developed as a proof of concept to potentially eliminate monthly server costs. However, the API-based calculation is faster and the max rate is generally more accurate to the input.
 
 ## Feature Ideas
- - themes
- - incorporate the throttle slider
-
+- Implementation of different themes.
+- Integration of a throttle slider.
 
 ## Todo
-- [ ] mobile
-- [ ] tests
-
+- [ ] Implement tests for all functionalities.
 
 ## Resources
 
-
 ### Special Thanks To These Wonderful Projects
-* [betaflight configurator](https://github.com/betaflight/betaflight-configurator)
-* [rotor pirates](https://github.com/apocolipse/RotorPirates)
-* [rate fitter](https://github.com/yhgillet/rateconv/tree/8e9cc846f63971820bb77f1069e79271c08e2ff2)
-* [rate tuner](https://github.com/Dadibom/Rate-Tuner/tree/de57d61d8307b29d8ac6a9a926aa719ddf3d605b)
-* [desmos](https://www.desmos.com/calculator/r5pkxlxhtb?fbclid=IwAR0DfRnnfMaYSUXF5g7moEjfHlwCOi84iq9WMOUaOhVQwauY-ggFDh-KpSY)
+- [Betaflight Configurator](https://github.com/betaflight/betaflight-configurator)
+- [Rotor Pirates](https://github.com/apocolipse/RotorPirates)
+- [Rate Fitter](https://github.com/yhgillet/rateconv/tree/8e9cc846f63971820bb77f1069e79271c08e2ff2)
+- [Rate Tuner](https://github.com/Dadibom/Rate-Tuner/tree/de57d61d8307b29d8ac6a9a926aa719ddf3d605b)
+- [Desmos](https://www.desmos.com/calculator/r5pkxlxhtb?fbclid=IwAR0DfRnnfMaYSUXF5g7moEjfHlwCOi84iq9WMOUaOhVQwauY-ggFDh-KpSY)
+
+## Notes
+- to switch between local rate calculation and using the api, add or remove both the `legacy` and `new-layout` classes on the `convert-btn`
+
+# Local Development
+
+## Python Flask Development Instructions
+
+### Prerequisites
+- python3.8
+- virtual environment (`venv`)
+- pip
 
 
+### Setup
 
-
-## Local Development
-
-
-### Flask Build Instructions
-
-
-#### Prerequisites
-* python
-* venv
-* pip
-
-
-#### Setup
-
-1. navigate to `/multirotor-rate-converter/`
-
-2. create a python virtual environment
-```
+1. navigate to the `/multirotor-rate-converter/` directory.
+2. create a python virtual environment:
+```bash
 python3 -m venv .venv
+# on macos, you may need to use:
+# /usr/bin/python3 -m venv .venv
 ```
-
-3. activate the virtual environment
-```
+3. activate the virtual environment:
+```bash
 source .venv/bin/activate
 ```
-
-4. install the packages in requirements.txt
-```
+4. install the required packages:
+```bash
 pip install -r requirements.txt
 ```
-
-5. launch the application
-```
+5. launch the application:
+```bash
 python3 wsgi.py
 ```
+6. access the application in your browser at `localhost:3000`.
 
-6. visit it in your browser at `localhost:3000`
-
-
-NOTE: sometimes the browser likes to cache files so either use an incognito window or hard refresh every once in a while
+**Note:** to avoid issues with browser caching, use an incognito window or perform a hard refresh occasionally.
 
 
 
-### Docker Build Instructions
+## Docker Build Development Instructions
 
+### Prerequisites
+- docker
 
-#### Prerequisites
-* docker
+### Setup
 
-
-#### Setup
-
-1. navigate to `/multirotor-rate-converter/`
-
-
-2. create a docker_volumes folder within the project directory
-
-
-3. create directories within the docker_volumes folder for both containers logs and gunicorn socket defined in the .env.dev file
+1. navigate to the `/multirotor-rate-converter/` directory.
+2. create a `docker_volumes` folder within the project directory.
+3. create directories within the `docker_volumes` folder for logs and the gunicorn socket as defined in the `.env.dev` file:
     * you must manually create these on the host or it will be owned by root and containers will not be able to access them
     * if you change them, these should match exactly whats found in the env.dev file
     * if you run into permission issues, remove the docker_volumes folder from the host entirely and recreate the folders
@@ -107,34 +97,24 @@ mkdir -p ./docker_volumes/var/log/nginx-docker
 mkdir -p ./docker_volumes/var/log/gunicorn-docker
 mkdir -p ./docker_volumes/run/gunicorn-docker
 ```
-
-
-4. set permissions for the docker_volumes folder and everything inside
+4. set permissions for the `docker_volumes` folder and its contents:
 ```bash
 chmod 770 -R ./docker_volumes/
 ```
-
-
-5. build and run
+5. build and run the docker containers:
 ```bash
 docker compose --env-file ./.env.dev up -d --build
 ```
-
-
-6. visit it in your browser at `127.0.0.1:3000`
-
-
-7. tear it down
+6. access the application in your browser at `127.0.0.1:3000`.
+7. to stop the containers:
 ```bash
 docker compose --env-file ./.env.dev down
 ```
 
+### Docker Development Quick Setup Scripts
 
-
-#### Docker Development Quick Setup Scripts
-
-**linux**  
-automatically create required folders with correct permissions extracted from the env.dev file
+#### Linux:
+Automatically create the required folders with the correct permissions extracted from the `.env.dev` file:
 ```bash
 # linux - extract the log paths from the .env.dev file and execute them as environment variables
 while IFS='=' read -r key value; do export "$key=$value";  done < <(grep 'PATH=' .env.dev | awk -F 'PATH=' '{print $1 "PATH_HOST="$2}' | sed 's/ //g')
@@ -142,8 +122,7 @@ while IFS='=' read -r key value; do export "$key=$value";  done < <(grep 'PATH='
 mkdir -p $DOC_NGINX_LOG_PATH_HOST && mkdir -p $DOC_GUN_LOG_PATH_HOST && mkdir -p $DOC_GUN_SOCK_PATH_HOST && chmod 770 -R ./docker_volumes/
 ```
 
-<!-- WORKS BUT NOT TESTED
-**windows**  
+#### Windows(WORKS BUT NOT THROUGHLY TESTED)  
 automatically create required folders with correct permissions extracted from the env.dev file
 ```bash
 # windows - extract the log paths from the .env.dev file and execute them as environment variables
@@ -151,84 +130,68 @@ for /f "tokens=1,* delims==" %i in ('findstr "PATH=" .env.dev') do @set "%i_HOST
 # windows - create the folder required directories from the environment variables
 mkdir %DOC_NGINX_LOG_PATH_HOST:/=\% %DOC_GUN_LOG_PATH_HOST:/=\% %DOC_GUN_SOCK_PATH_HOST:/=\%
 ```
--->
 
 
 
+# Production Setup
 
-## Production Setup(Docker)
+## Static On Device Rate Calculation
 
+1. copy the contents of the `app/static` folder to your web server
+2. make sure the button with the class `convert-btn` in the `index.html` file does not have the classes `legacy` or `new-layout`
+
+
+## Docker Build Production Instructions
 
 ### Todo
-- [ ] add ssl cert
-
+- [ ] add ssl certificate
 
 ### Prerequisites
-* docker
-* ufw(recommended)
-* fail2ban(recommended)
+- docker
+- ufw (recommended)
+- fail2ban (recommended)
 
 ### Comments
-
-* you must manually create directories on the host machine or they will be owned by root and containers will not be able to access them
-* if you change them values below, they should match exactly whats found in the env file you are using
-
+- you must manually create directories on the host machine or they will be owned by root and containers will not be able to access them.
+- ensure directory paths match the `.env` file configuration you are using.
 
 ### Docker Deployment Instructions
 
-
-1. navigate to `/multirotor-rate-converter/`
-
-
-2. Create a local docker container user group for sharing the docker volumes
+1. navigate to the `/multirotor-rate-converter/` directory.
+2. create a local docker container user group for sharing volumes:
 ```bash
 groupadd -g 1700 -o docker_grp
 ```
-
-
-3. Create local gunicorn and nginx users and add nginx user to docker group
-    * disable any shell for these users so they cant do anything if compromised
+3. create local gunicorn and nginx users, adding the nginx user to the docker group, and disable any shell for security:
 ```bash
 useradd --shell /usr/sbin/nologin --uid 1802 doc_gunicorn
 useradd --shell /usr/sbin/nologin --uid 1801 doc_nginx && usermod -aG docker_grp doc_nginx
 ```
-
-
-2. create nginx/gunicorn log directories on the host and set the correct permissions matching the values in .env.prod
+4. create nginx/gunicorn log directories and set the correct permissions matching the `.env.prod` file:
 ```bash
 mkdir -p /var/log/nginx-docker && chown 101:doc_nginx /var/log/nginx-docker && chmod 750 -R /var/log/nginx-docker
 mkdir -p /var/log/gunicorn-docker && chown doc_gunicorn:root /var/log/gunicorn-docker && chmod 750 -R /var/log/gunicorn-docker
 ```
 
-
-3. create gunicorn socket directory and set the correct permissions matching the values in .env.prod
+5. create gunicorn socket directory and set the correct permissions matching the `.env.prod` file:
 ```bash
 mkdir -p /run/gunicorn-docker && chown doc_gunicorn:docker_grp /run/gunicorn-docker && chmod 770 -R /run/gunicorn-docker
 ```
 
-
-4. build and run
+6. build and run the docker containers:
 ```bash
 docker compose --env-file ./.env.prod up -d --build
 ```
-
-
-5. visit it in your browser at the ip address of your server
-
-
-6. tear it down
+7. access the application in your browser using the server's ip address.
+8. to stop the containers:
 ```bash
 docker compose --env-file ./.env.prod down
 ```
-
-
-7. optional: configure fail2ban with new nginx log location
+9. optionally, configure fail2ban with the new nginx log location:
 ```bash
 # copy the default fail2ban config file to a jail.local file
 cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
-```
 
-```bash
 # add a reference to the new nginx log location for our docker container to the bottom of the file
 nano /etc/fail2ban/jail.local
 
@@ -239,8 +202,7 @@ port    = http,https
 logpath = /var/log/nginx-docker/*log
 ```
 
-
-8. optional: configure logrotate on the host to prevent logs from growing out of control
+10. optionally, configure log rotation on the host to manage log sizes:
 ```bash
 # create a new logrotate file for gunicorn and add a log configuration
 nano /etc/logrotate.d/gunicorn
@@ -266,7 +228,7 @@ nano /etc/logrotate.d/gunicorn
 ```
 
 
-#### Docker Production Quick Setup Scripts
+#### Docker Build Production Quick Setup Scripts
 
 automatically create required folders with correct permissions extracted from the env.prod file
 ```bash
