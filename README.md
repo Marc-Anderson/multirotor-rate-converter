@@ -145,6 +145,9 @@ mkdir %DOC_NGINX_LOG_PATH_HOST:/=\% %DOC_GUN_LOG_PATH_HOST:/=\% %DOC_GUN_SOCK_PA
 
 ### Todo
 - [ ] add ssl certificate
+    * https://forums.docker.com/t/docker-compose-letsencrypt-nginx-certbot-expectations/140052
+    * https://community.letsencrypt.org/t/letsencrypt-certbot-configuration-secuity/213973
+    * https://phoenixnap.com/kb/letsencrypt-docker
 
 ### Prerequisites
 - docker
