@@ -39,164 +39,349 @@ The on-device gradient descent calculation was developed as a proof of concept t
 - [Rate Tuner](https://github.com/Dadibom/Rate-Tuner/tree/de57d61d8307b29d8ac6a9a926aa719ddf3d605b)
 - [Desmos](https://www.desmos.com/calculator/r5pkxlxhtb?fbclid=IwAR0DfRnnfMaYSUXF5g7moEjfHlwCOi84iq9WMOUaOhVQwauY-ggFDh-KpSY)
 
-## Notes
-- to switch between local rate calculation and using the api, add or remove both the `legacy` and `new-layout` classes on the `convert-btn`
 
-# Local Development
+# Development: Python Flask
 
-## Python Flask Development Instructions
+for local testing without docker, you can run the project and serve the web app using just python and flask
 
-### Prerequisites
+## Prerequisites
 - python3.8
 - virtual environment (`venv`)
 - pip
 
 
-### Setup
+## Setup
 
-1. navigate to the `/multirotor-rate-converter/` directory.
-2. create a python virtual environment:
+#### 1. download this repo to the host or clone the repository
+
+```sh
+git clone https://github.com/Marc-Anderson/multirotor-rate-converter.git
+```
+
+#### 2. navigate to the project directory
+```sh
+cd multirotor-rate-converter
+```
+
+#### 3. create a python virtual environment:
 ```bash
 python3 -m venv .venv
-# on macos, you may need to use:
-# /usr/bin/python3 -m venv .venv
 ```
-3. activate the virtual environment:
+
+#### 4. activate the virtual environment:
 ```bash
 source .venv/bin/activate
 ```
-4. install the required packages:
+
+#### 5. install the required packages:
 ```bash
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 ```
-5. launch the application:
+
+#### 6. launch the application:
 ```bash
 python3 wsgi.py
 ```
-6. access the application in your browser at `localhost:3000`.
+
+#### 7. visit the application in your browser at `localhost:3000`.
 
 **Note:** to avoid issues with browser caching, use an incognito window or perform a hard refresh occasionally.
 
 
 
-## Docker Build Development Instructions
+# Development: Docker Compose
 
-### Prerequisites
+build an image and spin up a container containing the web app using docker compose. these development instructions will keep all of the files created in project folder
+
+## Prerequisites
+- linux, wsl2 in windows or multipass on macos
 - docker
+- non-root user
+- git(recommeded)
 
-### Setup
+## Setup
 
-1. navigate to the `/multirotor-rate-converter/` directory.
-2. create a `docker_volumes` folder within the project directory.
-3. create directories within the `docker_volumes` folder for logs and the gunicorn socket as defined in the `.env.dev` file:
-    * you must manually create these on the host or it will be owned by root and containers will not be able to access them
-    * if you change them, these should match exactly whats found in the env.dev file
-    * if you run into permission issues, remove the docker_volumes folder from the host entirely and recreate the folders
-```bash
+
+#### 1. download this repo to the host or clone the repository
+
+if you dont have git installed you can visit [this link to the repo](https://github.com/Marc-Anderson/multirotor-rate-converter.git) and download the zip file by clicking `code` > `download zip`
+
+```sh
+git clone https://github.com/Marc-Anderson/multirotor-rate-converter.git
+```
+
+#### 2. navigate to the project directory
+```sh
+cd multirotor-rate-converter
+```
+
+#### 3. automatically create folder structure with permissions using a setup script
+
+```sh
+# make the setup file executable and run it
+sudo chmod +x ./setup.sh
+./setup.sh
+```
+
+<details>
+
+<summary>click to expand: instructions for manually creating folder structure with required permissions instead</summary>
+<br />
+
+#### manually create folder structure
+
+some users prefer not to run setup scripts so the below steps walk you through the manual creation of the required folder structure 
+
+#### 1. create a `docker_volumes` folder within the project directory
+```sh
+mkdir docker_volumes
+```
+
+#### 2. create required directories within the `docker_volumes` folder
+
+you must create these logs and gunicorn socket folders as defined in the `.env` file if you dont create these on the host they will be owned by root and containers will not be able to access them
+
+```sh
 mkdir -p ./docker_volumes/var/log/nginx-docker
 mkdir -p ./docker_volumes/var/log/gunicorn-docker
 mkdir -p ./docker_volumes/run/gunicorn-docker
 ```
-4. set permissions for the `docker_volumes` folder and its contents:
+
+#### 4. set permissions for the `docker_volumes` folder and its contents:
 ```bash
 chmod 770 -R ./docker_volumes/
 ```
-5. build and run the docker containers:
+
+</details>
+
+
+#### 4. build and run the docker containers using docker compose:
 ```bash
 docker compose --env-file ./.env.dev up -d --build
 ```
-6. access the application in your browser at `127.0.0.1:3000`.
-7. to stop the containers:
+
+#### 5. access the application in your browser at the ip address of your host, port `3000` (e.g. `127.0.0.1:3000`).
+
+#### 6. to stop the containers:
 ```bash
 docker compose --env-file ./.env.dev down
 ```
 
-### Docker Development Quick Setup Scripts
-
-#### Linux:
-Automatically create the required folders with the correct permissions extracted from the `.env.dev` file:
-```bash
-# linux - extract the log paths from the .env.dev file and execute them as environment variables
-while IFS='=' read -r key value; do export "$key=$value";  done < <(grep 'PATH=' .env.dev | awk -F 'PATH=' '{print $1 "PATH_HOST="$2}' | sed 's/ //g')
-# linux - create the folder required directories from the environment variables
-mkdir -p $DOC_NGINX_LOG_PATH_HOST && mkdir -p $DOC_GUN_LOG_PATH_HOST && mkdir -p $DOC_GUN_SOCK_PATH_HOST && chmod 770 -R ./docker_volumes/
-```
-
-#### Windows(WORKS BUT NOT THROUGHLY TESTED)  
-automatically create required folders with correct permissions extracted from the env.dev file
-```bash
-# windows - extract the log paths from the .env.dev file and execute them as environment variables
-for /f "tokens=1,* delims==" %i in ('findstr "PATH=" .env.dev') do @set "%i_HOST=%j" && set %i_HOST=%j
-# windows - create the folder required directories from the environment variables
-mkdir %DOC_NGINX_LOG_PATH_HOST:/=\% %DOC_GUN_LOG_PATH_HOST:/=\% %DOC_GUN_SOCK_PATH_HOST:/=\%
-```
+# Production: Docker Compose
 
 
+## Prerequisites
+- linux vps
+- docker
+- ufw
+- fail2ban (recommended)
+- non-root user
+- ssh public key for user
+- a domain name
+- ssl certificate(domain key, and private key)
 
-# Production Setup
 
-## Static On Device Rate Calculation
+### ssl certificates
 
-1. copy the contents of the `app/static` folder to your web server
-2. make sure the button with the class `convert-btn` in the `index.html` file does not have the classes `legacy` or `new-layout`
-
-
-## Docker Build Production Instructions
-
-### Todo
-- [ ] add ssl certificate
+ssl certificates and renewal is an involved process. you may be able to deploy and manage them with certbot or caddy but for this deployment we use ssl certificate files which do not renew automatically
+* you can download your certificates from your dns provider which expire every 30-90 days
+* place these certificates in `./ssl_certificates/yourdomain.com`
+* you will need to upload new certificates once per month and restart the containers for nginx to recognize them
+* alternative options:
     * https://forums.docker.com/t/docker-compose-letsencrypt-nginx-certbot-expectations/140052
     * https://community.letsencrypt.org/t/letsencrypt-certbot-configuration-secuity/213973
     * https://phoenixnap.com/kb/letsencrypt-docker
 
-### Prerequisites
-- docker
-- ufw (recommended)
-- fail2ban (recommended)
+<details>
 
-### Comments
-- you must manually create directories on the host machine or they will be owned by root and containers will not be able to access them.
-- ensure directory paths match the `.env` file configuration you are using.
+<summary>click to expand: overview of server config</summary>
+<br />
 
-### Docker Deployment Instructions
+#### configure server with non-root user, ufw, fail2ban and docker
 
-1. navigate to the `/multirotor-rate-converter/` directory.
-2. create a local docker container user group for sharing volumes:
-```bash
-groupadd -g 1700 -o docker_grp
+this guide isnt going to cover this entirely but here is a brief overview with commands
+
+```sh
+# 1. create a new droplet on digitalocean
+# 2. select the marketplace images > docker
+# 3. choose the smallest possible vps
+# 4. log into the console as root from the website ui
+# 5. continue with the below steps
+
+# define a non-root username and ssh public key
+# default password will be your username
+USERNAME=docker_user
+SSH_KEY_NAME="computer"
+SSH_PUBLIC_KEY=""
+# EXAMPLE_SSH_PUBLIC_KEY="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBZzHpY7r6bRpN2u/9eLsPYkbZK8ZwCff9yM7qXzjV5b fakeuser@example.com"
+TEMP_PASSWORD=$USERNAME
+
+# make sure you provided a public key
+if [ -z "$SSH_PUBLIC_KEY" ]; then
+    echo "Error: SSH_PUBLIC_KEY is empty."
+    exit 1
+fi
+
+# update package list and install required tools
+sudo apt-get update && sudo apt-get install -y ufw git fail2ban
+
+# disable firewall
+sudo ufw disable
+# reset firewall to remove all rules
+sudo echo "y" | sudo ufw reset
+# allow but limit ssh
+sudo ufw limit 22/tcp
+# re-enable firewall
+sudo echo "y" | sudo ufw enable
+# confirm firewall status for JUST ssh
+sudo ufw status
+
+# create user and add them to the sudo group
+useradd --create-home --shell /bin/bash --groups sudo "${USERNAME}"
+
+# add the user to the docker group if it exists
+if command -v docker >/dev/null 2>&1; then usermod -aG docker "${USERNAME}"; fi
+
+# give the user a default password
+echo "${USERNAME}:${TEMP_PASSWORD}" | chpasswd
+
+# force password reset on next login
+# password defaults to username
+chage --lastday 0 "${USERNAME}"
+
+# create ssh directory for new user
+home_directory="$(eval echo ~${USERNAME})"
+mkdir --parents "${home_directory}/.ssh"
+
+# add specified public key to authorized keys for new user with the key description as a comment
+echo "# ${SSH_KEY_NAME}" >> "${home_directory}/.ssh/authorized_keys"
+echo $SSH_PUBLIC_KEY >> "${home_directory}/.ssh/authorized_keys"
+
+# update the permissions of the ssh folder and files
+chmod 0700 "${home_directory}/.ssh"
+chmod 0600 "${home_directory}/.ssh/authorized_keys"
+chown --recursive "${USERNAME}":"${USERNAME}" "${home_directory}/.ssh"
+
+# switch to the new user
+sudo su - $USERNAME
 ```
-3. create local gunicorn and nginx users, adding the nginx user to the docker group, and disable any shell for security:
-```bash
-useradd --shell /usr/sbin/nologin --uid 1802 doc_gunicorn
-useradd --shell /usr/sbin/nologin --uid 1801 doc_nginx && usermod -aG docker_grp doc_nginx
-```
-4. create nginx/gunicorn log directories and set the correct permissions matching the `.env.prod` file:
-```bash
-mkdir -p /var/log/nginx-docker && chown 101:doc_nginx /var/log/nginx-docker && chmod 750 -R /var/log/nginx-docker
-mkdir -p /var/log/gunicorn-docker && chown doc_gunicorn:root /var/log/gunicorn-docker && chmod 750 -R /var/log/gunicorn-docker
+</details>
+
+## Setup
+
+
+
+#### 1. download this repo to the host or clone the repository
+
+if you dont have git installed you can visit [this link to the repo](https://github.com/Marc-Anderson/multirotor-rate-converter.git) and download the zip file by clicking `code` > `download zip`
+
+```sh
+git clone https://github.com/Marc-Anderson/multirotor-rate-converter.git
 ```
 
-5. create gunicorn socket directory and set the correct permissions matching the `.env.prod` file:
-```bash
-mkdir -p /run/gunicorn-docker && chown doc_gunicorn:docker_grp /run/gunicorn-docker && chmod 770 -R /run/gunicorn-docker
+
+#### 2. navigate to the project directory
+```sh
+cd multirotor-rate-converter
 ```
 
-6. build and run the docker containers:
-```bash
-docker compose --env-file ./.env.prod up -d --build
+
+#### 3. organize your ssl certificates
+
+you should have an domain key, and a private key from your domain registrar. rename both files as below and place them in the new folder, place that folder in the `ssl_certificates` folder
+
+ssl certificates should be organized in their own domains folder. we're only working with one domain right now, but this keeps us organized in case we introduce multiple domains in the future
+
+```sh
+# ./ssl_certificates/example.com/domain.cert.pem
+# ./ssl_certificates/example.com/private.key.pem
 ```
-7. access the application in your browser using the server's ip address.
-8. to stop the containers:
-```bash
-docker compose --env-file ./.env.prod down
+
+
+#### 4. update the `DOC_DOMAIN` value in the `.env.prod` file with your domain name
+
+```sh
+domain_name=example.com
+sed -i "s/^DOC_DOMAIN=.*/DOC_DOMAIN=$domain_name/" .env.prod
 ```
-9. optionally, configure fail2ban with the new nginx log location:
+
+
+#### 5. automatically create folder structure with permissions using a setup script
+
+```sh
+# make the setup file executable and run it
+sudo chmod +x ./setup.sh
+./setup.sh
+```
+
+<details>
+
+<summary>click to expand: instructions for manually configuring the setup instead</summary>
+<br />
+
+#### 6. create a local docker container user group for sharing volumes:
+```bash
+sudo groupadd -g 1700 -o docker_grp
+```
+
+#### 7. create local gunicorn user, add the nginx user to the docker group, and disable any shell for security:
+```bash
+sudo useradd --shell /usr/sbin/nologin --uid 1802 doc_gunicorn
+
+# by default the nginx container user is 101 `systemd-resolve` so thats the user we will use here
+sudo usermod -aG docker_grp systemd-resolve
+```
+
+#### 8. create nginx/gunicorn log directories and set the correct permissions matching the `.env.prod` file:
+```bash
+sudo mkdir -p /var/log/nginx-docker
+sudo chown 101:101 /var/log/nginx-docker
+sudo chmod 750 -R /var/log/nginx-docker
+
+sudo mkdir -p /var/log/gunicorn-docker
+sudo chown doc_gunicorn:root /var/log/gunicorn-docker
+sudo chmod 750 -R /var/log/gunicorn-docker
+```
+
+#### 9. create gunicorn socket directory and set the correct permissions matching the `.env.prod` file:
+```bash
+sudo mkdir -p /run/gunicorn-docker
+sudo chown doc_gunicorn:docker_grp /run/gunicorn-docker
+sudo chmod 770 -R /run/gunicorn-docker
+```
+
+#### 10. create ssl directory directory under your domain `/etc/nginx/ssl/example.com` and copy your ssl certificates to it
+
+```bash
+# update your domain name here
+domain_name=example.com
+
+sudo mkdir -p /etc/nginx/ssl/$domain_name
+
+# can this be root:root?
+sudo chown 101:101 -R /etc/nginx/ssl
+sudo chmod 750 -R /etc/nginx
+
+sudo cp -r ./ssl_certificates/$domain_name/* /etc/nginx/ssl/$domain_name
+# set permissions for certificate and private keys
+
+sudo chown 101:101 /etc/nginx/ssl/$domain_name/domain.cert.pem
+sudo chown 101:101 /etc/nginx/ssl/$domain_name/private.key.pem
+
+sudo chmod 644 /etc/nginx/ssl/$domain_name/domain.cert.pem
+sudo chmod 640 /etc/nginx/ssl/$domain_name/private.key.pem
+```
+
+#### 11. create new fail2ban config with the location of the nginx logs
+
+if you dont do this, fail2ban wont be able to find the logs so it can block people abusing the server
+
 ```bash
 # copy the default fail2ban config file to a jail.local file
-cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
+sudo cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
 
 # add a reference to the new nginx log location for our docker container to the bottom of the file
-nano /etc/fail2ban/jail.local
+sudo nano /etc/fail2ban/jail.local
 
 # new nginx log location for docker container
 [docker-nginx]
@@ -205,10 +390,14 @@ port    = http,https
 logpath = /var/log/nginx-docker/*log
 ```
 
-10. optionally, configure log rotation on the host to manage log sizes:
+
+#### 12. create new logrotate config with the location of the gunicorn
+
+if you dont do this, the logs for gunicorn may grow out of control and take over your servers storage
+
 ```bash
 # create a new logrotate file for gunicorn and add a log configuration
-nano /etc/logrotate.d/gunicorn
+sudo nano /etc/logrotate.d/gunicorn
 
 # logrotate settings for gunicorn
 
@@ -230,40 +419,32 @@ nano /etc/logrotate.d/gunicorn
 }
 ```
 
+</details>
 
-#### Docker Build Production Quick Setup Scripts
 
-automatically create required folders with correct permissions extracted from the env.prod file
-```bash
-# linux - extract the log paths from the .env file and execute them as environment variables
-while IFS='=' read -r key value; do export "$key=$value";  done < <(grep '^DOC_' .env.prod)
-
-# Create the docker container user group for sharing volumes
-groupadd -g $DOC_VOL_GRP_ID -o $DOC_VOL_GRP
-
-# Create the users and add nginx to docker group
-useradd --shell /usr/sbin/nologin --uid $DOC_GUN_UID $DOC_GUN_USR
-useradd --shell /usr/sbin/nologin --uid $DOC_NGINX_UID $DOC_NGINX_USR && usermod -aG $DOC_VOL_GRP $DOC_NGINX_USR
-
-# todo: review this for nginx logs permissions
-# create nginx/gunicorn log directory and set the correct permissions
-mkdir -p $DOC_NGINX_LOG_PATH && chown 101:$DOC_NGINX_USR $DOC_NGINX_LOG_PATH && chmod 750 -R $DOC_NGINX_LOG_PATH
-mkdir -p $DOC_GUN_LOG_PATH && chown $DOC_GUN_USR:root $DOC_GUN_LOG_PATH && chmod 750 -R $DOC_GUN_LOG_PATH
-
-# create gunicorn socket directory and set the correct permissions
-mkdir -p $DOC_GUN_SOCK_PATH && chown $DOC_GUN_USR:$DOC_VOL_GRP $DOC_GUN_SOCK_PATH && chmod 770 -R $DOC_GUN_SOCK_PATH
+#### 6. enable and start fail2ban
+```sh
+sudo systemctl enable fail2ban
+sudo systemctl start fail2ban
 ```
 
-
-configure fail2ban with new nginx log location
-```bash
-# copy the default fail2ban config file and add new nginx log location to the bottom
-cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local && echo -e "\n\n[docker-nginx]\nfilter  = nginx-http-auth\nport    = http,https\nlogpath = /var/log/nginx-docker/*log" >> /etc/fail2ban/jail.local
+#### 7. enable and allow website traffic in ufw
+```sh
+sudo ufw allow 80/tcp && sudo ufw allow 443/tcp
+sudo ufw enable
 ```
 
-
-create a logrotate file on the host to prevent logs from growing out of control
+#### 8. build and run the docker containers
 ```bash
-# this one liner is provided to make the creation easier, you can also create it manually to your preference
-echo -e "# logrotate settings for gunicorn\n\n# rotate gunicorn logs to prevent them from consuming all of the storage\n/var/log/gunicorn/*.log {\n    monthly\n    maxsize 20M\n    # keep n rotated logs\n    rotate 3\n    # add date to archives\n    dateext\n    missingok\n    compress\n    delaycompress\n    # dont rotate if empty\n    notifempty\n    # copy log and remove content instead of deleting it\n    copytrucate\n}" > /etc/logrotate.d/gunicorn
+docker compose --env-file ./.env.prod up -d --build
+# docker compose --env-file ./.env.prod up --build
+```
+
+#### 9. test access the application in your browser using the server's ip address
+
+#### 10. access the application in your browser using your domain name
+
+#### 11. to stop the containers:
+```bash
+docker compose --env-file ./.env.prod down
 ```

@@ -1,4 +1,10 @@
 // global references, some for required from betaflight configurator
+const config = {
+    api_version: 1,
+    ui_version: 2,
+    chart_diff_mode: false,
+    mobile_slider_mode: 1
+}
 
 // bypass various boolean operations
 let useLegacyCurve = false;

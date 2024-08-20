@@ -1,10 +1,34 @@
 FROM nginx:latest
 
+# default to dev environment
+ARG ENVIRONMENT=dev
+
+# set domain name
+ARG DOC_DOMAIN=multirotor-rate-converter
+
+# set location of nginx config
+ARG NGINX_CONF=/etc/nginx/nginx.conf
+
 # copy nginx config
-COPY ./nginx.conf /etc/nginx/nginx.conf
+COPY ./nginx.conf $NGINX_CONF
+
+# remove all of the ssl configurations if the environment is dev
+RUN if [ "$ENVIRONMENT" = "dev" ]; then \
+    sed -i '/listen 80 default_server; # ssl default server/d' $NGINX_CONF && \
+    sed -i '/return 301 https:\/\/$host$request_uri;/d' $NGINX_CONF && \
+    sed -i '/listen 443 ssl;/d' $NGINX_CONF && \
+    sed -i '/listen \[::\]:443 ssl ipv6only=on;/d' $NGINX_CONF && \
+    sed -i '/ssl_certificate \/etc\/nginx\/ssl\/${DOC_DOMAIN}\/domain.cert.pem;/d' $NGINX_CONF && \
+    sed -i '/ssl_certificate_key \/etc\/nginx\/ssl\/${DOC_DOMAIN}\/private.key.pem;/d' $NGINX_CONF && \
+    sed -i '/ssl_protocols TLSv1.3 TLSv1.2;/d' $NGINX_CONF && \
+    sed -i 's/# listen 80 default_server;/listen 80 default_server;/' $NGINX_CONF; \
+fi
+
+# replace ${DOC_DOMAIN} with the DOC_DOMAIN environment variable
+RUN sed -i 's/\${DOC_DOMAIN}/'"$DOC_DOMAIN"'/g' $NGINX_CONF
 
 # copy site content
-COPY ./app/static /usr/share/nginx/html/rates.metamarc.com
+COPY ./app/static /usr/share/nginx/html/$DOC_DOMAIN
 
 # set working directory
 WORKDIR /usr/share/nginx/html
@@ -23,6 +47,13 @@ RUN chown -R $CONT_USER /usr/share/nginx/html && chmod -R 755 /usr/share/nginx/h
         chown -R $CONT_USER /var/cache/nginx && \
         chown -R $CONT_USER /var/log/nginx && \
         chown -R $CONT_USER /etc/nginx/conf.d
+        
+RUN mkdir -p /etc/nginx/ssl/ && \
+        chown -R $CONT_USER /etc/nginx/ssl/ && \
+        chmod -R 755 /etc/nginx/ssl/
+        
+# chown -R $CONT_USER /etc/nginx/ssl/$DOC_DOMAIN/domain.cert.pem && \
+# chown -R $CONT_USER /etc/nginx/ssl/$DOC_DOMAIN/private.key.pem && \
 
 # disable root user entirely
 RUN chsh -s /usr/sbin/nologin
@@ -34,3 +65,4 @@ EXPOSE 80
 
 # docker build -f Dockerfile.frontend -t ratefront:latest .
 # docker run --rm -p 3000:80 ratefront:latest
+# docker run -it --rm -p 3000:80 ratefront:latest /bin/bash
