@@ -13,15 +13,15 @@ Users can input their own rates or the rates of popular pilots to visually compa
 ## Frequently Asked Questions (FAQ)
 
 ### How do you ensure the rates are accurate?
-The rate calculations are derived directly from the [Betaflight Configurator](https://github.com/betaflight/betaflight-configurator) repository. This tool simply borrows their rate calculation file and gaves it a new place to show off its curves.
+The rate calculations are derived directly from the [Betaflight Configurator](https://github.com/betaflight/betaflight-configurator) repository. This tool simply borrows their rate calculation file and gives it a new place to show off its curves.
 
 ### How does the automatic rate conversion work?
 There are two methods for rate calculation:
-1. **API-Based Calculation:** This method takes 10 data points from the source curve and uses non-linear least squares to find the best fit for the desired rate type.
+1. **API-Based Calculation:** This method takes 10 data points from the source curve and uses non-linear least squares to(try to) find the best fit for the desired rate type.
 2. **Local Gradient Descent:** This method uses 500 data points and Mean Squared Error (MSE) to identify the best fit.
 
 ### Why are there two calculation methods?
-The on-device gradient descent calculation was developed as a proof of concept to potentially eliminate monthly server costs. However, the API-based calculation is faster and the max rate is generally more accurate to the input.
+The on-device gradient descent calculation was developed as a proof of concept to potentially reduce monthly server costs. However, the API-based calculation is faster and the max rate is generally more accurate to the input.
 
 ## Feature Ideas
 - Implementation of different themes.
@@ -42,7 +42,7 @@ The on-device gradient descent calculation was developed as a proof of concept t
 
 # Development: Python Flask
 
-for local testing without docker, you can run the project and serve the web app using just python and flask
+For local testing without docker, you can run the project and serve the web app using just python and flask
 
 ## Prerequisites
 - python3.8
@@ -52,7 +52,9 @@ for local testing without docker, you can run the project and serve the web app 
 
 ## Setup
 
-#### 1. download this repo to the host or clone the repository
+#### 1. download or clone this repository
+
+if you dont have git installed you can visit [this link to the repo](https://github.com/Marc-Anderson/multirotor-rate-converter.git) and download the zip file by clicking `code` > `download zip`
 
 ```sh
 git clone https://github.com/Marc-Anderson/multirotor-rate-converter.git
@@ -64,22 +66,22 @@ cd multirotor-rate-converter
 ```
 
 #### 3. create a python virtual environment:
-```bash
+```sh
 python3 -m venv .venv
 ```
 
 #### 4. activate the virtual environment:
-```bash
+```sh
 source .venv/bin/activate
 ```
 
 #### 5. install the required packages:
-```bash
+```sh
 pip3 install -r requirements.txt
 ```
 
 #### 6. launch the application:
-```bash
+```sh
 python3 wsgi.py
 ```
 
@@ -91,7 +93,7 @@ python3 wsgi.py
 
 # Development: Docker Compose
 
-build an image and spin up a container containing the web app using docker compose. these development instructions will keep all of the files created in project folder
+build an image and spin up a container containing the web app using docker compose. these development instructions will keep all files within the project folder
 
 ## Prerequisites
 - linux, wsl2 in windows or multipass on macos
@@ -102,7 +104,7 @@ build an image and spin up a container containing the web app using docker compo
 ## Setup
 
 
-#### 1. download this repo to the host or clone the repository
+#### 1. download or clone this repository
 
 if you dont have git installed you can visit [this link to the repo](https://github.com/Marc-Anderson/multirotor-rate-converter.git) and download the zip file by clicking `code` > `download zip`
 
@@ -118,19 +120,21 @@ cd multirotor-rate-converter
 #### 3. automatically create folder structure with permissions using a setup script
 
 ```sh
-# make the setup file executable and run it
+# make the setup file executable
 sudo chmod +x ./setup.sh
+# run the setup script
 ./setup.sh
+# follow the instructions for `dev`
 ```
 
 <details>
 
-<summary>click to expand: instructions for manually creating folder structure with required permissions instead</summary>
+<summary>Click To Expand: instructions for manually creating folder structure with required permissions instead</summary>
 <br />
 
 #### manually create folder structure
 
-some users prefer not to run setup scripts so the below steps walk you through the manual creation of the required folder structure 
+some users prefer not to run setup scripts for security reasons. the below steps walk you through the manual creation of the required folder structure 
 
 #### 1. create a `docker_volumes` folder within the project directory
 ```sh
@@ -148,7 +152,7 @@ mkdir -p ./docker_volumes/run/gunicorn-docker
 ```
 
 #### 4. set permissions for the `docker_volumes` folder and its contents:
-```bash
+```sh
 chmod 770 -R ./docker_volumes/
 ```
 
@@ -156,14 +160,14 @@ chmod 770 -R ./docker_volumes/
 
 
 #### 4. build and run the docker containers using docker compose:
-```bash
+```sh
 docker compose --env-file ./.env.dev up -d --build
 ```
 
 #### 5. access the application in your browser at the ip address of your host, port `3000` (e.g. `127.0.0.1:3000`).
 
 #### 6. to stop the containers:
-```bash
+```sh
 docker compose --env-file ./.env.dev down
 ```
 
@@ -194,7 +198,7 @@ ssl certificates and renewal is an involved process. you may be able to deploy a
 
 <details>
 
-<summary>click to expand: overview of server config</summary>
+<summary>Click To Expand: overview of server config</summary>
 <br />
 
 #### configure server with non-root user, ufw, fail2ban and docker
@@ -270,8 +274,7 @@ sudo su - $USERNAME
 ## Setup
 
 
-
-#### 1. download this repo to the host or clone the repository
+#### 1. download or clone this repository to the host
 
 if you dont have git installed you can visit [this link to the repo](https://github.com/Marc-Anderson/multirotor-rate-converter.git) and download the zip file by clicking `code` > `download zip`
 
@@ -300,6 +303,8 @@ ssl certificates should be organized in their own domains folder. we're only wor
 
 #### 4. update the `DOC_DOMAIN` value in the `.env.prod` file with your domain name
 
+you can do this manually or replace example.com below with your domain name and use these commands
+
 ```sh
 domain_name=example.com
 sed -i "s/^DOC_DOMAIN=.*/DOC_DOMAIN=$domain_name/" .env.prod
@@ -316,16 +321,16 @@ sudo chmod +x ./setup.sh
 
 <details>
 
-<summary>click to expand: instructions for manually configuring the setup instead</summary>
+<summary>Click To Expand: instructions for manually creating users, folder structure with required permissions instead</summary>
 <br />
 
 #### 6. create a local docker container user group for sharing volumes:
-```bash
+```sh
 sudo groupadd -g 1700 -o docker_grp
 ```
 
 #### 7. create local gunicorn user, add the nginx user to the docker group, and disable any shell for security:
-```bash
+```sh
 sudo useradd --shell /usr/sbin/nologin --uid 1802 doc_gunicorn
 
 # by default the nginx container user is 101 `systemd-resolve` so thats the user we will use here
@@ -333,7 +338,7 @@ sudo usermod -aG docker_grp systemd-resolve
 ```
 
 #### 8. create nginx/gunicorn log directories and set the correct permissions matching the `.env.prod` file:
-```bash
+```sh
 sudo mkdir -p /var/log/nginx-docker
 sudo chown 101:101 /var/log/nginx-docker
 sudo chmod 750 -R /var/log/nginx-docker
@@ -344,7 +349,7 @@ sudo chmod 750 -R /var/log/gunicorn-docker
 ```
 
 #### 9. create gunicorn socket directory and set the correct permissions matching the `.env.prod` file:
-```bash
+```sh
 sudo mkdir -p /run/gunicorn-docker
 sudo chown doc_gunicorn:docker_grp /run/gunicorn-docker
 sudo chmod 770 -R /run/gunicorn-docker
@@ -352,7 +357,9 @@ sudo chmod 770 -R /run/gunicorn-docker
 
 #### 10. create ssl directory directory under your domain `/etc/nginx/ssl/example.com` and copy your ssl certificates to it
 
-```bash
+replace example.com below with your domain name
+
+```sh
 # update your domain name here
 domain_name=example.com
 
@@ -376,7 +383,7 @@ sudo chmod 640 /etc/nginx/ssl/$domain_name/private.key.pem
 
 if you dont do this, fail2ban wont be able to find the logs so it can block people abusing the server
 
-```bash
+```sh
 # copy the default fail2ban config file to a jail.local file
 sudo cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
 
@@ -395,7 +402,7 @@ logpath = /var/log/nginx-docker/*log
 
 if you dont do this, the logs for gunicorn may grow out of control and take over your servers storage
 
-```bash
+```sh
 # create a new logrotate file for gunicorn and add a log configuration
 sudo nano /etc/logrotate.d/gunicorn
 
@@ -435,7 +442,7 @@ sudo ufw enable
 ```
 
 #### 8. build and run the docker containers
-```bash
+```sh
 docker compose --env-file ./.env.prod up -d --build
 # docker compose --env-file ./.env.prod up --build
 ```
@@ -445,6 +452,6 @@ docker compose --env-file ./.env.prod up -d --build
 #### 10. access the application in your browser using your domain name
 
 #### 11. to stop the containers:
-```bash
+```sh
 docker compose --env-file ./.env.prod down
 ```
