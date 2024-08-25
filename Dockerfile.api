@@ -1,0 +1,51 @@
+FROM python:3.9-slim
+
+# set working directory
+WORKDIR /usr/src/app
+
+# RUN python3 -m venv .venv
+# RUN source .env/bin/activate
+
+COPY requirements.txt ./
+
+RUN pip install --no-cache-dir -r requirements.txt && pip install --no-cache-dir gunicorn
+
+COPY . .
+
+# todo: remove redundant static files
+RUN rm -rf /usr/src/app/static
+
+# set user variables
+ARG CONT_USER=gunicorn
+# simple defaults which can be overridden in docker compose
+ARG USER_UID=1000
+
+# Create the user and add to group
+RUN useradd --uid $USER_UID -m $CONT_USER
+
+# set permissions for required folders
+RUN chown -R $CONT_USER /usr/src/app && chmod -R 755 /usr/src/app
+
+# create log directories and apply permissions
+RUN mkdir -p /var/log/gunicorn && chown -R $CONT_USER /var/log/gunicorn && chmod -R 755 /var/log/gunicorn
+
+# disable root user entirely
+RUN chsh -s /usr/sbin/nologin
+
+# activate the user
+USER $CONT_USER
+
+# start gunicorn server with logging
+# api access is managed by nginx so logging is only configured for errors
+# optional: to track access logs add `"--access-logfile=/var/log/gunicorn/access.log"`
+CMD ["gunicorn", "--log-level=info", "--error-logfile=/var/log/gunicorn/error.log", "--bind=unix:/run/gunicorn/gunicorn.sock", "--workers=2", "wsgi:app"]
+
+# if testing the api by itself
+# EXPOSE 3000
+# CMD ["gunicorn", "--bind=0.0.0.0:3000", "--workers=2", "wsgi:app"]
+
+# docker build -f Dockerfile.api -t rateapi:latest .
+# docker run --rm -p 3000:3000 rateapi:latest
+# access api at ipaddress:3000/api
+# you can try reducing the number of workers to 1 on low power systems but it may time out
+# you may also be able to increase the timeout with `"--timeout=60"`

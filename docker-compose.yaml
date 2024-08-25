@@ -1,0 +1,75 @@
+version: "3"
+
+services:
+  rateapi:
+    cap_drop:
+      - ALL
+    build:
+      args:
+        # define the user id for gunicorn in the container
+        - USER_UID=${DOC_GUN_UID}
+      context: .
+      dockerfile: Dockerfile.api
+    volumes:
+      # define the socket location
+      - ${DOC_GUN_SOCK_PATH}:/run/gunicorn
+      # define gunicorn log path
+      - ${DOC_GUN_LOG_PATH}:/var/log/gunicorn
+    security_opt:
+      - "no-new-privileges"
+    restart: unless-stopped
+    logging:
+      # force docker to rotate logs
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: 5
+        tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
+
+  nginx:
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+    build:
+      args:
+        # note: default nginx uid is 101
+        # define group and gid which will have permissions to read socket
+        - ENVIRONMENT=${ENVIRONMENT}
+        - CONT_GRUP=${DOC_VOL_GRP}
+        - CONT_GID=${DOC_VOL_GRP_ID}
+        - DOC_DOMAIN=${DOC_DOMAIN:-multirotor-rate-converter}
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      # these arent being properly loaded
+      # should be 3000:80 for dev and 80:80, 443:443 for prod
+      - "${DOC_PORT_MAP}"
+      - "${DOC_PORT_MAP_SSL:-3000:80}"
+    depends_on:
+      - rateapi
+    volumes:
+      # define the socket location
+      - ${DOC_GUN_SOCK_PATH}:/run/gunicorn
+      # define nginx log path
+      - ${DOC_NGINX_LOG_PATH}:/var/log/nginx
+      # define ssl cert path
+      - ${DOC_CERT_PATH:-./docker_volumes/ssl}:/etc/nginx/ssl
+    security_opt:
+      - "no-new-privileges"
+    restart: unless-stopped
+    logging:
+      # force docker to rotate logs
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: 5
+        tag: "{{.ImageName}}/{{.Name}}/{{.ID}}"
+
+volumes:
+  docker_volumes:
+
+# docker-compose config
+# docker compose --env-file ./.env.dev up --build
+# docker compose --env-file ./.env.dev up -d --build
+# docker compose --env-file ./.env.dev down

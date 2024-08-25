@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html class="no-js legacy" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta value="0" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="description" content="a simple website to visualize the difference and compare rates of flight controller software">
+
+    <title>Rate Converter</title>
+
+    <meta property="og:title" content="multirotor rate converter">
+
+    <link rel="apple-touch-icon" href="./media/logo.svg">
+    <link rel="icon" type="image/x-icon" href="./media/logo.svg">
+    <link rel="icon" href="./media/logo.svg">
+
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;700&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+
+    <link rel="stylesheet" href="./css/main.css?v=001">
+
+    <meta name="theme-color" content="#fafafa">
+
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-5QH8NCZ');</script>
+    <!-- End Google Tag Manager -->
+
+</head>
+<body>
+
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5QH8NCZ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
+    <dialog id="option-dialog" class="option-dialog">
+
+        <div style="font-size: 1.7rem;">
+            Options
+        </div>
+        <hr>
+    
+        <div class="option-grid">
+
+            <span class="option-title">Legacy/Modern Interface</span>
+            <label class="switch">
+                <input id="legacy-switch" class="legacy-switch" type="checkbox">
+                <span class="switchslider round"></span>
+            </label>
+
+            <span class="option-title">Api/Local Fitting</span>
+            <label class="switch">
+                <input id="api-switch" type="checkbox">
+                <span class="switchslider round"></span>
+            </label>
+
+            <span class="option-title">Chart Diff Mode</span>
+            <label class="switch">
+                <input id="diff-switch" type="checkbox">
+                <span class="switchslider round"></span>
+            </label>
+
+            <span class="option-title">Mobile Slider Mode</span>
+            <label class="switch">
+                <input id="slider-mode-switch" type="checkbox">
+                <span class="switchslider round"></span>
+            </label>
+        </div>
+    
+        <form method="dialog" style="text-align: right;">
+            <button>Close</button>
+        </form>
+
+        <div class="project-info-footer">See the full project and report issues on <a href="https://github.com/Marc-Anderson/multirotor-rate-converter" target="_blank">GitHub</a>
+        </div>
+    </dialog>
+
+
+    <!-- #region || site-content -->
+    <div class="site-content">
+
+
+
+
+    
+        <!-- #region || header -->
+        <div class="header-wrapper">
+        <header id="header" class="header">
+            <div class="header-left">
+                <img class="site-icon" src="./media/logo.svg"></img>
+                <span class="divider">|</span>
+                <span class="site-title">Multirotor Rate Converter</span>
+            </div>
+
+            <button id="settings-btn" class="settings-btn">
+                <svg class="icon" width="100%" height="100%" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M29 11.756h-1.526c-0.109-0.295-0.229-0.584-0.361-0.87l1.087-1.076c0.441-0.389 0.717-0.956 0.717-1.587 0-0.545-0.206-1.042-0.545-1.417l0.002 0.002-3.178-3.178c-0.373-0.338-0.87-0.544-1.415-0.544-0.632 0-1.199 0.278-1.587 0.718l-0.002 0.002-1.081 1.080c-0.285-0.131-0.573-0.251-0.868-0.36l0.008-1.526c0.003-0.042 0.005-0.091 0.005-0.141 0-1.128-0.884-2.049-1.997-2.109l-0.005-0h-4.496c-1.119 0.059-2.004 0.981-2.004 2.11 0 0.049 0.002 0.098 0.005 0.147l-0-0.007v1.524c-0.295 0.109-0.584 0.229-0.87 0.361l-1.074-1.084c-0.389-0.443-0.957-0.722-1.589-0.722-0.545 0-1.042 0.206-1.416 0.545l0.002-0.002-3.179 3.179c-0.338 0.373-0.544 0.87-0.544 1.415 0 0.633 0.278 1.2 0.719 1.587l0.002 0.002 1.078 1.079c-0.132 0.287-0.252 0.576-0.362 0.872l-1.525-0.007c-0.042-0.003-0.091-0.005-0.14-0.005-1.128 0-2.050 0.885-2.11 1.998l-0 0.005v4.495c0.059 1.119 0.982 2.005 2.111 2.005 0.049 0 0.098-0.002 0.146-0.005l-0.007 0h1.525c0.109 0.295 0.229 0.584 0.361 0.87l-1.084 1.071c-0.443 0.39-0.721 0.958-0.721 1.592 0 0.545 0.206 1.043 0.545 1.418l-0.002-0.002 3.179 3.178c0.339 0.337 0.806 0.545 1.322 0.545 0.007 0 0.014-0 0.021-0h-0.001c0.653-0.013 1.24-0.287 1.662-0.722l0.001-0.001 1.079-1.079c0.287 0.132 0.577 0.252 0.873 0.362l-0.007 1.524c-0.003 0.042-0.005 0.091-0.005 0.14 0 1.128 0.885 2.050 1.998 2.11l0.005 0h4.496c1.118-0.060 2.003-0.981 2.003-2.109 0-0.050-0.002-0.099-0.005-0.147l0 0.007v-1.526c0.296-0.11 0.585-0.23 0.872-0.362l1.069 1.079c0.423 0.435 1.009 0.709 1.66 0.723l0.002 0h0.002c0.006 0 0.014 0 0.021 0 0.515 0 0.982-0.207 1.323-0.541l3.177-3.177c0.335-0.339 0.541-0.805 0.541-1.32 0-0.009-0-0.018-0-0.028l0 0.001c-0.013-0.651-0.285-1.236-0.718-1.658l-0.001-0-1.080-1.081c0.131-0.285 0.251-0.573 0.36-0.868l1.525 0.007c0.042 0.003 0.090 0.005 0.139 0.005 1.129 0 2.051-0.885 2.11-1.999l0-0.005v-4.495c-0.060-1.119-0.981-2.004-2.11-2.004-0.049 0-0.098 0.002-0.147 0.005l0.007-0zM28.75 17.749l-2.162-0.011c-0.026 0-0.048 0.013-0.074 0.015-0.093 0.009-0.179 0.026-0.261 0.053l0.008-0.002c-0.31 0.068-0.565 0.263-0.711 0.527l-0.003 0.005c-0.048 0.071-0.091 0.152-0.124 0.238l-0.003 0.008c-0.008 0.024-0.027 0.041-0.034 0.066-0.23 0.804-0.527 1.503-0.898 2.155l0.025-0.048c-0.014 0.025-0.013 0.054-0.026 0.080-0.029 0.063-0.053 0.138-0.071 0.215l-0.001 0.008c-0.023 0.072-0.040 0.156-0.048 0.242l-0 0.005c-0.002 0.027-0.004 0.058-0.004 0.089 0 0.209 0.061 0.404 0.166 0.568l-0.003-0.004c0.045 0.088 0.096 0.163 0.154 0.232l-0.001-0.002c0.017 0.019 0.022 0.043 0.040 0.061l1.529 1.531-2.469 2.467-1.516-1.529c-0.020-0.021-0.048-0.027-0.069-0.046-0.060-0.050-0.128-0.096-0.2-0.135l-0.006-0.003c-0.195-0.109-0.429-0.173-0.677-0.173-0.002 0-0.004 0-0.006 0h0c-0.076 0.008-0.145 0.022-0.211 0.040l0.009-0.002c-0.102 0.020-0.192 0.050-0.276 0.089l0.007-0.003c-0.022 0.011-0.047 0.010-0.069 0.022-0.606 0.346-1.307 0.644-2.043 0.859l-0.070 0.017c-0.027 0.008-0.045 0.027-0.071 0.037-0.084 0.033-0.157 0.071-0.224 0.116l0.004-0.003c-0.075 0.041-0.139 0.085-0.199 0.135l0.002-0.002c-0.053 0.052-0.102 0.11-0.145 0.171l-0.003 0.004c-0.103 0.113-0.176 0.254-0.206 0.411l-0.001 0.005c-0.024 0.074-0.043 0.16-0.051 0.249l-0 0.005c-0.002 0.026-0.015 0.048-0.015 0.075l-0.001 2.162h-3.491l0.011-2.156c0-0.028-0.014-0.052-0.016-0.079-0.008-0.092-0.026-0.177-0.052-0.258l0.002 0.008c-0.068-0.313-0.265-0.57-0.531-0.717l-0.006-0.003c-0.070-0.047-0.15-0.089-0.235-0.122l-0.008-0.003c-0.024-0.008-0.042-0.027-0.067-0.034-0.806-0.23-1.507-0.528-2.161-0.9l0.048 0.025c-0.023-0.013-0.050-0.012-0.073-0.023-0.072-0.033-0.156-0.061-0.244-0.079l-0.008-0.001c-0.092-0.029-0.198-0.045-0.308-0.045-0.221 0-0.426 0.066-0.597 0.18l0.004-0.002c-0.076 0.040-0.141 0.084-0.201 0.134l0.002-0.002c-0.021 0.019-0.048 0.025-0.068 0.045l-1.529 1.529-2.47-2.469 1.532-1.516c0.020-0.020 0.027-0.047 0.045-0.067 0.053-0.063 0.101-0.134 0.142-0.209l0.003-0.006c0.037-0.058 0.071-0.124 0.099-0.194l0.003-0.008c0.038-0.14 0.062-0.301 0.066-0.467l0-0.003c-0.008-0.083-0.023-0.158-0.044-0.231l0.002 0.009c-0.020-0.094-0.047-0.177-0.083-0.255l0.003 0.007c-0.012-0.025-0.011-0.052-0.025-0.076-0.347-0.605-0.645-1.305-0.858-2.041l-0.017-0.068c-0.007-0.026-0.027-0.045-0.036-0.070-0.034-0.086-0.072-0.16-0.118-0.228l0.003 0.005c-0.040-0.074-0.084-0.138-0.133-0.197l0.002 0.002c-0.052-0.053-0.109-0.101-0.169-0.144l-0.004-0.003c-0.060-0.051-0.128-0.097-0.2-0.136l-0.006-0.003c-0.057-0.026-0.126-0.049-0.196-0.066l-0.008-0.002c-0.077-0.026-0.167-0.045-0.259-0.053l-0.005-0c-0.026-0.002-0.047-0.015-0.073-0.015l-2.162-0.001v-3.492l2.162 0.011c0.16-0.002 0.311-0.035 0.45-0.092l-0.008 0.003c0.054-0.024 0.099-0.048 0.142-0.075l-0.005 0.003c0.090-0.047 0.168-0.1 0.239-0.16l-0.002 0.001c0.043-0.039 0.082-0.079 0.118-0.122l0.002-0.002c0.056-0.065 0.106-0.138 0.147-0.215l0.003-0.007c0.027-0.047 0.054-0.102 0.076-0.159l0.003-0.008c0.010-0.028 0.029-0.050 0.037-0.078 0.23-0.805 0.527-1.506 0.899-2.159l-0.025 0.048c0.014-0.024 0.013-0.052 0.025-0.076 0.031-0.067 0.057-0.147 0.075-0.229l0.001-0.008c0.020-0.086 0.032-0.185 0.032-0.287 0-0.317-0.113-0.607-0.3-0.834l0.002 0.002c-0.017-0.020-0.023-0.045-0.042-0.063l-1.527-1.529 2.469-2.469 1.518 1.531c0.055 0.045 0.116 0.087 0.18 0.122l0.006 0.003c0.042 0.033 0.089 0.065 0.138 0.094l0.006 0.003c0.16 0.088 0.35 0.142 0.551 0.148l0.002 0 0.005 0.001c0.012 0 0.023-0.009 0.034-0.009 0.186-0.008 0.359-0.056 0.513-0.135l-0.007 0.003c0.022-0.011 0.047-0.006 0.070-0.018 0.605-0.346 1.305-0.645 2.041-0.858l0.069-0.017c0.025-0.007 0.042-0.026 0.066-0.034 0.091-0.035 0.17-0.076 0.243-0.125l-0.004 0.003c0.069-0.038 0.128-0.079 0.183-0.124l-0.002 0.002c0.058-0.056 0.11-0.117 0.156-0.183l0.003-0.004c0.046-0.056 0.089-0.119 0.126-0.185l0.003-0.006c0.028-0.062 0.053-0.135 0.070-0.21l0.002-0.008c0.024-0.073 0.042-0.158 0.050-0.247l0-0.005c0.002-0.027 0.015-0.049 0.015-0.076l0.001-2.162h3.491l-0.011 2.156c-0 0.028 0.014 0.051 0.015 0.079 0.008 0.093 0.026 0.178 0.052 0.26l-0.002-0.008c0.019 0.084 0.044 0.157 0.075 0.227l-0.003-0.008c0.040 0.073 0.082 0.136 0.13 0.194l-0.002-0.002c0.048 0.070 0.101 0.131 0.158 0.187l0 0c0.053 0.044 0.112 0.084 0.174 0.12l0.006 0.003c0.068 0.046 0.147 0.087 0.23 0.119l0.008 0.003c0.025 0.009 0.043 0.028 0.069 0.035 0.804 0.229 1.503 0.527 2.155 0.899l-0.047-0.025c0.022 0.012 0.046 0.007 0.068 0.018 0.147 0.076 0.32 0.124 0.503 0.132l0.003 0c0.012 0 0.024 0.009 0.036 0.009l0.028-0.008c0.193-0.008 0.372-0.059 0.531-0.143l-0.007 0.003c0.059-0.033 0.109-0.066 0.156-0.104l-0.003 0.002c0.068-0.037 0.127-0.076 0.181-0.12l-0.002 0.002 1.531-1.528 2.469 2.47-1.531 1.516c-0.020 0.020-0.027 0.047-0.046 0.068-0.053 0.063-0.101 0.134-0.142 0.209l-0.003 0.006c-0.084 0.123-0.138 0.272-0.148 0.434l-0 0.002c-0.013 0.056-0.020 0.121-0.020 0.187 0 0.097 0.016 0.19 0.045 0.277l-0.002-0.006c0.020 0.094 0.047 0.176 0.083 0.254l-0.003-0.007c0.012 0.025 0.011 0.053 0.025 0.078 0.347 0.604 0.645 1.303 0.858 2.038l0.017 0.068c0.008 0.030 0.028 0.052 0.038 0.080 0.024 0.062 0.049 0.113 0.077 0.163l-0.003-0.006c0.211 0.397 0.619 0.665 1.090 0.674l0.001 0 2.162 0.001zM16 10.75c-2.899 0-5.25 2.351-5.25 5.25s2.351 5.25 5.25 5.25c2.899 0 5.25-2.351 5.25-5.25v0c-0.004-2.898-2.352-5.246-5.25-5.25h-0zM16 18.75c-1.519 0-2.75-1.231-2.75-2.75s1.231-2.75 2.75-2.75c1.519 0 2.75 1.231 2.75 2.75v0c-0.002 1.518-1.232 2.748-2.75 2.75h-0z"></path></svg>
+            </button>
+
+
+            <!-- <label class="switch">
+                <input id="legacy-switch" class="legacy-switch" type="checkbox">
+                <span class="switchslider round"></span>
+            </label> -->
+
+
+
+
+
+
+
+            <!-- <span class="add-group-btn material-icons-outlined" title="insert row" onclick="generateRateTableGroup()">add</span> -->
+        </header>
+        </div>
+        <!-- #endregion || header -->
+
+
+
+
+
+
+
+        <!-- #region || main -->
+        <main id="main" class="main">
+
+
+
+            
+            <!-- #region || chart -->
+            <div id="chart-container" class="chart-container">
+                <canvas id="rateChart" class="rateChart"></canvas>
+            </div>
+            <!-- #endregion || chart -->
+            
+
+
+
+
+            <!-- #region || input area -->
+            <div id="input-container" class="input-container">
+
+                
+                <div class="data-section">
+                    <div id="ratetable" class="ratetable" style="border-collapse: collapse">
+                        <!-- RATE TABLE GROUPS GENERATED HERE -->
+                    </div>
+                </div>
+
+
+                <div class="data-section" style="--ratetable-bg-color: rgba(186, 60, 79, 0.65);">
+                    <div class="data-row convert">
+
+                        <div class="data-cell convert">
+                            <button id="convert-btn" class="convert-btn" onclick="convertRates(event)">Convert</button>
+                        </div>
+
+
+                        <label class="data-cell stats">
+                            <span class="data-cell-title">Total Delta</span>
+                            <input type="number" class="rate-input totalDelta" disabled value="999"></input>
+                        </label>
+                        
+                    </div>
+
+                    <div class="data-row slider-container">
+                        <input type="range" min="1" max="100" class="slider" id="rateSlider">
+                    </div>
+                </div>
+
+            </div>
+            <!-- #endregion || input area -->
+
+
+
+        </main>
+        <!-- #endregion || main -->
+
+
+
+
+
+        <!-- #region || footer -->
+        <!-- <footer id="footer" class="footer"> -->
+            <!-- <div class="project-info-footer"> -->
+                <!-- <small>See the full project on <a href="https://github.com/Marc-Anderson/multirotor-rate-converter">GitHub</a></small> -->
+            <!-- </div> -->
+        <!-- </footer> -->
+        <!-- #endregion || footer -->
+
+
+
+
+        
+    </div>
+    <!-- #endregion || site-content -->
+
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js" integrity="sha512-QSkVNOCYLtj73J4hbmVoOV6KVZuMluZlioC+trLpewV8qMjsWqlIQvkn1KGX2StWvPMdWGBqim1xlC8krl1EKQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <!-- require integration scripts -->
+    <script src="./libraries/js/RateCurve.js"></script>
+    <script src="./js/global.js?v=001"></script>
+    
+    <script src="./js/curveCalculator.js?v=001"></script>
+    <script src="./js/chart.js?v=001"></script>
+    <script src="./js/utilities.js?v=001"></script>
+    <script src="./js/main.js?v=001"></script>
+
+
+
+<template id="ratetable-group-template">
+
+
+    <div class="ratetable-group" data-id="">
+
+        <div class="data-row ratetable-typesection">
+
+            <div class="data-cell rate-type">
+                <div class="convert-btn" onclick="convertRates(event)">Convert</div>
+
+                <span class="icon">
+                    <svg fill="#000000" width="100%" height="100%" viewBox="0 0 32 32" id="icon" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                          <style>
+                            .cls-1 {
+                              fill: none;
+                            }
+                          </style>
+                        </defs>
+                        <path fill="rgba(255,255,255,.5)" d="M7,12a5,5,0,1,1,5-5H10a3,3,0,1,0-3,3Z"/>
+                        <path fill="rgba(255,255,255,.5)" d="M25,12V10a3,3,0,1,0-3-3H20a5,5,0,1,1,5,5Z"/>
+                        <path fill="rgba(255,255,255,.5)" d="M7,30A5,5,0,0,1,7,20v2a3,3,0,1,0,3,3h2A5.0055,5.0055,0,0,1,7,30Z"/>
+                        <path fill="rgba(255,255,255,.5)" d="M25,30a5.0055,5.0055,0,0,1-5-5h2a3,3,0,1,0,3-3V20a5,5,0,0,1,0,10Z"/>
+                        <path fill="rgba(255,255,255,.5)" d="M20,18.5859V13.4141L25.707,7.707a1,1,0,1,0-1.414-1.414l-4.4995,4.5a3.9729,3.9729,0,0,0-7.587,0L7.707,6.293a.9994.9994,0,0,0-1.414,0h0a.9994.9994,0,0,0,0,1.414L12,13.4141v5.1718L6.293,24.293a.9994.9994,0,0,0,0,1.414h0a.9994.9994,0,0,0,1.414,0l4.5-4.5a3.9729,3.9729,0,0,0,7.587,0l4.4995,4.5a1,1,0,0,0,1.414-1.414ZM18,20a2,2,0,0,1-4,0V12a2,2,0,0,1,4,0Z"/>
+                        <rect id="_Transparent_Rectangle_" data-name="&lt;Transparent Rectangle&gt;" class="cls-1" width="32" height="32"/>
+                      </svg>
+                </span>
+
+                <select class="ratetype-selector">
+                    <!-- RATES TYPE LIST GENERATED HERE -->
+                </select>
+
+                <span class="icon right">
+                    <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M12.7071 4.29289C12.3166 3.90237 11.6834 3.90237 11.2929 4.29289L7.29289 8.29289C6.90237 8.68342 6.90237 9.31658 7.29289 9.70711C7.68342 10.0976 8.31658 10.0976 8.70711 9.70711L12 6.41421L15.2929 9.70711C15.6834 10.0976 16.3166 10.0976 16.7071 9.70711C17.0976 9.31658 17.0976 8.68342 16.7071 8.29289L12.7071 4.29289ZM7.29289 15.7071L11.2929 19.7071C11.6834 20.0976 12.3166 20.0976 12.7071 19.7071L16.7071 15.7071C17.0976 15.3166 17.0976 14.6834 16.7071 14.2929C16.3166 13.9024 15.6834 13.9024 15.2929 14.2929L12 17.5858L8.70711 14.2929C8.31658 13.9024 7.68342 13.9024 7.29289 14.2929C6.90237 14.6834 6.90237 15.3166 7.29289 15.7071Z" fill="rgba(0,0,0,.3)"/></svg>
+                </span>
+
+            </div>
+
+            <label class="data-cell max">
+                <span class="data-cell-title">Max Rate</span>
+                <input type="number" class="rate-input maxAngularVel" disabled value="999"></input>
+            </label>
+        </div>
+
+
+        <div class="data-row">
+            <label class="data-cell rc_rate">
+                <span class="data-cell-title rc_rate_title">RC Rate</span>
+                <input type="number" class="rate-input rc_rate_input" name="rc_rate" step="0.01" min="0" max="1">
+            </label>
+            <label class="data-cell rate">
+                <span class="data-cell-title rate_title">Rate</span>
+                <input type="number" class="rate-input rate_input" name="rate" step="0.01" min="0" max="1">
+            </label>
+            <label class="data-cell rc_expo">
+                <span class="data-cell-title expo_title">Expo</span>
+                <input type="number" class="rate-input expo_input" name="rc_expo" step="0.01" min="0" max="1">
+            </label>
+            <label class="data-cell max">
+                <span class="data-cell-title">Max Rate</span>
+                <input type="number" class="rate-input maxAngularVel" disabled value="999"></input>
+            </label>
+        </div>
+
+    </div>
+
+
+</template>
+</body>
+</html>

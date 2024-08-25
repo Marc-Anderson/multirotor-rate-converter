@@ -1,4 +1,10 @@
 // global references, some for required from betaflight configurator
+const config = {
+    api_version: 1,
+    ui_version: 2,
+    chart_diff_mode: false,
+    mobile_slider_mode: 1
+}
 
 // bypass various boolean operations
 let useLegacyCurve = false;
@@ -63,6 +69,8 @@ let rateTableGroupCounter = 0;
 
 
 const colors = [
+    'rgba(0,210,213)',
+    'rgba(127,128,205)',
     'rgba(255,61,2)',
     'rgba(77,209,33)',
     'rgba(41,63,255)',
@@ -70,9 +78,7 @@ const colors = [
     'rgba(177,61,255)',
     'rgba(255,127,0)',
     'rgba(152,78,163)',
-    'rgba(0,210,213)',
     'rgba(175,141,0)',
-    'rgba(127,128,205)',
     'rgba(179,233,0)',
     'rgba(196,46,96)',
     'rgba(166,86,40)',
