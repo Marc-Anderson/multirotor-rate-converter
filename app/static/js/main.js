@@ -476,7 +476,7 @@ async function convertRates ( event ) {
     let rc_expo = sourceDataset.rates.rc_expo
 
     let apiTrackingObject = {
-        event: calculationType == 'local' ? 'convert_rates_local' : 'convert_rates',
+        event: 'convert_rates',
         srcRateType: srcRateType,
         rate: rate,
         rc_rate: rc_rate,
