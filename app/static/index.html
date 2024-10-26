@@ -36,8 +36,9 @@
 
     <dialog id="option-dialog" class="option-dialog">
 
-        <div style="font-size: 1.7rem;">
-            Options
+        <div style="font-size: 1.7rem; display: flex; justify-content: space-between;">
+            <span>Options</span>
+            <a href="https://www.paypal.com/donate/?business=NWFMAUF4GHSQ8&no_recurring=0&item_name=Thanks+for+your+support%21+Donations+help+maintain+this+tool+for+the+fpv+community+and+pilots+around+the+world&currency_code=USD" target="_blank" style="box-shadow: 0px 1px 0px 0px #fff6af; background: linear-gradient(to bottom, #ffec64 5%, #ffab23 100%); background-color: #ffec64; border-radius: 6px; border: 1px solid #ffaa22; display: inline-block; cursor: pointer; color: #333333; font-family: Arial; font-size: 15px; font-weight: bold; padding: 6px 24px; text-decoration: none; text-shadow: 0px 1px 0px #ffee66;" onmouseover="this.style.background='linear-gradient(to bottom, #ffab23 5%, #ffec64 100%)'; this.style.backgroundColor='#ffab23';" onmouseout="this.style.background='linear-gradient(to bottom, #ffec64 5%, #ffab23 100%)'; this.style.backgroundColor='#ffec64';" onmousedown="this.style.position='relative'; this.style.top='1px';" onmouseup="this.style.position=''; this.style.top='';">donate</a>
         </div>
         <hr>
     
@@ -45,25 +46,25 @@
 
             <span class="option-title">Legacy/Modern Interface</span>
             <label class="switch">
-                <input id="legacy-switch" class="legacy-switch" type="checkbox">
+                <input id="legacy-switch" class="legacy-switch feature-switch" type="checkbox">
                 <span class="switchslider round"></span>
             </label>
 
             <span class="option-title">Api/Local Fitting</span>
             <label class="switch">
-                <input id="api-switch" type="checkbox">
+                <input id="api-switch" class=" feature-switch" type="checkbox">
                 <span class="switchslider round"></span>
             </label>
 
             <span class="option-title">Chart Diff Mode</span>
             <label class="switch">
-                <input id="diff-switch" type="checkbox">
+                <input id="diff-switch" class=" feature-switch" type="checkbox">
                 <span class="switchslider round"></span>
             </label>
 
             <span class="option-title">Mobile Slider Mode</span>
             <label class="switch">
-                <input id="slider-mode-switch" type="checkbox">
+                <input id="slider-mode-switch" class=" feature-switch" type="checkbox">
                 <span class="switchslider round"></span>
             </label>
         </div>
