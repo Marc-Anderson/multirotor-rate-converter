@@ -639,6 +639,14 @@ blockquote > p::after {
     flex-direction: column;
     justify-content: space-evenly;
 }
+@media screen and (max-width: 450px) {
+    .input-container {
+        justify-content: start;
+    }
+    .legacy .input-container {
+        justify-content: space-evenly;
+    }
+}
 .input-container input[type=number] {
     text-align: center;
     font-size: 1rem;
@@ -865,7 +873,13 @@ input.rate-input.maxAngularVel[type=number] {
     margin-block: .4rem;
     padding: .1rem;
 }
+@media screen and (max-width: 450px) {
+    .ratetable-group {
+        margin-block: 0;
+    }
+}
 .legacy .ratetable-group {
+    margin-block: .4rem;
     /* border-left: 5px solid var(--ratetable-bg-color); */
 }
 /* .ratetable-group input {} */
@@ -1010,6 +1024,10 @@ input[type=number]::-webkit-outer-spin-button {
     box-sizing: border-box;
 }
 
+
+.data-row.slider-container {
+    padding-block: 1rem;
+}
 
 /* todo: is this really necessary */
 .legacy .data-row.slider-container {

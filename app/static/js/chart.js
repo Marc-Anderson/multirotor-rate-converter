@@ -44,10 +44,13 @@ function generateRateChart(isLegacyUi = false){
         }
     };
     const options = {
-        plugins: [shiftYAxisTicksPlugin],
-        aspectRatio: ()=>{
-            return window.innerWidth < 450 ? 1.4 : 1.7;
+        // plugins: [shiftYAxisTicksPlugin],
+        plugins: {
+            legend: {
+                display: () => { return window.innerWidth < 450 ? false : true },
+            }
         },
+        aspectRatio: ()=>{ return window.innerWidth < 450 ? 1.6: 1.7 },
         layout: {
             padding: {
                 left:  -20
@@ -141,7 +144,8 @@ function generateRateChart(isLegacyUi = false){
     const chartConfig = {
         type: 'line',
         data: currentData,
-        options: isLegacyUi ? legacyOptions : options
+        options: isLegacyUi ? legacyOptions : options,
+        plugins: isLegacyUi ? [] : [shiftYAxisTicksPlugin]
     };
 
     const customChartProperties = {
