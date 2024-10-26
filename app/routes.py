@@ -2,7 +2,7 @@ from flask import request, jsonify
 from app.api.ratefitter import *
 
 def init(app):
-    @app.route("/api", methods=['GET'])
+    @app.route("/api/v1/multirotor-rate-converter", methods=['GET'])
     def fitter():
         try:
             srcRateType = request.args.get("srcRateType", "")[:11]

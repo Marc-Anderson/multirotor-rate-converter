@@ -542,11 +542,14 @@ async function convertRates ( event ) {
 }
 
 function fetchFitDataApi(rateRequestDataObject){
+    let rate_fitter_api_path = "/api/v1/multirotor-rate-converter"
+    let rate_fitter_api_url = window.location.origin + rate_fitter_api_path
+    
     let requestUrl = `srcRateType=${rateRequestDataObject.srcRateType}&rate=${rateRequestDataObject.rate}&rc_rate=${rateRequestDataObject.rc_rate}&rc_expo=${rateRequestDataObject.rc_expo}&tgtRateType=${rateRequestDataObject.tgtRateType}`
     
     return new Promise(async (resolve, reject) => {
         try {
-            const response = await fetch(`${window.location.origin}/api?${requestUrl}`);
+            const response = await fetch(`${rate_fitter_api_url}?${requestUrl}`);
             if (!response.ok || response.status === 503) {
                 throw new Error('rate fitter api unavailable');
             }
