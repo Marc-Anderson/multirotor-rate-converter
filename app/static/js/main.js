@@ -559,8 +559,9 @@ function fetchFitDataApi(rateRequestDataObject){
 }
 
 
+const gradientDescentWorker = new Worker('./js/gradientDescentWorker.js');
+
 function fetchFitDataLocally(rateRequestDataObject) {
-    const gradientDescentWorker = new Worker('./js/gradientDescentWorker.js');
     return new Promise((resolve, reject) => {
         gradientDescentWorker.onmessage = function(e) {
             if(e.data.request_status === "failed"){
@@ -569,7 +570,7 @@ function fetchFitDataLocally(rateRequestDataObject) {
             resolve({ json: () => {
                 return Promise.resolve(e.data)
             }});
-            gradientDescentWorker.terminate();
+            // gradientDescentWorker.terminate();
         };
         gradientDescentWorker.postMessage(rateRequestDataObject);
     });
