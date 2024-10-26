@@ -255,6 +255,7 @@ h1,h2,h3,h4,h5,h6 {
     display: flex;
     flex-direction: row;
     align-items: center;
+    flex-grow: 1;
 }
 
 .add-group-btn {
@@ -284,7 +285,7 @@ h1,h2,h3,h4,h5,h6 {
 
 .site-title {
     /* font-size: clamp(1.8em, 5vw, 2em); */
-    font-size: clamp(1.2rem, 5vw, 2.2rem);
+    font-size: clamp(1.2rem, .8rem + 2vw, 2.2rem);
     /* font-size: clamp(1.5rem, 5vw, 2.2rem); */
     /* margin: 0 .1em .2em; */
 }
