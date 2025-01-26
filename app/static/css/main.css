@@ -283,6 +283,23 @@ h1,h2,h3,h4,h5,h6 {
     width: clamp(30px, 5vw, 35px);
 }
 
+
+
+.site-title.mobile {
+    display: none;
+}
+
+@media only screen and (max-width: 340px) {
+    .site-title {
+        display: none;
+    }
+
+    .site-title.mobile {
+        display: initial;
+    }
+}
+
+
 .site-title {
     /* font-size: clamp(1.8em, 5vw, 2em); */
     font-size: clamp(1.2rem, .8rem + 2vw, 2.2rem);
@@ -934,6 +951,9 @@ input[type=number]::-webkit-outer-spin-button {
     pointer-events: none;
 }
 
+.data-cell.rate-type {
+    position: relative;
+}
 
 .data-cell.rate-type .icon.right {
     align-self: end;
@@ -1227,4 +1247,12 @@ input.rate-input.maxAngularVel[type=number] {
     transform: scale(1.02); 
     background-color: rgba(180, 180, 180, 1);
     transition: transform 0.3s ease-in-out, background-color 0.2s ease-in-out; 
+}
+
+header > span.add-group-btn.material-icons-outlined {
+    display: none;
+}
+
+.legacy header > span.add-group-btn.material-icons-outlined {
+    display: inline-block;
 }
