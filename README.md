@@ -29,6 +29,13 @@ The on-device gradient descent calculation was developed as a proof of concept t
 
 ## Todo
 - [ ] Implement tests for all functionalities.
+- [ ] [set colors for fc options](https://blog.unmanned.tech/flight-controller-firmware/)
+    - [ ] betaflight - `rgb(238, 166, 0);`
+    - [ ] raceflight - `rgb(182, 25, 22);`
+    - [ ] kiss - `none? maybe light gray`
+    - [ ] actual - `rgb(25, 120, 178)`
+    - [ ] quick - `rgb(231, 33, 31)`
+
 
 ## Resources
 

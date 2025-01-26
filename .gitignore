@@ -6,3 +6,4 @@ docker_volumes
 .DS_Store
 ssl_certificates/*
 !ssl_certificates/example.com
+_notes

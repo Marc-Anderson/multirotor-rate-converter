@@ -5,3 +5,4 @@ __pycache__
 docker_volumes
 .git
 .DS_Store
+_notes
