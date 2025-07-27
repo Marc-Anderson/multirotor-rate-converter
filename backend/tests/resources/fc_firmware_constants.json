@@ -1,0 +1,147 @@
+{
+    "betaflight": {
+        "id": "0",
+        "label": "Betaflight",
+        "backgroundColor": "rgb(255,61,2)",
+        "borderColor": "rgb(255,61,2)",
+        "rateValues": {
+            "rc_rate": {
+                "title": "RC Rate",
+                "step": 0.01,
+                "min": 0.01,
+                "max": 2.55,
+                "default": 1.00
+            },
+            "rate": {
+                "title": "Rate",
+                "step": 0.01,
+                "min": 0.00,
+                "max": 1.00,
+                "default": 0.70
+            },
+            "rc_expo": {
+                "title": "RC Expo",
+                "step": 0.01,
+                "min": 0.00,
+                "max": 1.00,
+                "default": 0.00
+            }
+        }
+    },
+    "raceflight": {
+        "id": "1",
+        "label": "Raceflight",
+        "backgroundColor": "rgb(77,209,33)",
+        "borderColor": "rgb(77,209,33)",
+        "rateValues": {
+            "rc_rate": {
+                "title": "Rate",
+                "step": 10,
+                "min": 10,
+                "max": 2000,
+                "default": 370
+            },
+            "rate": {
+                "title": "Acro+",
+                "step": 1,
+                "min": 0,
+                "max": 255,
+                "default": 80
+            },
+            "rc_expo": {
+                "title": "Expo",
+                "step": 1,
+                "min": 0,
+                "max": 100,
+                "default": 50
+            }
+        }
+    },
+    "kiss": {
+        "id": "2",
+        "label": "Kiss",
+        "backgroundColor": "rgb(41,63,255)",
+        "borderColor": "rgb(41,63,255)",
+        "rateValues": {
+            "rc_rate": {
+                "title": "RC Rate",
+                "step": 0.01,
+                "min": 0.01,
+                "max": 2.55,
+                "default": 1.00
+            },
+            "rate": {
+                "title": "Rate",
+                "step": 0.01,
+                "min": 0.00,
+                "max": 0.99,
+                "default": 0.70
+            },
+            "rc_expo": {
+                "title": "RC Curve",
+                "step": 0.01,
+                "min": 0.00,
+                "max": 1.00,
+                "default": 0.00
+            }
+        }
+    },
+    "actual": {
+        "id": "3",
+        "label": "Actual",
+        "backgroundColor": "rgb(232,203,14)",
+        "borderColor": "rgb(232,203,14)",
+        "rateValues": {
+            "rc_rate": {
+                "title": "Center Sensitivity",
+                "step": 10,
+                "min": 10,
+                "max": 2000,
+                "default": 70
+            },
+            "rate": {
+                "title": "Max Rate",
+                "step": 10,
+                "min": 0,
+                "max": 2000,
+                "default": 670
+            },
+            "rc_expo": {
+                "title": "Expo",
+                "step": 0.01,
+                "min": 0.00,
+                "max": 1.00,
+                "default": 0.00
+            }
+        }
+    },
+    "quickrates": {
+        "id": "4",
+        "label": "Quickrates",
+        "backgroundColor": "rgb(177,61,255)",
+        "borderColor": "rgb(177,61,255)",
+        "rateValues": {
+            "rc_rate": {
+                "title": "RC Rate",
+                "step": 0.01,
+                "min": 0.01,
+                "max": 2.55,
+                "default": 1.00
+            },
+            "rate": {
+                "title": "Max Rate",
+                "step": 10,
+                "min": 0,
+                "max": 2000,
+                "default": 670
+            },
+            "rc_expo": {
+                "title": "Expo",
+                "step": 0.01,
+                "min": 0.00,
+                "max": 1.00,
+                "default": 0.00
+            }
+        }
+    }
+}

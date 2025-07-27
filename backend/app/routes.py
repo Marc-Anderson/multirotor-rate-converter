@@ -12,9 +12,9 @@ def init(app):
             srcRcExpo = round(float(request.args.get("rc_expo", "")),2)
             result = getFitValues(srcRateType, tgtRateType, srcRate, srcRcRate, srcRcExpo)
             result["request_status"] = "okay"
+            return jsonify(result)
         except ValueError as error:
-            result = {
+            return jsonify({
                 "request_status": "failed",
                 "errors": error.args
-            }
-        return json.dumps(result)
+            }), 400

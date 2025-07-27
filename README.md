@@ -47,7 +47,7 @@ The on-device gradient descent calculation was developed as a proof of concept t
 - [Desmos](https://www.desmos.com/calculator/r5pkxlxhtb?fbclid=IwAR0DfRnnfMaYSUXF5g7moEjfHlwCOi84iq9WMOUaOhVQwauY-ggFDh-KpSY)
 
 
-# Development: Python Flask
+# Development: Python
 
 For local testing without docker, you can run the project and serve the web app using just python and flask
 
@@ -462,3 +462,35 @@ docker compose --env-file ./.env.prod up -d --build
 ```sh
 docker compose --env-file ./.env.prod down
 ```
+
+
+
+
+# testing
+
+test cases include all valid rate conversions on the website between october 2024 and april 2025. 
+
+#### 1. install requests
+```sh
+pip3 install requests
+```
+
+#### 2. run the tests
+```sh
+cd backend
+python3 -m unittest tests/test_000_bulk.py -f
+# it will take a second to get going on the first run
+# if you want to run all tests in spite of failures you can remove the -f
+# `python3 -m unittest tests/test_000_bulk.py `
+```
+
+
+#### 3. evaluate the results
+
+1. check the number of failures, all tests should pass
+    - every 5000 tests, the system will try a random set of values
+2. at the end you can review the results file in `./tests/RESULTS.txt`
+3. check the error rate compared to the current `test` results
+- the `test` result is the known values of the existing best solution
+- upgrading to python3.13 we lost `153.94`. i hope to resolve this in the future
+
