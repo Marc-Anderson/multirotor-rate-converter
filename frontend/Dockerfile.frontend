@@ -12,7 +12,7 @@ ARG NGINX_CONF=/etc/nginx/nginx.conf
 # copy nginx config
 COPY ./nginx.conf $NGINX_CONF
 
-# remove all of the ssl configurations if the environment is dev
+# remove all of the ssl configurations from nginx conf if the environment is dev
 RUN if [ "$ENVIRONMENT" = "dev" ]; then \
     sed -i '/listen 80 default_server; # ssl default server/d' $NGINX_CONF && \
     sed -i '/return 301 https:\/\/$host$request_uri;/d' $NGINX_CONF && \
@@ -27,8 +27,8 @@ fi
 # replace ${DOC_DOMAIN} with the DOC_DOMAIN environment variable
 RUN sed -i 's/\${DOC_DOMAIN}/'"$DOC_DOMAIN"'/g' $NGINX_CONF
 
-# copy site content
-COPY ./app/static /usr/share/nginx/html/$DOC_DOMAIN
+# copy application code
+COPY ./public /usr/share/nginx/html/$DOC_DOMAIN
 
 # set working directory
 WORKDIR /usr/share/nginx/html
@@ -55,14 +55,11 @@ RUN mkdir -p /etc/nginx/ssl/ && \
 # chown -R $CONT_USER /etc/nginx/ssl/$DOC_DOMAIN/domain.cert.pem && \
 # chown -R $CONT_USER /etc/nginx/ssl/$DOC_DOMAIN/private.key.pem && \
 
-# disable root user entirely
-RUN chsh -s /usr/sbin/nologin
-
 # activate the user
 USER $CONT_USER
 
 EXPOSE 80
 
 # docker build -f Dockerfile.frontend -t ratefront:latest .
-# docker run --rm -p 3000:80 ratefront:latest
-# docker run -it --rm -p 3000:80 ratefront:latest /bin/bash
+# docker run --rm -p 5000:80 ratefront:latest
+# docker run -it --rm -p 5000:80 ratefront:latest /bin/bash

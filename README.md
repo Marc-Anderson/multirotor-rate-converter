@@ -77,12 +77,12 @@ source .venv/bin/activate
 
 #### 5. install the required packages:
 ```sh
-pip3 install -r requirements.txt
+pip3 install -r backend/requirements.txt
 ```
 
 #### 6. launch the application:
 ```sh
-python3 wsgi.py
+python3 backend/wsgi.py
 ```
 
 #### 7. visit the application in your browser at `localhost:3000`.

@@ -3,9 +3,9 @@ from scipy.optimize import curve_fit
 import json
 import math
 
-# with open('./resources/global.json', 'r') as file:
-with open('./app/api/resources/global.json', 'r') as file:
-  data = json.load(file)
+# load the config file containing all of the rate data
+from . import fc_firmware_constants as data
+
 
 def constrain(value, minValue, maxValue):
     if isinstance(value, int) | isinstance(value, float):

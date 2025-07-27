@@ -1,4 +1,4 @@
-{
+fc_firmware_constants = {
     "betaflight": {
         "id": "0",
         "label": "Betaflight",
@@ -10,23 +10,23 @@
                 "step": 0.01,
                 "min": 0.01,
                 "max": 2.55,
-                "default": 1.00
+                "default": 1.00,
             },
             "rate": {
                 "title": "Rate",
                 "step": 0.01,
                 "min": 0.00,
                 "max": 1.00,
-                "default": 0.70
+                "default": 0.70,
             },
             "rc_expo": {
                 "title": "RC Expo",
                 "step": 0.01,
                 "min": 0.00,
                 "max": 1.00,
-                "default": 0.00
-            }
-        }
+                "default": 0.00,
+            },
+        },
     },
     "raceflight": {
         "id": "1",
@@ -39,23 +39,17 @@
                 "step": 10,
                 "min": 10,
                 "max": 2000,
-                "default": 370
+                "default": 370,
             },
-            "rate": {
-                "title": "Acro+",
-                "step": 1,
-                "min": 0,
-                "max": 255,
-                "default": 80
-            },
+            "rate": {"title": "Acro+", "step": 1, "min": 0, "max": 255, "default": 80},
             "rc_expo": {
                 "title": "Expo",
                 "step": 1,
                 "min": 0,
                 "max": 100,
-                "default": 50
-            }
-        }
+                "default": 50,
+            },
+        },
     },
     "kiss": {
         "id": "2",
@@ -68,23 +62,23 @@
                 "step": 0.01,
                 "min": 0.01,
                 "max": 2.55,
-                "default": 1.00
+                "default": 1.00,
             },
             "rate": {
                 "title": "Rate",
                 "step": 0.01,
                 "min": 0.00,
                 "max": 0.99,
-                "default": 0.70
+                "default": 0.70,
             },
             "rc_expo": {
                 "title": "RC Curve",
                 "step": 0.01,
                 "min": 0.00,
                 "max": 1.00,
-                "default": 0.00
-            }
-        }
+                "default": 0.00,
+            },
+        },
     },
     "actual": {
         "id": "3",
@@ -97,23 +91,23 @@
                 "step": 10,
                 "min": 10,
                 "max": 2000,
-                "default": 70
+                "default": 70,
             },
             "rate": {
                 "title": "Max Rate",
                 "step": 10,
                 "min": 0,
                 "max": 2000,
-                "default": 670
+                "default": 670,
             },
             "rc_expo": {
                 "title": "Expo",
                 "step": 0.01,
                 "min": 0.00,
                 "max": 1.00,
-                "default": 0.00
-            }
-        }
+                "default": 0.00,
+            },
+        },
     },
     "quickrates": {
         "id": "4",
@@ -126,22 +120,22 @@
                 "step": 0.01,
                 "min": 0.01,
                 "max": 2.55,
-                "default": 1.00
+                "default": 1.00,
             },
             "rate": {
                 "title": "Max Rate",
                 "step": 10,
                 "min": 0,
                 "max": 2000,
-                "default": 670
+                "default": 670,
             },
             "rc_expo": {
                 "title": "Expo",
                 "step": 0.01,
                 "min": 0.00,
                 "max": 1.00,
-                "default": 0.00
-            }
-        }
-    }
+                "default": 0.00,
+            },
+        },
+    },
 }

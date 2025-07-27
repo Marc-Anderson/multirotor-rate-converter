@@ -8,8 +8,11 @@ services:
       args:
         # define the user id for gunicorn in the container
         - USER_UID=${DOC_GUN_UID}
-      context: .
-      dockerfile: Dockerfile.api
+      # define the root directory for the dockerfiles context
+      context: ./backend
+      dockerfile: Dockerfile.backend
+    ports:
+      - "127.0.0.1:3000:3000"
     volumes:
       # define the socket location
       - ${DOC_GUN_SOCK_PATH}:/run/gunicorn
@@ -39,13 +42,14 @@ services:
         - CONT_GRUP=${DOC_VOL_GRP}
         - CONT_GID=${DOC_VOL_GRP_ID}
         - DOC_DOMAIN=${DOC_DOMAIN:-multirotor-rate-converter}
-      context: .
+      # define the root directory for the dockerfiles context
+      context: ./frontend
       dockerfile: Dockerfile.frontend
     ports:
       # these arent being properly loaded
-      # should be 3000:80 for dev and 80:80, 443:443 for prod
+      # should be 5000:80 for dev and 80:80, 443:443 for prod
       - "${DOC_PORT_MAP}"
-      - "${DOC_PORT_MAP_SSL:-3000:80}"
+      - "${DOC_PORT_MAP_SSL:-5000:80}"
     depends_on:
       - rateapi
     volumes:

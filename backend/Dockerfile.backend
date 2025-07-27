@@ -3,6 +3,7 @@ FROM python:3.9-slim
 # set working directory
 WORKDIR /usr/src/app
 
+# Install dependencies
 # RUN python3 -m venv .venv
 # RUN source .env/bin/activate
 
@@ -10,6 +11,7 @@ COPY requirements.txt ./
 
 RUN pip install --no-cache-dir -r requirements.txt && pip install --no-cache-dir gunicorn
 
+# Copy application code
 COPY . .
 
 # todo: remove redundant static files
@@ -38,14 +40,16 @@ USER $CONT_USER
 # start gunicorn server with logging
 # api access is managed by nginx so logging is only configured for errors
 # optional: to track access logs add `"--access-logfile=/var/log/gunicorn/access.log"`
-CMD ["gunicorn", "--log-level=info", "--error-logfile=/var/log/gunicorn/error.log", "--bind=unix:/run/gunicorn/gunicorn.sock", "--workers=2", "wsgi:app"]
+# CMD ["gunicorn", "--log-level=info", "--error-logfile=/var/log/gunicorn/error.log", "--bind=unix:/run/gunicorn/gunicorn.sock", "--workers=2", "wsgi:app"]
 
-# if testing the api by itself
-# EXPOSE 3000
-# CMD ["gunicorn", "--bind=0.0.0.0:3000", "--workers=2", "wsgi:app"]
 
-# docker build -f Dockerfile.api -t rateapi:latest .
-# docker run --rm -p 3000:3000 rateapi:latest
+# run gunicorn on tcp port instead of socket
+# expose the port gunicorn will run on
+EXPOSE 3000
+CMD ["gunicorn", "--log-level=info", "--error-logfile=-", "--bind=0.0.0.0:3000", "--workers=1", "wsgi:app"]
+
+# docker build -f Dockerfile.backend -t rateapi:latest .
+# docker run --rm -p 127.0.0.1:3000:3000 rateapi:latest
 # access api at ipaddress:3000/api
 # you can try reducing the number of workers to 1 on low power systems but it may time out
 # you may also be able to increase the timeout with `"--timeout=60"`
