@@ -1249,10 +1249,3 @@ input.rate-input.maxAngularVel[type=number] {
     transition: transform 0.3s ease-in-out, background-color 0.2s ease-in-out; 
 }
 
-header > span.add-group-btn.material-icons-outlined {
-    display: none;
-}
-
-.legacy header > span.add-group-btn.material-icons-outlined {
-    display: inline-block;
-}

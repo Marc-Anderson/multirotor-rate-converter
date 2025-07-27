@@ -23,12 +23,15 @@ importScripts('curveCalculator.js');
 ============================================================ */
 /* #region || web worker */
 
-self.onmessage = function(e) {
-
-    let fitData = gradientDescent(e.data.srcRateType, e.data.tgtRateType, [e.data.rate, e.data.rc_rate, e.data.rc_expo]);
-    self.postMessage(fitData);
-
-}
+self.onmessage = function ( e ) {
+    const { messageId, srcRateType, tgtRateType, rate, rc_rate, rc_expo } = e.data;
+    try {
+        const fitData = gradientDescent( srcRateType, tgtRateType, [ rate, rc_rate, rc_expo ] );
+        self.postMessage( { messageId, fitData } );
+    } catch ( err ) {
+        self.postMessage( { messageId, error: err.message || String( err ) } );
+    }
+};
 
 /* #endregion || web worker */
 /* ============================================================

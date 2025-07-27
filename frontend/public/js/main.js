@@ -551,7 +551,8 @@ function fetchFitDataApi(rateRequestDataObject){
         try {
             const response = await fetch(`${rate_fitter_api_url}?${requestUrl}`);
             if (!response.ok || response.status === 503) {
-                throw new Error('rate fitter api unavailable');
+                console.warn('rate fitter api unavailable');
+                await fetchFitDataLocally(rateRequestDataObject)
             }
             resolve(response);
         } catch (error) {
@@ -562,19 +563,35 @@ function fetchFitDataApi(rateRequestDataObject){
 }
 
 
-const gradientDescentWorker = new Worker('./js/gradientDescentWorker.js');
+const gradientDescentWorker = new Worker( './js/gradientDescentWorker.js' );
 
-function fetchFitDataLocally(rateRequestDataObject) {
-    return new Promise((resolve, reject) => {
-        gradientDescentWorker.onmessage = function(e) {
-            if(e.data.request_status === "failed"){
-                reject(e);
-            }
-            resolve({ json: () => {
-                return Promise.resolve(e.data)
-            }});
-            // gradientDescentWorker.terminate();
-        };
-        gradientDescentWorker.postMessage(rateRequestDataObject);
-    });
+// track pending fit requests
+const pendingMessages = new Map();
+
+gradientDescentWorker.onmessage = function ( e ) {
+    const { messageId, fitData, error } = e.data;
+    const pendingMessage = pendingMessages.get( messageId );
+    if ( pendingMessage ) {
+        pendingMessages.delete( messageId );
+        if ( error ) {
+            pendingMessage.reject( error );
+        } else {
+            pendingMessage.resolve( {
+                json: () => {
+                    return Promise.resolve( fitData )
+                }
+            } );
+        }
+    }
+};
+
+function fetchFitDataLocally ( rateRequestDataObject ) {
+    return new Promise( ( resolve, reject ) => {
+        const messageId = Math.random().toString( 36 ).substring( 2, 15 );
+        pendingMessages.set( messageId, { resolve, reject } );
+        gradientDescentWorker.postMessage( {
+            ...rateRequestDataObject,
+            messageId: messageId
+        } );
+    } );
 }
