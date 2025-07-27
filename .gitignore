@@ -4,5 +4,6 @@ venv
 __pycache__
 docker_volumes
 .DS_Store
+_archive/
 ssl_certificates/*
 !ssl_certificates/example.com
