@@ -99,6 +99,52 @@ def getQuickRates(rcCommandf, rcCommandfAbs, rate, rcRate, rcExpo):
     return angularVel
 
 
+def getInavRates(rc_commandf, rate, rc_rate, rc_expo):
+    """
+    Compute INAV stick rate output (degrees/second) from RC input.
+
+    Args:
+        rc_commandf (float): Raw RC input in the range 1000–2000.
+        rate (float): Max rate in degrees per second.
+        rc_rate (float): Unused.
+        rc_expo (float): Expo value in [0, 1].
+
+    Returns:
+        float: Output in degrees per second.
+
+    this calculation is based on a kind redditor and their desmos calculator:
+    - https://www.desmos.com/calculator/7ph8s3vbhp
+    - https://www.reddit.com/r/Multicopter/comments/1isj05g/updated_graphing_calculator_added_inav_rates/
+    """
+
+    # Convert RC input to stick deflection in range [-500, 500]
+    stick_deflection = rc_commandf * 500
+
+    # Convert to -5.0 to 5.0 range
+    tmpf = stick_deflection / 100.0
+
+    # INAV internal rate calculation
+    rate_cmd = ((2500.0 + rc_expo * (tmpf * tmpf - 25.0)) * tmpf) / 25.0
+
+    # Convert to degrees per second
+    return (rate_cmd / 500.0) * rate
+
+
+def inav_rate_math(x, i, r):
+    """
+    Mathematically simplified INAV rate curve.
+
+    Args:
+        x (float): Normalized stick input [-1, 1].
+        i (float): Expo in [0, 1].
+        r (float): Max rate (deg/s).
+
+    Returns:
+        float: Output rate (deg/s).
+    """
+    return (1 + i * (x * x - 1)) * x * r
+
+
 # print(getBetaflightRates(.6, .6, .7, 1, .5, True, 2000))
 # print(getRaceflightRates(.6, 80, 370, 50))
 # print(getKISSRates(.6, .6, .7, 1, 0))
@@ -128,6 +174,9 @@ def getDegreesPerSecondAtRcCommand(rateType, rcCommandf, rate, rcRate, rcExpo):
     elif rateType == "quickrates":
         # print("generating quickrates")
         anglerate = getQuickRates(rcCommandf, rcCommandfAbs, rate, rcRate, rcExpo)
+    elif rateType == "inavflight":
+        # print("generating inavflight")
+        anglerate = getInavRates(rcCommandf, rate, rcRate, rcExpo)
     else:
         return 0
 
@@ -296,7 +345,7 @@ def format_fit_results(
     # todo: 10/17/24 - i changed raceflight from ceil to floor, because they seemed to fit better
     # 20250412 - changed back, review this in the future
     """
-    if tgtRateType == "raceflight":
+    if tgtRateType == "raceflight" or tgtRateType == "inavflight":
         rate = int(math.ceil((denormalized_rate_values[0])))
         rc_rate = int(math.ceil((denormalized_rate_values[1])))
         rc_expo = int(math.ceil((denormalized_rate_values[2])))

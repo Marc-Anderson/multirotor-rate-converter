@@ -301,7 +301,7 @@ function gradientDescent(srcRateType, tgtRateType, srcRates){
     });
 
     let formatted_rate, formatted_rc_rate, formatted_rc_expo;
-    if (tgtRateType === "raceflight") {
+    if (tgtRateType === "raceflight" || tgtRateType === "inavflight") {
         formatted_rate = Math.ceil(rate);
         formatted_rc_rate = Math.ceil(rcRate);
         formatted_rc_expo = Math.ceil(rcExpo);

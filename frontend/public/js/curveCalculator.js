@@ -9,6 +9,11 @@ function getRcCommandRawToDegreesPerSecond(ratesType, rcData, rate, rcRate, rcEx
     rcRate = parseFloat(rcRate)
     rcExpo = parseFloat(rcExpo)
 
+    if (ratesType == 'inavflight') {
+        // console.log("Using INAV rates calculation with parameters:", rcData, rate, rcRate, rcExpo);
+        return getINAVRates(rcData, rate, rcRate, rcExpo)
+    }
+
     let superExpoActive = true
     let deadband = 0
     let limit = 1998
@@ -42,3 +47,34 @@ function generateCurve(ratesType, rate, rcRate, rcExpo){
 //     }, 0 )
 //     return sumDiff
 // }
+
+function getINAVRates(rcCommandf, rate, rcRate, rcExpo) {
+    /**
+     * INAV rates (degrees/second).
+     *
+     * rcCommandf : raw input in 1000–2000
+     * rate       : "Max Rate" in degrees per second
+     * rcRate     : unused
+     * rcExpo     : "Expo" from 0 to 1
+     */
+
+    // this calculation is based on a kind redditor and their desmos calculator:
+    //https://www.desmos.com/calculator/7ph8s3vbhp
+    //https://www.reddit.com/r/Multicopter/comments/1isj05g/updated_graphing_calculator_added_inav_rates/
+
+    // Convert raw RC value (1000–2000) to INAV stick deflection range [-500, 500]
+    const stickDeflection = rcCommandf - 1500;
+
+    // Convert expo from [0, 1] range to [0, 100] like INAV expects
+    const expoPercent = rcExpo;
+    // const expoPercent = rcExpo * 100.0;
+
+    // Convert deflection to -5.0 to 5.0 range
+    const tmpf = stickDeflection / 100.0;
+
+    // Reproduce INAV internal rate calculation
+    const rateCmd = ((2500.0 + expoPercent * (tmpf * tmpf - 25.0)) * tmpf) / 25.0;
+
+    // Convert to degrees per second by scaling with Max Rate (rate)
+    return (rateCmd / 500.0) * rate;
+}
