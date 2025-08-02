@@ -6,9 +6,6 @@ window.addEventListener('load', () => {
 
 function init(){
 
-    generateRateTableGroup()
-    generateRateTableGroup('actual')
-
     // defaults: 
     //   - server api calculation
     //   - legacy ui
@@ -19,6 +16,41 @@ function init(){
 
     const urlParams = new URLSearchParams(window.location.search);
     
+    if (urlParams.get('inav') == 1) {
+        rateDetails["inavflight"] = {
+            "id": "5",
+            "label": "iNavFlight",
+            "backgroundColor": "rgb(245, 255, 61)",
+            "borderColor": "rgb(245, 255, 61)",
+            "rateValues": {
+                "rc_rate": {
+                    "title": "Unused",
+                    "step": 1,
+                    "min": 0,
+                    "max": 1,
+                    "default": 1
+                },
+                "rate": {
+                    "title": "Max Rate",
+                    "step": 1,
+                    "min": 0,
+                    "max": 1000,
+                    "default": 670
+                },
+                "rc_expo": {
+                    "title": "Expo",
+                    "step": 1,
+                    "min": 0,
+                    "max": 100,
+                    "default": 70
+                }
+            }
+        }
+    }
+
+    generateRateTableGroup()
+    generateRateTableGroup('actual')
+
     if (urlParams.get('api') == 1 || urlParams.get('api') == 2) {
         config.api_version = parseInt(urlParams.get('api'));
     }
