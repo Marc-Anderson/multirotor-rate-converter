@@ -207,9 +207,9 @@ function updateRateTableGroup(datasetID){
     
     let rateTableGroup = document.querySelector(`.ratetable-group[data-id="${datasetID}"]`)
     
-    let rateType = Object.keys(rateDetails).filter(type => {
-        return rateDetails[type].id == rateTableGroup.querySelector('.ratetype-selector').selectedIndex;
-    })[0]
+    let rateTypesArray = Object.keys(rateDetails);
+    let selectedIndex = rateTableGroup.querySelector('.ratetype-selector').selectedIndex;
+    let rateType = rateTypesArray[selectedIndex];
 
     let rc_rate_title = rateTableGroup.querySelector('.rc_rate_title')
         rc_rate_title.textContent = rateDetails[rateType].rateValues.rc_rate.title
@@ -264,9 +264,10 @@ function updateUiVersion(){
 function monitorChanges(e){
     if(e.target.selectedIndex == undefined){
 
-        let rateType = Object.keys(rateDetails).filter(type => {
-            return rateDetails[type].id == e.currentTarget.querySelector('.ratetype-selector').selectedIndex;
-        })[0]
+        let rateTypesArray = Object.keys(rateDetails);
+        let selectedIndex = e.currentTarget.querySelector('.ratetype-selector').selectedIndex;
+        let rateType = rateTypesArray[selectedIndex];
+        
         if(parseFloat(e.target.value) < rateDetails[rateType].rateValues[e.target.name].min) return
         if(parseFloat(e.target.value) > rateDetails[rateType].rateValues[e.target.name].max) return
 
@@ -286,9 +287,9 @@ function updateRateTableGroupType(datasetID){
     
     let rateTableGroup = document.querySelector(`.ratetable-group[data-id="${datasetID}"]`)
     
-    let rateType = Object.keys(rateDetails).filter(type => {
-        return rateDetails[type].id == rateTableGroup.querySelector('.ratetype-selector').selectedIndex;
-    })[0]
+    let rateTypesArray = Object.keys(rateDetails);
+    let selectedIndex = rateTableGroup.querySelector('.ratetype-selector').selectedIndex;
+    let rateType = rateTypesArray[selectedIndex];
 
     let rc_rate_title = rateTableGroup.querySelector('.rc_rate_title')
         rc_rate_title.textContent = rateDetails[rateType].rateValues.rc_rate.title
@@ -379,9 +380,10 @@ function updateDatasetFromHTML(datasetID){
 
     let targetDataset = currentData.datasets.find(dataset => dataset.id == datasetID)
 
-    targetDataset.rates.rate = rateTableGroup.querySelector('input[name="rate"]').value
-    targetDataset.rates.rc_rate = rateTableGroup.querySelector('input[name="rc_rate"]').value
-    targetDataset.rates.rc_expo = rateTableGroup.querySelector('input[name="rc_expo"]').value
+    // Parse values to ensure they're numbers
+    targetDataset.rates.rate = parseFloat(rateTableGroup.querySelector('input[name="rate"]').value) || 0
+    targetDataset.rates.rc_rate = parseFloat(rateTableGroup.querySelector('input[name="rc_rate"]').value) || 0
+    targetDataset.rates.rc_expo = parseFloat(rateTableGroup.querySelector('input[name="rc_expo"]').value) || 0
     
     targetDataset.rates.max = getRateTableGroupMaxAngularVel(datasetID)
     rateTableGroup.querySelectorAll('.maxAngularVel').forEach(maxAngularVel => maxAngularVel.value = targetDataset.rates.max)

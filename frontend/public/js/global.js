@@ -58,6 +58,7 @@ const FC = {
         KISS: 2,
         ACTUAL: 3,
         QUICKRATES: 4,
+        EASYRATES: 6,
     }
 }
 
@@ -233,6 +234,35 @@ let rateDetails = {
                 "min": 0.00,
                 "max": 1.00,
                 "default": 0.00
+            }
+        }
+    },
+    "easyrates": {
+        "id": "6",
+        "label": "EasyRates",
+        "backgroundColor": "rgb(0,210,213)",
+        "borderColor": "rgb(0,210,213)",
+        "rateValues": {
+            "rc_rate": {
+                "title": "Precision",
+                "step": 1,
+                "min": 0,
+                "max": 100,
+                "default": 50
+            },
+            "rate": {
+                "title": "Transition",
+                "step": 1,
+                "min": 0,
+                "max": 100,
+                "default": 50
+            },
+            "rc_expo": {
+                "title": "Max Rotation Speed",
+                "step": 1,
+                "min": 0,
+                "max": 1998,
+                "default": 670
             }
         }
     }
