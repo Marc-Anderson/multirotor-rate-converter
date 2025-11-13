@@ -14,6 +14,10 @@ function getRcCommandRawToDegreesPerSecond(ratesType, rcData, rate, rcRate, rcEx
         return getINAVRates(rcData, rate, rcRate, rcExpo)
     }
 
+    if (ratesType == 'easyrates') {
+        return getEasyRates(rcData, rate, rcRate, rcExpo);
+    }
+
     let superExpoActive = true
     let deadband = 0
     let limit = 1998
@@ -77,4 +81,31 @@ function getINAVRates(rcCommandf, rate, rcRate, rcExpo) {
 
     // Convert to degrees per second by scaling with Max Rate (rate)
     return (rateCmd / 500.0) * rate;
+}
+
+function getEasyRates(rcCommandf, rate, rcRate, rcExpo) {
+    /**
+     * Easy Rates calculation (degrees/second).
+     *
+     * rcCommandf : raw input in 1000–2000
+     * rate       : Transition (0-100%)
+     * rcRate     : Precision (0-100%)
+     * rcExpo     : Max rotation speed (0-1998 deg/s)
+     *
+     * Formula: f(x) = x * maxSpeed * (precision * |x|^(20*transition) + (1-precision))
+     * Based on Betaflight Easy Rates implementation with 512-point LUT.
+     */
+    const stickPosition = (rcCommandf - 1500) / 500.0;
+    const stickPositionAbs = Math.abs(stickPosition);
+  
+    const maxRotationSpeed = parseFloat(rcExpo);
+    const precision = parseFloat(rcRate) / 100.0;
+    const transition = parseFloat(rate) / 100.0;
+    const exponent = 20.0 * transition;
+
+    const powerTerm = Math.pow(stickPositionAbs, exponent);
+    const curveFactor = precision * powerTerm + (1.0 - precision);
+    const angleRate = stickPosition * maxRotationSpeed * curveFactor;
+
+    return angleRate;
 }

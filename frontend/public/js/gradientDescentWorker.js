@@ -305,6 +305,10 @@ function gradientDescent(srcRateType, tgtRateType, srcRates){
         formatted_rate = Math.ceil(rate);
         formatted_rc_rate = Math.ceil(rcRate);
         formatted_rc_expo = Math.ceil(rcExpo);
+    } else if (tgtRateType === "easyrates") {
+        formatted_rate = Math.ceil(rate);
+        formatted_rc_rate = Math.ceil(rcRate);
+        formatted_rc_expo = Math.ceil(rcExpo);
     } else if (tgtRateType === "actual") {
         formatted_rate = Math.ceil(rate);
         formatted_rc_rate = Math.ceil(rcRate);

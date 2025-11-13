@@ -161,4 +161,33 @@ fc_firmware_constants = {
             },
         },
     },
+    "easyrates": {
+        "id": "6",
+        "label": "Easy Rates",
+        "backgroundColor": "rgb(0,210,213)",
+        "borderColor": "rgb(0,210,213)",
+        "rateValues": {
+            "rc_rate": {
+                "title": "Precision",
+                "step": 1,
+                "min": 0,
+                "max": 100,
+                "default": 50,
+            },
+            "rate": {
+                "title": "Transition",
+                "step": 1,
+                "min": 0,
+                "max": 100,
+                "default": 50,
+            },
+            "rc_expo": {
+                "title": "Max Rotation Speed",
+                "step": 1,
+                "min": 0,
+                "max": 1998,
+                "default": 667,
+            },
+        },
+    },
 }

@@ -99,6 +99,18 @@ def getQuickRates(rcCommandf, rcCommandfAbs, rate, rcRate, rcExpo):
     return angularVel
 
 
+def getEasyRates(rcCommandf, rate, rcRate, rcExpo):
+    rcCommandfAbs = abs(rcCommandf)
+    max_rotation_speed = rcExpo
+    precision = rcRate / 100.0
+    transition = rate / 100.0
+    exponent = 20.0 * transition
+    power_term = rcCommandfAbs ** exponent
+    curve_factor = precision * power_term + (1.0 - precision)    
+    angularVel = rcCommandf * max_rotation_speed * curve_factor    
+    return angularVel
+
+
 def getInavRates(rc_commandf, rate, rc_rate, rc_expo):
     """
     Compute INAV stick rate output (degrees/second) from RC input.
@@ -150,6 +162,7 @@ def inav_rate_math(x, i, r):
 # print(getKISSRates(.6, .6, .7, 1, 0))
 # print(getActualRates(.6, .6, 670, 200, .54))
 # print(getQuickRates(.6, .6, 670, 1, 0))
+# print(getEasyRates(.6, 50, 50, 670))
 
 
 # get degrees per second value at any given rc command
@@ -177,6 +190,9 @@ def getDegreesPerSecondAtRcCommand(rateType, rcCommandf, rate, rcRate, rcExpo):
     elif rateType == "inavflight":
         # print("generating inavflight")
         anglerate = getInavRates(rcCommandf, rate, rcRate, rcExpo)
+    elif rateType == "easyrates":
+        # print("generating easyrates")
+        anglerate = getEasyRates(rcCommandf, rate, rcRate, rcExpo)
     else:
         return 0
 
@@ -346,6 +362,10 @@ def format_fit_results(
     # 20250412 - changed back, review this in the future
     """
     if tgtRateType == "raceflight" or tgtRateType == "inavflight":
+        rate = int(math.ceil((denormalized_rate_values[0])))
+        rc_rate = int(math.ceil((denormalized_rate_values[1])))
+        rc_expo = int(math.ceil((denormalized_rate_values[2])))
+    elif tgtRateType == "easyrates":
         rate = int(math.ceil((denormalized_rate_values[0])))
         rc_rate = int(math.ceil((denormalized_rate_values[1])))
         rc_expo = int(math.ceil((denormalized_rate_values[2])))
