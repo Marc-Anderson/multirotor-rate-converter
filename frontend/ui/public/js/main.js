@@ -584,7 +584,8 @@ function fetchFitDataApi(rateRequestDataObject){
             const response = await fetch(`${rate_fitter_api_url}?${requestUrl}`);
             if (!response.ok || response.status === 503) {
                 console.warn('rate fitter api unavailable');
-                await fetchFitDataLocally(rateRequestDataObject)
+                resolve(await fetchFitDataLocally(rateRequestDataObject));
+                return;
             }
             resolve(response);
         } catch (error) {

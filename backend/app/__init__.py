@@ -6,7 +6,7 @@ def create_app():
     # build absolute path to frontend folder for development
     current_dir = os.path.dirname(os.path.abspath(__file__))
     static_folder = os.path.abspath(
-        os.path.join(current_dir, "..", "..", "frontend", "public")
+        os.path.join(current_dir, "..", "..", "frontend", "ui", "public")
     )
 
     app = Flask(

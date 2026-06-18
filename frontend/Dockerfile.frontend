@@ -28,7 +28,7 @@ fi
 RUN sed -i 's/\${DOC_DOMAIN}/'"$DOC_DOMAIN"'/g' $NGINX_CONF
 
 # copy application code
-COPY ./public /usr/share/nginx/html/$DOC_DOMAIN
+COPY ./ui/public /usr/share/nginx/html/$DOC_DOMAIN
 
 # set working directory
 WORKDIR /usr/share/nginx/html
