@@ -4,7 +4,7 @@ from . import BaseTestCase
 from .compare_fit_results import evaluate_fit_methods, is_essentially_less_equal
 from .utilities import config_from_test_case, random_rate_fitter_config
 
-from app.multirotor_rate_converter.core import getFitValues
+from multirotor_rate_converter.core import getFitValues
 
 # load the json test cases once
 with open("./tests/test_cases-20250411.json", "r") as f:

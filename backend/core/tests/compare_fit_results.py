@@ -7,7 +7,7 @@ import time
 import math
 
 # from tests.utils_rate_fitter_test_helpers import random_rate_fitter_config
-from app.multirotor_rate_converter.core import (
+from multirotor_rate_converter.core import (
     getDegreesPerSecondAtRcCommand,
     getFitValues,
     mse,

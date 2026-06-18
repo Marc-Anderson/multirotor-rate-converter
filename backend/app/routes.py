@@ -1,5 +1,6 @@
 from flask import request, jsonify
-from app.multirotor_rate_converter.core import *
+
+from multirotor_rate_converter.core import getFitValues
 
 def init(app):
     @app.route("/api/v1/multirotor-rate-converter", methods=['GET'])
