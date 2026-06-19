@@ -84,8 +84,9 @@ source .venv/bin/activate
 
 #### 5. install the required packages:
 ```sh
-pip3 install -r backend/requirements.txt
+cd backend && pip3 install -r requirements.txt && cd ..
 ```
+**Note:** the Docker build and `backend/requirements.txt` reference `./core` as a relative path, so it must be installed from inside `backend/`
 
 #### 6. launch the application:
 ```sh
@@ -100,7 +101,7 @@ python3 backend/wsgi.py
 
 # Development: Docker Compose
 
-build an image and spin up a container containing the web app using docker compose. these development instructions will keep all files within the project folder
+build an image and spin up a container containing the web app using docker compose
 
 ## Prerequisites
 - linux, wsl2 in windows or multipass on macos
@@ -124,58 +125,22 @@ git clone https://github.com/Marc-Anderson/multirotor-rate-converter.git
 cd multirotor-rate-converter
 ```
 
-#### 3. automatically create folder structure with permissions using a setup script
-
+#### 3. copy the example env file
 ```sh
-# make the setup file executable
-sudo chmod +x ./setup.sh
-# run the setup script
-./setup.sh
-# follow the instructions for `dev`
+cp .env.example .env
 ```
-
-<details>
-
-<summary>Click To Expand: instructions for manually creating folder structure with required permissions instead</summary>
-<br />
-
-#### manually create folder structure
-
-some users prefer not to run setup scripts for security reasons. the below steps walk you through the manual creation of the required folder structure 
-
-#### 1. create a `docker_volumes` folder within the project directory
-```sh
-mkdir docker_volumes
-```
-
-#### 2. create required directories within the `docker_volumes` folder
-
-you must create these logs and gunicorn socket folders as defined in the `.env` file if you dont create these on the host they will be owned by root and containers will not be able to access them
-
-```sh
-mkdir -p ./docker_volumes/var/log/nginx-docker
-mkdir -p ./docker_volumes/var/log/gunicorn-docker
-mkdir -p ./docker_volumes/run/gunicorn-docker
-```
-
-#### 4. set permissions for the `docker_volumes` folder and its contents:
-```sh
-chmod 770 -R ./docker_volumes/
-```
-
-</details>
-
+the defaults work as-is for local testing, no editing needed
 
 #### 4. build and run the docker containers using docker compose:
 ```sh
-docker compose --env-file ./.env.dev up -d --build
+docker compose up -d --build
 ```
 
-#### 5. access the application in your browser at the ip address of your host, port `3000` (e.g. `127.0.0.1:3000`).
+#### 5. access the application in your browser at `localhost:3000`
 
 #### 6. to stop the containers:
 ```sh
-docker compose --env-file ./.env.dev down
+docker compose down
 ```
 
 # Production: Docker Compose
@@ -188,20 +153,12 @@ docker compose --env-file ./.env.dev down
 - fail2ban (recommended)
 - non-root user
 - ssh public key for user
-- a domain name
-- ssl certificate(domain key, and private key)
+- a domain name with dns already pointed at this host's ip address
 
 
-### ssl certificates
+### tls certificates
 
-ssl certificates and renewal is an involved process. you may be able to deploy and manage them with certbot or caddy but for this deployment we use ssl certificate files which do not renew automatically
-* you can download your certificates from your dns provider which expire every 30-90 days
-* place these certificates in `./ssl_certificates/yourdomain.com`
-* you will need to upload new certificates once per month and restart the containers for nginx to recognize them
-* alternative options:
-    * https://forums.docker.com/t/docker-compose-letsencrypt-nginx-certbot-expectations/140052
-    * https://community.letsencrypt.org/t/letsencrypt-certbot-configuration-secuity/213973
-    * https://phoenixnap.com/kb/letsencrypt-docker
+caddy (the reverse proxy/static file server in front of the app) automatically requests and renews a let's encrypt certificate for `DOC_DOMAIN` the first time it starts, as long as that domain's dns points at this server and ports 80/443 are reachable from the internet. there's nothing to download, upload, or renew by hand.
 
 <details>
 
@@ -296,171 +253,49 @@ cd multirotor-rate-converter
 ```
 
 
-#### 3. organize your ssl certificates
-
-you should have an domain key, and a private key from your domain registrar. rename both files as below and place them in the new folder, place that folder in the `ssl_certificates` folder
-
-ssl certificates should be organized in their own domains folder. we're only working with one domain right now, but this keeps us organized in case we introduce multiple domains in the future
+#### 3. point your domain's dns at this server, then copy the example env file and set `DOC_DOMAIN` and `HTTP_PORT` (and optionally `SSL_EMAIL`)
 
 ```sh
-# ./ssl_certificates/example.com/domain.cert.pem
-# ./ssl_certificates/example.com/private.key.pem
+cp .env.example .env
 ```
 
-
-#### 4. update the `DOC_DOMAIN` value in the `.env.prod` file with your domain name
-
-you can do this manually or replace example.com below with your domain name and use these commands
+edit `.env` by hand - set `DOC_DOMAIN` to your domain and uncomment `HTTP_PORT=80` - or replace the variables below and run this command
 
 ```sh
 domain_name=example.com
-sed -i "s/^DOC_DOMAIN=.*/DOC_DOMAIN=$domain_name/" .env.prod
+ssl_email_address=webmaster@example.com
+sed -i -e "s/^# DOC_DOMAIN=.*/DOC_DOMAIN=$domain_name/" -e "s/^# SSL_EMAIL=.*/SSL_EMAIL=$ssl_email_address/" -e "s/^# HTTP_PORT=.*/HTTP_PORT=80/" .env
 ```
 
 
-#### 5. automatically create folder structure with permissions using a setup script
-
-```sh
-# make the setup file executable and run it
-sudo chmod +x ./setup.sh
-./setup.sh
-```
-
-<details>
-
-<summary>Click To Expand: instructions for manually creating users, folder structure with required permissions instead</summary>
-<br />
-
-#### 6. create a local docker container user group for sharing volumes:
-```sh
-sudo groupadd -g 1700 -o docker_grp
-```
-
-#### 7. create local gunicorn user, add the nginx user to the docker group, and disable any shell for security:
-```sh
-sudo useradd --shell /usr/sbin/nologin --uid 1802 doc_gunicorn
-
-# by default the nginx container user is 101 `systemd-resolve` so thats the user we will use here
-sudo usermod -aG docker_grp systemd-resolve
-```
-
-#### 8. create nginx/gunicorn log directories and set the correct permissions matching the `.env.prod` file:
-```sh
-sudo mkdir -p /var/log/nginx-docker
-sudo chown 101:101 /var/log/nginx-docker
-sudo chmod 750 -R /var/log/nginx-docker
-
-sudo mkdir -p /var/log/gunicorn-docker
-sudo chown doc_gunicorn:root /var/log/gunicorn-docker
-sudo chmod 750 -R /var/log/gunicorn-docker
-```
-
-#### 9. create gunicorn socket directory and set the correct permissions matching the `.env.prod` file:
-```sh
-sudo mkdir -p /run/gunicorn-docker
-sudo chown doc_gunicorn:docker_grp /run/gunicorn-docker
-sudo chmod 770 -R /run/gunicorn-docker
-```
-
-#### 10. create ssl directory directory under your domain `/etc/nginx/ssl/example.com` and copy your ssl certificates to it
-
-replace example.com below with your domain name
-
-```sh
-# update your domain name here
-domain_name=example.com
-
-sudo mkdir -p /etc/nginx/ssl/$domain_name
-
-# can this be root:root?
-sudo chown 101:101 -R /etc/nginx/ssl
-sudo chmod 750 -R /etc/nginx
-
-sudo cp -r ./ssl_certificates/$domain_name/* /etc/nginx/ssl/$domain_name
-# set permissions for certificate and private keys
-
-sudo chown 101:101 /etc/nginx/ssl/$domain_name/domain.cert.pem
-sudo chown 101:101 /etc/nginx/ssl/$domain_name/private.key.pem
-
-sudo chmod 644 /etc/nginx/ssl/$domain_name/domain.cert.pem
-sudo chmod 640 /etc/nginx/ssl/$domain_name/private.key.pem
-```
-
-#### 11. create new fail2ban config with the location of the nginx logs
-
-if you dont do this, fail2ban wont be able to find the logs so it can block people abusing the server
-
-```sh
-# copy the default fail2ban config file to a jail.local file
-sudo cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
-
-# add a reference to the new nginx log location for our docker container to the bottom of the file
-sudo nano /etc/fail2ban/jail.local
-
-# new nginx log location for docker container
-[docker-nginx]
-filter  = nginx-http-auth
-port    = http,https
-logpath = /var/log/nginx-docker/*log
-```
-
-
-#### 12. create new logrotate config with the location of the gunicorn
-
-if you dont do this, the logs for gunicorn may grow out of control and take over your servers storage
-
-```sh
-# create a new logrotate file for gunicorn and add a log configuration
-sudo nano /etc/logrotate.d/gunicorn
-
-# logrotate settings for gunicorn
-
-# rotate gunicorn logs to prevent them from consuming all of the storage
-/var/log/gunicorn/*.log {
-    monthly
-    maxsize 20M
-    # keep n rotated logs
-    rotate 3
-    # add date to archives
-    dateext
-    missingok
-    compress
-    delaycompress
-    # dont rotate if empty
-    notifempty
-    # copy log and remove content instead of deleting it
-    copytrucate
-}
-```
-
-</details>
-
-
-#### 6. enable and start fail2ban
+#### 4. enable and start fail2ban
 ```sh
 sudo systemctl enable fail2ban
 sudo systemctl start fail2ban
 ```
 
-#### 7. enable and allow website traffic in ufw
+#### 5. allow web traffic in ufw
 ```sh
 sudo ufw allow 80/tcp && sudo ufw allow 443/tcp
 sudo ufw enable
 ```
 
-#### 8. build and run the docker containers
+#### 6. Ensure that your domain is set pointing to your server before continuing
 ```sh
-docker compose --env-file ./.env.prod up -d --build
-# docker compose --env-file ./.env.prod up --build
+hostname -I
+dig $domain_name
 ```
 
-#### 9. test access the application in your browser using the server's ip address
-
-#### 10. access the application in your browser using your domain name
-
-#### 11. to stop the containers:
+#### 7. build and run the docker containers
 ```sh
-docker compose --env-file ./.env.prod down
+docker compose up -d --build
+```
+
+#### 8. visit your domain over https - caddy requests the certificate on first access, no extra steps needed
+
+#### 9. to stop the containers:
+```sh
+docker compose down
 ```
 
 
@@ -477,7 +312,7 @@ pip3 install requests
 
 #### 2. run the tests
 ```sh
-cd backend
+cd backend/core
 python3 -m unittest tests/test_000_bulk.py -f
 # it will take a second to get going on the first run
 # if you want to run all tests in spite of failures you can remove the -f

@@ -1,0 +1,16 @@
+{
+	email {$SSL_EMAIL:webmaster@example.com}
+}
+
+{$DOC_DOMAIN:http://localhost} {
+    encode gzip
+
+    handle /api/* {
+        reverse_proxy rateapi:3001
+    }
+
+    handle {
+        root * /srv/public
+        file_server
+    }
+}
