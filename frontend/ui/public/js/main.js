@@ -13,6 +13,7 @@ function init(){
     const apiSwitch = document.getElementById('api-switch');
     const chartDiffSwitch = document.getElementById('diff-switch');
     const sliderModeSwitch = document.getElementById('slider-mode-switch');
+    const darkModeSwitch = document.getElementById('dark-mode-switch');
 
     const urlParams = new URLSearchParams(window.location.search);
     
@@ -74,6 +75,10 @@ function init(){
         rateChart.custom.toggleChartDiff();
     }
 
+    const isDarkModeForced = urlParams.get('dark_mode') == 1;
+    darkModeSwitch.checked = isDarkModeForced;
+    updateDarkMode(isDarkModeForced);
+
     updateUiVersion();
     legacySwitches.forEach(switchElement => {
         switchElement.addEventListener('change', (e) => {
@@ -124,6 +129,18 @@ function init(){
         window.history.pushState({}, '', currentUrl);
     });
 
+    darkModeSwitch.addEventListener('change', (e) => {
+        updateDarkMode(e.target.checked);
+
+        const currentUrl = new URL(window.location.href);
+        if (e.target.checked) {
+            currentUrl.searchParams.set('dark_mode', 1);
+        } else {
+            currentUrl.searchParams.delete('dark_mode');
+        }
+        window.history.pushState({}, '', currentUrl);
+    });
+
 
     function updateMobileSliderMode(){
         if(config.mobile_slider_mode == 2){
@@ -150,6 +167,12 @@ function init(){
                 // 
             });
         }
+    }
+
+    function updateDarkMode(isEnabled){
+        document.documentElement.classList.toggle('dark-mode', isEnabled);
+        rateChart.custom.applyTheme();
+        rateChart.update();
     }
 
     
@@ -180,6 +203,14 @@ function init(){
 
     // open dialog when clicking the title of the page
     const optionDialog = document.getElementById('option-dialog');
+    const siteIcon = document.querySelector('.site-icon');
+
+    siteIcon.addEventListener('click', () => {
+        const currentUrl = new URL(window.location.href);
+        currentUrl.search = '';
+        window.location.href = currentUrl.toString();
+    });
+
     document.querySelector('.settings-btn').addEventListener('click', ()=>{
         optionDialog.showModal();
     })

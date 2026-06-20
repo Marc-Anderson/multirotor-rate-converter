@@ -4,6 +4,11 @@ const currentData = {
     usedColors: []
 };
 
+function getThemeColor(variableName, fallbackValue) {
+    const colorValue = getComputedStyle(document.documentElement).getPropertyValue(variableName).trim()
+    return colorValue || fallbackValue
+}
+
 function generateRateChart(isLegacyUi = false){
 
     const shiftYAxisTicksPlugin = {
@@ -16,7 +21,7 @@ function generateRateChart(isLegacyUi = false){
             if ( !yAxis ) return;
 
             // define the shift amount (pixels)
-            labelColor = "rgba(0, 0, 0, 0.62)";
+            const labelColor = getThemeColor('--chart-text-color', 'rgba(0, 0, 0, 0.62)')
             const tickShift = 10;
 
             // get the canvas context for drawing
@@ -103,9 +108,9 @@ function generateRateChart(isLegacyUi = false){
                     color: function(context) {
                         // color only every 20th tick
                         if(context.tick.value % 20 === 0){
-                            return "rgba(0, 0, 0, 0.1)"
+                            return getThemeColor('--chart-grid-color', 'rgba(0, 0, 0, 0.1)')
                         } else {
-                            return ""
+                            return 'transparent'
                         }
                     }
                 }
@@ -152,6 +157,30 @@ function generateRateChart(isLegacyUi = false){
         mode: isLegacyUi ? 'legacy' : 'modern',
         options: options,
         legacyOptions: legacyOptions,
+        applyTheme: function() {
+            const chartTextColor = getThemeColor('--chart-text-color', 'rgba(0, 0, 0, 0.62)')
+            const chartGridColor = getThemeColor('--chart-grid-color', 'rgba(0, 0, 0, 0.1)')
+
+            Chart.defaults.color = chartTextColor
+            Chart.defaults.borderColor = chartGridColor
+
+            Object.assign(this.options.plugins.legend.labels ||= {}, {
+                color: chartTextColor
+            })
+
+            this.options.scales.yAxisID.title.color = chartTextColor
+            this.options.scales.yAxisID.ticks.color = chartTextColor
+            this.options.scales.yAxisID.grid = { color: chartGridColor }
+            this.options.scales.xAxisID.title.color = chartTextColor
+            this.options.scales.xAxisID.ticks.color = chartTextColor
+
+            this.legacyOptions.scales.y.title.color = chartTextColor
+            this.legacyOptions.scales.y.ticks.color = chartTextColor
+            this.legacyOptions.scales.y.grid = { color: chartGridColor }
+            this.legacyOptions.scales.x.title.color = chartTextColor
+            this.legacyOptions.scales.x.ticks.color = chartTextColor
+            this.legacyOptions.scales.x.grid = { color: chartGridColor }
+        },
         updateUiMode: function (mode=undefined) {
             if(mode == 'legacy' || config.ui_version == 1){
                 this.mode = 'legacy'
@@ -162,6 +191,7 @@ function generateRateChart(isLegacyUi = false){
                 this.mode = 'modern'
                 Chart.register( shiftYAxisTicksPlugin );
             }
+            this.applyTheme();
             rateChart.update();
         },
         toggleChartDiff: function () {
@@ -188,11 +218,17 @@ function generateRateChart(isLegacyUi = false){
     );
 
     rateChart.custom = customChartProperties;
+    rateChart.custom.applyTheme();
 
     return rateChart
 }
 
 const rateChart = generateRateChart(false);
+
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+    rateChart.custom.applyTheme();
+    rateChart.update();
+})
 
 
 function createDataset(rateType = "betaflight"){

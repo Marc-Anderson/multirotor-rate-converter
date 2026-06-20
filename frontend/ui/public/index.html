@@ -21,7 +21,8 @@
 
     <link rel="stylesheet" href="./css/main.css?v=001">
 
-    <meta name="theme-color" content="#fafafa">
+    <meta name="theme-color" content="#fafafa" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#101214" media="(prefers-color-scheme: dark)">
 
     <!-- Google Tag Manager -->
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-5QH8NCZ');</script>
@@ -65,6 +66,12 @@
             <span class="option-title">Mobile Slider Mode</span>
             <label class="switch">
                 <input id="slider-mode-switch" class=" feature-switch" type="checkbox">
+                <span class="switchslider round"></span>
+            </label>
+
+            <span class="option-title">Force Dark Mode</span>
+            <label class="switch">
+                <input id="dark-mode-switch" class="feature-switch" type="checkbox">
                 <span class="switchslider round"></span>
             </label>
         </div>
