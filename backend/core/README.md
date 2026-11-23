@@ -101,19 +101,31 @@ pip3 install requests
 
 #### 2. run the tests
 ```sh
-python3 -m unittest tests/test_000_bulk.py -f
+# Tests Last Updated 2026-08-05
+python3 -m unittest tests/test_bulk_test_cases.py
 # it will take a second to get going on the first run
-# if you want to run all tests in spite of failures you can remove the -f
-# `python3 -m unittest tests/test_000_bulk.py `
+# add -f if you want to stop at the first failure
 ```
 
 
 #### 3. evaluate the results
 
 1. check the number of failures, all tests should pass
-    - every 5000 tests, the system will try a random set of values
-2. at the end you can review the results file in `./tests/RESULTS.txt`
+2. error sums are printed in the console
 3. check the error rate compared to the current `test` results
 - the `test` result is the known values of the existing best solution
 - upgrading to python3.13 we lost `153.94`. i hope to resolve this in the future
 
+
+## GitHub Actions
+
+The `Core tests` workflow runs on pushes and pull requests using Python 3.12.
+To reproduce its commands locally in an activated Python 3.12 environment:
+
+```sh
+python3 -m pip install --constraint .github/ci-constraints.txt . requests
+python3 -m pip check
+python3 -m tests.run
+```
+
+NumPy and SciPy are pinned. `tests.run` runs the suite, fails on errors, and logs results to the Actions summary.

@@ -9,7 +9,7 @@ with open("./tests/resources/fc_firmware_constants.json", "r") as file:
 
 
 # load the config file containing all of the rate data
-with open("./tests/test_cases-20250411.json", "r") as file:
+with open("./tests/test_cases.json", "r") as file:
     rate_fitter_test_cases = json.load(file)
 
 

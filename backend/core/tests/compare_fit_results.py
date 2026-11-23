@@ -50,18 +50,16 @@ class RateFitterConfig:
 
 
 class EvaluationMethod:
-    def __init__(self, name):
-        self.name = (
-            name.strip().replace(" ", "_").replace("-", "_").replace(".", "_").lower()
-        )
+    name = None
 
     def get_fit_results(self, rate_fitter_input):
         raise NotImplementedError("This method should be overridden by subclasses")
 
 
-class ApiEvaluationMethod(EvaluationMethod):
-    def __init__(self, name, endpoint=0):
-        super().__init__(name)
+class ApiFitMethod(EvaluationMethod):
+    name = "api"
+
+    def __init__(self, endpoint=0):
         if not isinstance(endpoint, str):
             endpoints = [
                 "https://rates.metamarc.com/api/v1/multirotor-rate-converter",
@@ -88,9 +86,21 @@ class ApiEvaluationMethod(EvaluationMethod):
         return response_dict
 
 
-class ModuleEvaluationMethod(EvaluationMethod):
-    def __init__(self, name, get_fit_values_fn=None):
-        super().__init__(name)
+class BaselineFitMethod(EvaluationMethod):
+    name = "baseline"
+
+    def __init__(self, fit_result):
+        self.fit_result = fit_result
+
+    @time_get_fit_results
+    def get_fit_results(self, rate_fitter_input):
+        return self.fit_result.copy()
+
+
+class CandidateFitMethod(EvaluationMethod):
+    name = "candidate"
+
+    def __init__(self, get_fit_values_fn=None):
         self.get_fit_values_fn = get_fit_values_fn
         if get_fit_values_fn is None:
             self.get_fit_values_fn = getFitValues
@@ -134,8 +144,8 @@ def evaluate_fit_methods(
 ):
     if evaluation_methods is None:
         evaluation_methods = [
-            ApiEvaluationMethod(name="server"),
-            ModuleEvaluationMethod(name="local"),
+            ApiFitMethod(),
+            CandidateFitMethod(),
         ]
     # generate x values between 0 and 1
     x_axis_values = linspace(0, 1, num_eval_points)
