@@ -1,0 +1,4 @@
+# Keep the numerical dependencies aligned with the validated Python 3.12 run.
+# Update deliberately and compare error sums before accepting a new baseline.
+numpy==2.5.4
+scipy==1.18.1
