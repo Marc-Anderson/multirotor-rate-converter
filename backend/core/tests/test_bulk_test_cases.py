@@ -1,13 +1,16 @@
 # test api routes for both versions of the api, could be broken up into separate files if needed
 import json
 from . import BaseTestCase
-from .compare_fit_results import evaluate_fit_methods, is_essentially_less_equal
-from .utilities import config_from_test_case, random_rate_fitter_config
+from .compare_fit_results import (
+    evaluate_fit_methods, is_essentially_less_equal,
+    BaselineFitMethod, CandidateFitMethod,
+)
+from .utilities import config_from_test_case
 
 from multirotor_rate_converter.core import getFitValues
 
 # load the json test cases once
-with open("./tests/test_cases-20250411.json", "r") as f:
+with open("./tests/test_cases.json", "r") as f:
     test_cases = json.load(f)
 
 
@@ -27,12 +30,6 @@ class RateConverterTest(BaseTestCase):
         print(f"difference: {cls.new_sum - cls.test_sum}")
         winner = "test" if cls.new_sum - cls.test_sum >= 0 else "new"
         print(f"winner: {winner}")
-
-        with open("./tests/RESULTS.txt", "a") as f:
-            f.write(f"\ntest error sum: {cls.test_sum}")
-            f.write(f"\nnew error sum : {cls.new_sum}")
-            f.write(f"\ndifference: {cls.new_sum - cls.test_sum}")
-            f.write(f"\nwinner: {winner}\n")
 
     def assertPracticallyLessEqual(self, a, b, msg=None):
         tolerance = 0.5
@@ -105,7 +102,14 @@ class RateConverterTest(BaseTestCase):
                 if not exact_match:
 
                     # define a specific configuration
-                    fit_results = evaluate_fit_methods(test_case, num_eval_points=20)
+                    fit_results = evaluate_fit_methods(
+                        test_case,
+                        evaluation_methods=[
+                            BaselineFitMethod(test_case),
+                            CandidateFitMethod(),
+                        ],
+                        num_eval_points=20,
+                    )
                     fit_data = fit_results["fit_data"]
                     msg = (
                         f"{base_msg}output: {fit_data}"
@@ -126,9 +130,6 @@ class RateConverterTest(BaseTestCase):
 # generate new class tests for each test case
 for idx, test_case in enumerate(test_cases):
     method_name = f"test_get_fit_results_{idx}"
-    if idx % 5000 == 0:
-        test_case = random_rate_fitter_config()
-    else:
-        test_case = config_from_test_case(test_case)
+    test_case = config_from_test_case(test_case)
     test_method = RateConverterTest.generate_test_method(test_case)
     setattr(RateConverterTest, method_name, test_method)
